@@ -13,14 +13,19 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
     }
-    const admin = await verifyCredentials(parsed.data.email, parsed.data.password);
-    if (!admin) {
+    const user = await verifyCredentials(parsed.data.email, parsed.data.password);
+    if (!user) {
       return NextResponse.json(
         { error: "Błędny e-mail lub hasło" },
         { status: 401 }
       );
     }
-    await createSession({ sub: admin.id, email: admin.email });
+    await createSession({
+      sub: user.id,
+      email: user.email,
+      role: user.role as any,
+      name: user.name ?? undefined,
+    });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Błąd serwera" }, { status: 500 });

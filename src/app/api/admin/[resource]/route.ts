@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { getSession, isManager } from "@/lib/auth";
 import {
   isResource,
   getDelegate,
@@ -12,7 +12,8 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: { resource: string } }
 ) {
-  if (!(await getSession())) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const delegate = getDelegate(params.resource);
@@ -26,7 +27,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: { resource: string } }
 ) {
-  if (!(await getSession())) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const config = getConfig(params.resource);

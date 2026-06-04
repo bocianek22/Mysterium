@@ -18,13 +18,22 @@ FAQ, Rezerwacja LockMe, formularz kontaktowy, WhatsApp, stopka.
 - 🚪 Pokojami zagadek (zdjęcie, czas, liczba osób, trudność, status, kolejność)
 - 🖼️ Galerią zdjęć (wgrywanie plików)
 - 🎬 Galerią filmów (YouTube lub własny plik mp4)
-- ⭐ Opiniami graczy
-- 💰 Cennikiem (pakiety)
-- ❓ FAQ
+- ⭐ Opiniami graczy · 💰 Cennikiem · ❓ FAQ
 - ✉️ Wiadomościami z formularza kontaktowego
-- ⚙️ Ustawieniami (telefon, e-mail, adres, WhatsApp, LockMe, teksty)
+- ⚙️ Ustawieniami (telefon, e-mail, adres, WhatsApp, LockMe, Google Calendar, teksty)
 
 Każda treść ma osobne pola **PL** i **EN**. Można ukrywać/pokazywać i zmieniać kolejność pozycji.
+
+**Zarządzanie zespołem i rezerwacjami** (`/admin`):
+- 👥 **Konta i role** — właściciel/admin oraz pracownicy; dodawanie kont z panelu, hasła, stawki
+- 🗓️ **Grafik** zmian (kalendarz) + **dyspozycyjność** zgłaszana przez pracowników
+- 💵 **Wypłaty** — wynagrodzenie liczone z grafiku wg stawek dzień / noc (22–6) / weekend
+- 📅 **Rezerwacje** — ręczne w panelu + import z **LockMe API** (po konfiguracji)
+- 📆 **Google Calendar** — subskrypcja iCal (każde konto ma swój link) + opcjonalna pełna
+  synchronizacja przez konto serwisowe + osadzony kalendarz w panelu
+- 📊 **Statystyki** w pulpicie (rezerwacje, godziny, wypłaty, wiadomości)
+
+Role: **OWNER/ADMIN** widzą wszystko; **EMPLOYEE** widzi tylko swój grafik, dyspozycyjność i zarobki.
 
 ---
 

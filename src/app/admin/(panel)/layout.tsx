@@ -14,7 +14,7 @@ export default async function PanelLayout({
 
   return (
     <div className="md:flex min-h-screen relative z-[1]" style={{ background: "var(--navy-dd)" }}>
-      <Sidebar email={session.email} />
+      <Sidebar email={session.email} role={session.role} name={session.name} />
       <main className="flex-1 p-5 md:p-8 max-w-full overflow-x-hidden">{children}</main>
     </div>
   );

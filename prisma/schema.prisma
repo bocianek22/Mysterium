@@ -11,13 +11,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Konto administratora (logowanie do panelu /admin)
-model Admin {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime @default(now())
+// Konto użytkownika panelu — właściciel/admin lub pracownik
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String?
+  phone         String?
+  role          String         @default("EMPLOYEE") // OWNER | ADMIN | EMPLOYEE
+  active        Boolean        @default(true)
+  // Stawki godzinowe (zł/h)
+  rateDay       Float          @default(0)
+  rateNight     Float          @default(0)
+  rateWeekend   Float          @default(0)
+  // Kalendarz
+  calendarToken String         @unique @default(cuid()) // token subskrypcji iCal
+  calendarEmbed String?        // URL osadzonego kalendarza Google w panelu
+  createdAt     DateTime       @default(now())
+  shifts        Shift[]
+  availability  Availability[]
+}
+
+// Zmiany w grafiku (przypisane przez admina)
+model Shift {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  start     DateTime
+  end       DateTime
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([start])
+}
+
+// Dyspozycyjność zgłaszana przez pracownika
+model Availability {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  start     DateTime
+  end       DateTime
+  note      String?
+  status    String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Rezerwacje (ręczne w panelu lub zaimportowane z LockMe)
+model Reservation {
+  id            String   @id @default(cuid())
+  title         String
+  roomId        String?
+  room          Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  start         DateTime
+  end           DateTime
+  people        Int      @default(0)
+  customerName  String?
+  customerPhone String?
+  customerEmail String?
+  notes         String?
+  source        String   @default("MANUAL") // MANUAL | LOCKME
+  externalId    String?  @unique // identyfikator rezerwacji z LockMe
+  createdAt     DateTime @default(now())
+
+  @@index([start])
 }
 
 // Pokoje zagadek (stacjonarne + mobilne)
@@ -38,6 +98,7 @@ model Room {
   difficultyEn  String   @default("Medium")
   badgePl       String   @default("Stacjonarny")
   badgeEn       String   @default("On-site")
+  reservations  Reservation[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
   bookingUrl    String?
   order         Int      @default(0)
@@ -140,5 +201,14 @@ model SiteSettings {
   heroDescEn    String  @default("Step into a world where every second counts.")
   promoVideoPl  String? // YouTube ID lub URL pliku dla sekcji intro
   lockmeWidget  String? // kod osadzenia widżetu LockMe (iframe lub script)
+  // Integracja LockMe API (automatyczny import rezerwacji)
+  lockmeApiUrl  String?
+  lockmeApiKey  String?
+  lockmeRoomId  String?
+  // Integracja Google Calendar (pełna synchronizacja — opcjonalna)
+  googleSyncEnabled  Boolean @default(false)
+  googleClientEmail  String?
+  googlePrivateKey   String?
+  googleCalendarId   String?
   updatedAt     DateTime @updatedAt
 }

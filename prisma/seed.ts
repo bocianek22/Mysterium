@@ -4,16 +4,16 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  // --- Administrator ---
+  // --- Właściciel (konto główne) ---
   const email = process.env.ADMIN_EMAIL || "admin@mysterium.pl";
   const password = process.env.ADMIN_PASSWORD || "mysterium123";
   const passwordHash = await bcrypt.hash(password, 10);
-  await prisma.admin.upsert({
+  await prisma.user.upsert({
     where: { email },
-    update: { passwordHash },
-    create: { email, passwordHash, name: "Administrator" },
+    update: { passwordHash, role: "OWNER", active: true },
+    create: { email, passwordHash, name: "Właściciel", role: "OWNER" },
   });
-  console.log(`✓ Admin: ${email}`);
+  console.log(`✓ Właściciel: ${email}`);
 
   // --- Ustawienia strony ---
   await prisma.siteSettings.upsert({

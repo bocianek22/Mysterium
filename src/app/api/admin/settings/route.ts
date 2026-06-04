@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession } from "@/lib/auth";
+import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -18,10 +18,18 @@ const schema = z.object({
   heroDescEn: z.string().optional(),
   promoVideoPl: z.string().optional().nullable(),
   lockmeWidget: z.string().optional().nullable(),
+  lockmeApiUrl: z.string().optional().nullable(),
+  lockmeApiKey: z.string().optional().nullable(),
+  lockmeRoomId: z.string().optional().nullable(),
+  googleSyncEnabled: z.coerce.boolean().optional(),
+  googleClientEmail: z.string().optional().nullable(),
+  googlePrivateKey: z.string().optional().nullable(),
+  googleCalendarId: z.string().optional().nullable(),
 });
 
 export async function GET() {
-  if (!(await getSession())) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const settings = await prisma.siteSettings.upsert({
     where: { id: "main" },
     update: {},
@@ -31,7 +39,8 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  if (!(await getSession())) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
   const settings = await prisma.siteSettings.upsert({
