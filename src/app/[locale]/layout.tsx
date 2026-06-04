@@ -5,6 +5,7 @@ import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
 import Particles from "@/components/site/Particles";
 import WhatsappFloat from "@/components/site/WhatsappFloat";
+import SiteFX from "@/components/site/FX";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -29,6 +30,7 @@ export default async function LocaleLayout({
 
   return (
     <>
+      <SiteFX />
       <Particles />
       <Nav locale={locale} t={t} />
       <main>{children}</main>

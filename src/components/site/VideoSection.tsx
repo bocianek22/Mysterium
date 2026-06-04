@@ -73,7 +73,7 @@ export default function VideoSection({
     <section className="px-6 md:px-[60px] py-20 md:py-[120px] relative z-[1]" id="film" style={{ background: "var(--navy-d)" }}>
       <div className="max-w-[1000px] mx-auto">
         <SectionHeader label={t.video.label} title={t.video.title} center />
-        <div className="corner-frame aspect-video w-full overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+        <div className="corner-frame aspect-video w-full overflow-hidden reveal reveal-scale" style={{ border: "1px solid var(--border)" }}>
           <VideoPlayer video={main} locale={locale} />
         </div>
         {rest.length > 0 && (

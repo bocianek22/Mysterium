@@ -17,6 +17,7 @@ const schema = z.object({
   heroDescPl: z.string().optional(),
   heroDescEn: z.string().optional(),
   promoVideoPl: z.string().optional().nullable(),
+  lockmeWidget: z.string().optional().nullable(),
 });
 
 export async function GET() {

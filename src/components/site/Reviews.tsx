@@ -21,10 +21,10 @@ export default function Reviews({
     >
       <SectionHeader label={t.reviews.label} title={t.reviews.title} />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-[1100px] mx-auto mt-[60px]">
-        {reviews.map((r) => (
+        {reviews.map((r, i) => (
           <div
             key={r.id}
-            className="relative px-7 py-8 transition-all hover:-translate-y-1"
+            className={`relative px-7 py-8 transition-all duration-500 hover:-translate-y-[6px] glow-hover reveal reveal-d${(i % 3) + 1}`}
             style={{ background: "rgba(13,27,42,.7)", border: "1px solid var(--border)" }}
           >
             <div className="absolute top-4 right-5 font-display text-[56px] leading-none" style={{ color: "rgba(201,168,76,.06)" }}>

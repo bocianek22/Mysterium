@@ -59,7 +59,7 @@ export default function Contact({
       <h2 className="sec-title text-gold-grad">{t.contact.title}</h2>
       <div className="sec-divider" />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-20 max-w-[1100px] mx-auto items-start">
-        <div>
+        <div className="reveal reveal-left">
           {info.map((it, i) => (
             <div key={i} className="flex gap-4 mb-7 pb-7" style={{ borderBottom: i < info.length - 1 ? "1px solid rgba(201,168,76,.07)" : "none" }}>
               <div className="w-11 h-11 flex items-center justify-center text-lg flex-shrink-0" style={{ border: "1px solid var(--border)", background: "rgba(201,168,76,.04)" }}>
@@ -83,7 +83,7 @@ export default function Contact({
           ))}
         </div>
 
-        <div className="corner-frame p-8 md:p-10" style={{ background: "rgba(201,168,76,.03)", border: "1px solid var(--border)" }}>
+        <div className="corner-frame p-8 md:p-10 reveal reveal-right" style={{ background: "rgba(201,168,76,.03)", border: "1px solid var(--border)" }}>
           <h3 className="font-display text-[22px] mb-[6px] text-gold-grad">{t.contact.formTitle}</h3>
           <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
             {t.contact.formSub}

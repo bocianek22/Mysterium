@@ -139,5 +139,6 @@ model SiteSettings {
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")
   heroDescEn    String  @default("Step into a world where every second counts.")
   promoVideoPl  String? // YouTube ID lub URL pliku dla sekcji intro
+  lockmeWidget  String? // kod osadzenia widżetu LockMe (iframe lub script)
   updatedAt     DateTime @updatedAt
 }

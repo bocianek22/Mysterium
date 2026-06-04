@@ -37,7 +37,7 @@ export default async function HomePage({
       <Gallery locale={locale} t={t} images={gallery} />
       <Reviews locale={locale} t={t} reviews={reviews} />
       <Faq locale={locale} t={t} items={faq} />
-      <Booking t={t} lockmeUrl={settings?.lockmeUrl || "https://lock.me"} />
+      <Booking t={t} lockmeUrl={settings?.lockmeUrl || "https://lock.me"} widget={settings?.lockmeWidget} />
       <Contact
         locale={locale}
         t={t}

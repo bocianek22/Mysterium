@@ -21,14 +21,14 @@ export default function Pricing({
     >
       <SectionHeader label={t.pricing.label} title={t.pricing.title} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2px] max-w-[1100px] mx-auto mt-[60px]">
-        {plans.map((p) => {
+        {plans.map((p, i) => {
           const name = pick(p, "name", locale);
           const desc = pick(p, "desc", locale);
           const isQuote = !/\d/.test(p.price);
           return (
             <div
               key={p.id}
-              className="relative overflow-hidden px-[30px] py-10 transition-all hover:-translate-y-[6px]"
+              className={`relative overflow-hidden px-[30px] py-10 transition-all duration-500 hover:-translate-y-[8px] glow-hover reveal reveal-d${(i % 4) + 1}`}
               style={{
                 background: p.featured ? "rgba(13,61,58,.2)" : "var(--navy-dd)",
                 border: p.featured ? "1px solid rgba(201,168,76,.3)" : "1px solid rgba(201,168,76,.08)",
@@ -69,7 +69,7 @@ export default function Pricing({
           );
         })}
       </div>
-      <p className="text-center mt-7 font-serif text-[11px] tracking-[2px]" style={{ color: "var(--dim)" }}>
+      <p className="text-center mt-7 font-serif text-[11px] tracking-[2px] reveal" style={{ color: "var(--dim)" }}>
         {t.pricing.coupon}
       </p>
     </section>

@@ -1,3 +1,5 @@
+"use client";
+import { useEffect, useRef } from "react";
 import type { Locale, Dict } from "@/lib/i18n";
 
 export default function Hero({
@@ -10,6 +12,23 @@ export default function Hero({
   desc: string;
 }) {
   const tags = [t.hero.tagOnsite, t.hero.tagMobile, t.hero.tagLocation];
+  const orb1 = useRef<HTMLDivElement>(null);
+  const orb2 = useRef<HTMLDivElement>(null);
+  const title = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+    const onMove = (e: MouseEvent) => {
+      const x = e.clientX / window.innerWidth - 0.5;
+      const y = e.clientY / window.innerHeight - 0.5;
+      if (orb1.current) orb1.current.style.transform = `translate(${x * 60}px,${y * 60}px)`;
+      if (orb2.current) orb2.current.style.transform = `translate(${x * -90}px,${y * -70}px)`;
+      if (title.current) title.current.style.transform = `translate(${x * 14}px,${y * 10}px)`;
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
   return (
     <section
       className="min-h-screen flex items-center justify-center relative overflow-hidden text-center px-6 md:px-10 pt-[120px] pb-20"
@@ -22,13 +41,31 @@ export default function Hero({
             "radial-gradient(ellipse 80% 70% at 50% 40%,rgba(13,61,58,.4) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 85% 20%,rgba(201,168,76,.05) 0%,transparent 60%),linear-gradient(180deg,var(--navy-dd) 0%,var(--navy-d) 100%)",
         }}
       />
+      <div ref={orb1} className="absolute orb-anim" style={{ transition: "transform .4s ease-out" }}>
+        <div
+          className="rounded-full"
+          style={{ width: 420, height: 420, background: "rgba(13,61,58,.4)", marginTop: "-30vh", marginLeft: "-30vw", filter: "blur(70px)" }}
+        />
+      </div>
+      <div ref={orb2} className="absolute orb-anim" style={{ transition: "transform .4s ease-out" }}>
+        <div
+          className="rounded-full"
+          style={{ width: 320, height: 320, background: "rgba(201,168,76,.07)", marginTop: "30vh", marginLeft: "30vw", filter: "blur(70px)" }}
+        />
+      </div>
+
+      {/* Ozdobny obracający się pierścień za tytułem */}
       <div
-        className="absolute rounded-full animate-orbDrift"
-        style={{ width: 400, height: 400, background: "rgba(13,61,58,.35)", top: "10%", left: -100, filter: "blur(60px)", animationDuration: "12s" }}
-      />
-      <div
-        className="absolute rounded-full animate-orbDrift"
-        style={{ width: 300, height: 300, background: "rgba(201,168,76,.06)", bottom: "10%", right: -80, filter: "blur(60px)", animationDuration: "15s", animationDelay: "3s" }}
+        aria-hidden
+        className="absolute pointer-events-none"
+        style={{
+          width: "min(560px,90vw)",
+          height: "min(560px,90vw)",
+          border: "1px solid rgba(201,168,76,.08)",
+          borderRadius: "50%",
+          boxShadow: "inset 0 0 80px rgba(201,168,76,.04)",
+          animation: "spin 60s linear infinite",
+        }}
       />
 
       <div className="relative z-[2] max-w-[820px]">
@@ -41,9 +78,9 @@ export default function Hero({
           <span style={{ width: 40, height: 1, background: "linear-gradient(90deg,var(--gold),transparent)" }} />
         </div>
 
-        <h1 className="font-display font-black leading-[.95] mb-6" style={{ letterSpacing: 4, animation: "fadeUp .8s .4s both" }}>
+        <h1 ref={title} className="font-display font-black leading-[.95] mb-6" style={{ letterSpacing: 4, animation: "fadeUp .8s .4s both", transition: "transform .3s ease-out" }}>
           <span
-            className="block"
+            className="block shimmer"
             style={{
               fontSize: "clamp(52px,10vw,108px)",
               background: "linear-gradient(135deg,#fff 0%,var(--gold-ll) 40%,var(--gold) 70%,var(--gold-d) 100%)",
@@ -76,7 +113,7 @@ export default function Hero({
           {desc}
         </p>
 
-        <div className="flex gap-[10px] flex-wrap justify-center mb-8">
+        <div className="flex gap-[10px] flex-wrap justify-center mb-8" style={{ animation: "fadeUp .8s .7s both" }}>
           {tags.map((tag) => (
             <span key={tag} className="font-serif text-[9px] tracking-[2px] uppercase px-[14px] py-1" style={{ border: "1px solid rgba(201,168,76,.25)", background: "rgba(201,168,76,.05)", color: "var(--muted)" }}>
               {tag}
