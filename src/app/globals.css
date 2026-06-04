@@ -1,0 +1,214 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600&family=Raleway:wght@300;400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #c9a84c;
+  --gold-l: #e8c97a;
+  --gold-ll: #f5e4b0;
+  --gold-d: #8b6914;
+  --teal: #0d3d3a;
+  --teal-m: #0a2e2c;
+  --navy: #0d1b2a;
+  --navy-d: #070f18;
+  --navy-dd: #040c14;
+  --text: #e8dcc8;
+  --muted: #9a8b75;
+  --dim: #5a5040;
+  --border: rgba(201, 168, 76, 0.15);
+  --border-h: rgba(201, 168, 76, 0.4);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--navy-dd);
+    color: var(--text);
+    font-family: "Raleway", sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  /* Gradientowy złoty tekst */
+  .text-gold-grad {
+    background: linear-gradient(135deg, var(--gold-ll), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Etykiety / tytuły sekcji */
+  .sec-label {
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .sec-title {
+    font-family: "Cinzel Decorative", serif;
+    font-size: clamp(28px, 4.5vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+  .sec-divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin: 20px 0 50px;
+  }
+
+  /* Przyciski */
+  .btn-gold {
+    display: inline-block;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, var(--gold-d), var(--gold), var(--gold-l));
+    color: var(--navy-dd);
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 30px rgba(201, 168, 76, 0.2);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    border: none;
+    cursor: pointer;
+  }
+  .btn-gold:hover {
+    box-shadow: 0 6px 40px rgba(201, 168, 76, 0.4);
+    filter: brightness(1.08);
+  }
+  .btn-outline {
+    display: inline-block;
+    padding: 15px 40px;
+    background: transparent;
+    color: var(--gold);
+    font-family: "Cinzel", serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    cursor: pointer;
+  }
+  .btn-outline:hover {
+    background: rgba(201, 168, 76, 0.08);
+    border-color: var(--gold);
+  }
+
+  /* Pole formularza */
+  .field-input {
+    width: 100%;
+    background: rgba(201, 168, 76, 0.04);
+    border: 1px solid rgba(201, 168, 76, 0.18);
+    color: var(--text);
+    padding: 12px 14px;
+    font-family: "Raleway", sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+  }
+  .field-input:focus {
+    border-color: var(--gold);
+    background: rgba(201, 168, 76, 0.07);
+    box-shadow: 0 0 14px rgba(201, 168, 76, 0.1);
+  }
+  .field-label {
+    display: block;
+    font-family: "Cinzel", serif;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  /* Ozdobne narożniki (corner frame) */
+  .corner-frame {
+    position: relative;
+  }
+  .corner-frame::before,
+  .corner-frame::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .corner-frame::before {
+    top: -1px;
+    left: -1px;
+    border-width: 2px 0 0 2px;
+  }
+  .corner-frame::after {
+    bottom: -1px;
+    right: -1px;
+    border-width: 0 2px 2px 0;
+  }
+}
+
+/* Tło — szum */
+.noise-bg::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9990;
+  opacity: 0.5;
+}
+
+/* Tło — heksy */
+.hex-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V18L28 2l28 16v32L28 66zm0-6l22-12.7V21.7L28 9 6 21.7v25.6L28 60z' fill='%23C9A84C'/%3E%3C/svg%3E");
+}
+
+/* Cząsteczki */
+.pt {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: ptrise linear infinite;
+  opacity: 0;
+}
+@keyframes ptrise {
+  0% { opacity: 0; transform: translateY(100vh) rotate(0); }
+  15% { opacity: 0.6; }
+  85% { opacity: 0.2; }
+  100% { opacity: 0; transform: translateY(-50px) rotate(720deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(40px, -30px); }
+}
+@keyframes scrollLine {
+  0%, 100% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
