@@ -122,10 +122,10 @@ export default function Hero({
         </div>
 
         <div className="flex gap-4 justify-center flex-wrap" style={{ animation: "fadeUp .8s .8s both" }}>
-          <a href={`/${locale}#rezerwacja`} className="btn-gold">
+          <a href={`/${locale}/rezerwacja`} className="btn-gold">
             {t.hero.bookNow}
           </a>
-          <a href={`/${locale}#pokoje`} className="btn-outline">
+          <a href={`/${locale}/pokoje`} className="btn-outline">
             {t.hero.exploreRooms}
           </a>
         </div>

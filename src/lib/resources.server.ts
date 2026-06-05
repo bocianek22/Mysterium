@@ -42,7 +42,9 @@ export function buildSchema(config: ResourceConfig) {
       default:
         s = z.string();
     }
-    if (f.required && (f.type === "text" || f.type === "textarea" || f.type === "select" || f.type === "image" || f.type === "video")) {
+    if (f.type === "gallery") {
+      s = z.string().optional().nullable(); // JSON tablicy URLi (string)
+    } else if (f.required && (f.type === "text" || f.type === "textarea" || f.type === "select" || f.type === "image" || f.type === "video")) {
       s = (s as z.ZodString).min(1, `Pole "${f.label}" jest wymagane`);
     } else if (!f.required) {
       s = s.optional().nullable();

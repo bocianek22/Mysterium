@@ -7,10 +7,12 @@ export default function Rooms({
   locale,
   t,
   rooms,
+  hideHeader,
 }: {
   locale: Locale;
   t: Dict;
   rooms: Room[];
+  hideHeader?: boolean;
 }) {
   return (
     <section
@@ -22,7 +24,7 @@ export default function Rooms({
       }}
     >
       <div className="relative z-[1]">
-        <SectionHeader label={t.rooms.label} title={t.rooms.title} />
+        {!hideHeader && <SectionHeader label={t.rooms.label} title={t.rooms.title} />}
         {rooms.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>{t.rooms.empty}</p>
         ) : (

@@ -8,7 +8,8 @@ export type FieldType =
   | "boolean"
   | "select"
   | "image"
-  | "video";
+  | "video"
+  | "gallery";
 
 export type Field = {
   name: string;
@@ -45,6 +46,7 @@ export const resources: Record<string, ResourceConfig> = {
       { name: "descriptionPl", label: "Pełny opis (PL)", type: "textarea" },
       { name: "descriptionEn", label: "Pełny opis (EN)", type: "textarea" },
       { name: "image", label: "Zdjęcie główne", type: "image" },
+      { name: "imagesJson", label: "Galeria pokoju (zdjęcia)", type: "gallery", help: "Zdjęcia widoczne na podstronie tego pokoju." },
       { name: "durationMin", label: "Czas gry (min)", type: "number", default: 60 },
       { name: "minPlayers", label: "Min. osób", type: "number", default: 2 },
       { name: "maxPlayers", label: "Maks. osób", type: "number", default: 8 },

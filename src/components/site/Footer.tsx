@@ -34,12 +34,12 @@ export default function Footer({
           </h4>
           <ul className="list-none flex flex-col gap-[10px]">
             {[
-              ["#pokoje", t.nav.rooms],
-              ["#jak-to-dziala", t.nav.how],
-              ["#cennik", t.nav.pricing],
-              ["#opinie", t.nav.reviews],
-              ["#faq", t.nav.faq],
-              ["#kontakt", t.nav.contact],
+              ["/pokoje", t.nav.rooms],
+              ["/galeria", t.nav.gallery],
+              ["/cennik", t.nav.pricing],
+              ["/o-nas", t.nav.about],
+              ["/rezerwacja", t.nav.book],
+              ["/kontakt", t.nav.contact],
             ].map(([href, label]) => (
               <li key={href}>
                 <a href={`/${locale}${href}`} className="text-sm no-underline transition-colors" style={{ color: "var(--dim)" }}>
@@ -60,7 +60,7 @@ export default function Footer({
               </a>
             </li>
             <li>
-              <a href={`/${locale}#rezerwacja`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+              <a href={`/${locale}/rezerwacja`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
                 LockMe
               </a>
             </li>

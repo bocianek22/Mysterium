@@ -98,6 +98,7 @@ model Room {
   difficultyEn  String   @default("Medium")
   badgePl       String   @default("Stacjonarny")
   badgeEn       String   @default("On-site")
+  imagesJson    String?  @default("[]") // galeria pokoju (JSON: tablica URLi)
   reservations  Reservation[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
   bookingUrl    String?
@@ -199,6 +200,21 @@ model SiteSettings {
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")
   heroDescEn    String  @default("Step into a world where every second counts.")
+  // Sekcja „O nas" + mapa
+  aboutPl       String  @default("")
+  aboutEn       String  @default("")
+  mapEmbed      String? // src iframe mapy (Google Maps → Udostępnij → Umieść mapę)
+  mapLink       String? @default("https://maps.app.goo.gl/EanoTZX2GWReqSC46")
+  // Sekcja promo / odliczanie
+  promoMode     String  @default("OFF") // OFF | COUNTDOWN | BANNER
+  promoTitlePl  String  @default("")
+  promoTitleEn  String  @default("")
+  promoTextPl   String  @default("")
+  promoTextEn   String  @default("")
+  promoCtaLabelPl String @default("")
+  promoCtaLabelEn String @default("")
+  promoCtaUrl   String?
+  promoDate     DateTime?
   promoVideoPl  String? // YouTube ID lub URL pliku dla sekcji intro
   lockmeWidget  String? // kod osadzenia widżetu LockMe (iframe lub script)
   // Integracja LockMe API (automatyczny import rezerwacji)

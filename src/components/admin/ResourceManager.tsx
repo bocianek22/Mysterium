@@ -243,6 +243,45 @@ export default function ResourceManager({
   );
 }
 
+function GalleryField({ value, onChange }: { value: any; onChange: (v: any) => void }) {
+  let list: string[] = [];
+  try {
+    list = value ? JSON.parse(value) : [];
+    if (!Array.isArray(list)) list = [];
+  } catch {
+    list = [];
+  }
+  const update = (arr: string[]) => onChange(JSON.stringify(arr));
+  return (
+    <div>
+      {list.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {list.map((url, i) => (
+            <div key={i} className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt="" className="w-20 h-20 object-cover rounded" style={{ border: "1px solid var(--border)" }} />
+              <button
+                type="button"
+                onClick={() => update(list.filter((_, j) => j !== i))}
+                className="absolute -top-2 -right-2 w-5 h-5 rounded-full text-xs flex items-center justify-center"
+                style={{ background: "#ef4444", color: "#fff" }}
+                title="Usuń"
+              >
+                ×
+              </button>
+              <div className="flex justify-between mt-[2px]">
+                <button type="button" onClick={() => { if (i > 0) { const a = [...list];[a[i - 1], a[i]] = [a[i], a[i - 1]]; update(a); } }} className="text-[10px]" style={{ color: "var(--muted)" }}>←</button>
+                <button type="button" onClick={() => { if (i < list.length - 1) { const a = [...list];[a[i + 1], a[i]] = [a[i], a[i + 1]]; update(a); } }} className="text-[10px]" style={{ color: "var(--muted)" }}>→</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <FileUpload value="" onChange={(url) => url && update([...list, url])} accept="image/*" kind="image" />
+    </div>
+  );
+}
+
 function FieldInput({ field, value, onChange }: { field: Field; value: any; onChange: (v: any) => void }) {
   if (field.type === "boolean") {
     return (
@@ -274,6 +313,8 @@ function FieldInput({ field, value, onChange }: { field: Field; value: any; onCh
         <FileUpload value={value || ""} onChange={onChange} accept="image/*" kind="image" />
       ) : field.type === "video" ? (
         <FileUpload value={value || ""} onChange={onChange} accept="video/*" kind="video" />
+      ) : field.type === "gallery" ? (
+        <GalleryField value={value} onChange={onChange} />
       ) : (
         <input type="text" value={value || ""} onChange={(e) => onChange(e.target.value)} className="field-input" placeholder={field.placeholder} />
       )}

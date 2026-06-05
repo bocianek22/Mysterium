@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Field = { name: string; label: string; type?: string; help?: string };
+type Field = { name: string; label: string; type?: string; help?: string; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
   {
@@ -18,6 +18,33 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "heroDescEn", label: "Opis na stronie głównej (EN)", type: "textarea" },
       { name: "instagram", label: "Instagram (URL)" },
       { name: "facebook", label: "Facebook (URL)" },
+    ],
+  },
+  {
+    title: "O nas i mapa",
+    fields: [
+      { name: "aboutPl", label: "O nas — treść (PL)", type: "textarea", help: "Akapity oddzielaj pustą linią." },
+      { name: "aboutEn", label: "O nas — treść (EN)", type: "textarea" },
+      { name: "mapLink", label: "Link „Otwórz w Google Maps”" },
+      { name: "mapEmbed", label: "Mapa — kod osadzenia (src iframe)", help: "Google Maps → Udostępnij → Umieść mapę → skopiuj adres z src=\"...\". Zostaw puste, by użyć adresu." },
+    ],
+  },
+  {
+    title: "Sekcja promo / odliczanie (strona główna)",
+    fields: [
+      { name: "promoMode", label: "Tryb", type: "select", options: [
+        { value: "OFF", label: "Wyłączona" },
+        { value: "COUNTDOWN", label: "Odliczanie do daty" },
+        { value: "BANNER", label: "Baner (bez zegara)" },
+      ] },
+      { name: "promoTitlePl", label: "Tytuł (PL)" },
+      { name: "promoTitleEn", label: "Tytuł (EN)" },
+      { name: "promoTextPl", label: "Tekst (PL)", type: "textarea" },
+      { name: "promoTextEn", label: "Tekst (EN)", type: "textarea" },
+      { name: "promoDate", label: "Data odliczania", type: "datetime", help: "Wymagane dla trybu „Odliczanie”." },
+      { name: "promoCtaLabelPl", label: "Przycisk — tekst (PL)" },
+      { name: "promoCtaLabelEn", label: "Przycisk — tekst (EN)" },
+      { name: "promoCtaUrl", label: "Przycisk — link" },
     ],
   },
   {
@@ -79,6 +106,12 @@ export default function SettingsForm() {
                 <label className="field-label">{f.label}</label>
                 {f.type === "textarea" ? (
                   <textarea value={data[f.name] || ""} onChange={(e) => set(f.name, e.target.value)} className="field-input h-20 resize-none" />
+                ) : f.type === "select" ? (
+                  <select value={data[f.name] || ""} onChange={(e) => set(f.name, e.target.value)} className="field-input">
+                    {f.options?.map((o) => <option key={o.value} value={o.value} style={{ background: "var(--navy-d)" }}>{o.label}</option>)}
+                  </select>
+                ) : f.type === "datetime" ? (
+                  <input type="datetime-local" value={(data[f.name] || "").slice(0, 16)} onChange={(e) => set(f.name, e.target.value)} className="field-input" />
                 ) : (
                   <input type="text" value={data[f.name] || ""} onChange={(e) => set(f.name, e.target.value)} className="field-input" />
                 )}

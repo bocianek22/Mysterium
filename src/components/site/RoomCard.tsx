@@ -53,7 +53,7 @@ export default function RoomCard({
   return (
     <a
       ref={ref}
-      href={room.bookingUrl || `/${locale}#rezerwacja`}
+      href={`/${locale}/pokoje/${room.slug}`}
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       className="group relative overflow-hidden no-underline block min-h-[480px] reveal reveal-scale tilt"

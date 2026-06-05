@@ -25,6 +25,19 @@ const schema = z.object({
   googleClientEmail: z.string().optional().nullable(),
   googlePrivateKey: z.string().optional().nullable(),
   googleCalendarId: z.string().optional().nullable(),
+  aboutPl: z.string().optional(),
+  aboutEn: z.string().optional(),
+  mapEmbed: z.string().optional().nullable(),
+  mapLink: z.string().optional().nullable(),
+  promoMode: z.enum(["OFF", "COUNTDOWN", "BANNER"]).optional(),
+  promoTitlePl: z.string().optional(),
+  promoTitleEn: z.string().optional(),
+  promoTextPl: z.string().optional(),
+  promoTextEn: z.string().optional(),
+  promoCtaLabelPl: z.string().optional(),
+  promoCtaLabelEn: z.string().optional(),
+  promoCtaUrl: z.string().optional().nullable(),
+  promoDate: z.string().optional().nullable(),
 });
 
 export async function GET() {
@@ -43,10 +56,17 @@ export async function PUT(req: NextRequest) {
   if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success) return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
+
+  const { promoDate, ...rest } = parsed.data;
+  const data: any = { ...rest };
+  if (promoDate !== undefined) {
+    data.promoDate = promoDate ? new Date(promoDate) : null;
+  }
+
   const settings = await prisma.siteSettings.upsert({
     where: { id: "main" },
-    update: parsed.data,
-    create: { id: "main", ...parsed.data },
+    update: data,
+    create: { id: "main", ...data },
   });
   return NextResponse.json({ settings });
 }

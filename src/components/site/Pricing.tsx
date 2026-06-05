@@ -54,7 +54,7 @@ export default function Pricing({
                 </div>
               )}
               <a
-                href={p.ctaUrl || `/${locale}#${isQuote ? "kontakt" : "rezerwacja"}`}
+                href={p.ctaUrl || `/${locale}/${isQuote ? "kontakt" : "rezerwacja"}`}
                 className="inline-block font-serif text-[11px] tracking-[2px] no-underline px-7 py-[11px] transition-all"
                 style={{
                   border: "1px solid rgba(201,168,76,.35)",

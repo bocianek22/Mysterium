@@ -2,51 +2,62 @@ import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { getHomeData } from "@/lib/data";
 import Hero from "@/components/site/Hero";
+import Promo from "@/components/site/Promo";
 import Rooms from "@/components/site/Rooms";
 import VideoSection from "@/components/site/VideoSection";
 import HowItWorks from "@/components/site/HowItWorks";
 import Pricing from "@/components/site/Pricing";
-import Gallery from "@/components/site/Gallery";
 import Reviews from "@/components/site/Reviews";
 import Faq from "@/components/site/Faq";
-import Booking from "@/components/site/Booking";
-import Contact from "@/components/site/Contact";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage({
-  params,
-}: {
-  params: { locale: string };
-}) {
+export default async function HomePage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  const { settings, rooms, gallery, videos, reviews, pricing, faq } =
-    await getHomeData();
+  const { settings, rooms, videos, reviews, pricing, faq } = await getHomeData();
 
   const heroDesc = locale === "pl" ? settings?.heroDescPl : settings?.heroDescEn;
 
   return (
     <>
       <Hero locale={locale} t={t} desc={heroDesc || ""} />
-      <Rooms locale={locale} t={t} rooms={rooms} />
+
+      {settings?.promoMode && settings.promoMode !== "OFF" && (
+        <Promo
+          locale={locale}
+          t={t}
+          mode={settings.promoMode}
+          title={(locale === "pl" ? settings.promoTitlePl : settings.promoTitleEn) || ""}
+          text={(locale === "pl" ? settings.promoTextPl : settings.promoTextEn) || ""}
+          ctaLabel={(locale === "pl" ? settings.promoCtaLabelPl : settings.promoCtaLabelEn) || ""}
+          ctaUrl={settings.promoCtaUrl}
+          date={settings.promoDate ? settings.promoDate.toISOString() : null}
+        />
+      )}
+
+      <Rooms locale={locale} t={t} rooms={rooms.slice(0, 3)} />
+      <div className="text-center -mt-8 md:-mt-12 pb-16 relative z-[1]" style={{ background: "var(--navy-dd)" }}>
+        <a href={`/${locale}/pokoje`} className="btn-outline">{t.common.seeAllRooms}</a>
+      </div>
+
       <VideoSection locale={locale} t={t} videos={videos} />
       <HowItWorks t={t} />
       <Pricing locale={locale} t={t} plans={pricing} />
-      <Gallery locale={locale} t={t} images={gallery} />
       <Reviews locale={locale} t={t} reviews={reviews} />
       <Faq locale={locale} t={t} items={faq} />
-      <Booking t={t} lockmeUrl={settings?.lockmeUrl || "https://lock.me"} widget={settings?.lockmeWidget} />
-      <Contact
-        locale={locale}
-        t={t}
-        phone={settings?.phone || "+48 571 080 192"}
-        email={settings?.email || "artsmysterium@gmail.com"}
-        address={(locale === "pl" ? settings?.addressPl : settings?.addressEn) || ""}
-        hours={(locale === "pl" ? settings?.hoursPl : settings?.hoursEn) || ""}
-        whatsapp={settings?.whatsapp || "48571080192"}
-      />
+
+      {/* CTA końcowe */}
+      <section className="px-6 md:px-[60px] py-20 relative z-[1] aurora text-center" style={{ background: "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>
+        <div className="relative z-[1] max-w-[640px] mx-auto">
+          <h2 className="font-display text-gold-grad shimmer text-3xl md:text-4xl mb-5 reveal">{t.booking.title}</h2>
+          <div className="flex gap-4 justify-center flex-wrap reveal reveal-d1">
+            <a href={`/${locale}/rezerwacja`} className="btn-gold">{t.hero.bookNow}</a>
+            <a href={`/${locale}/kontakt`} className="btn-outline">{t.nav.contact}</a>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
