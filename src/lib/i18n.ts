@@ -63,6 +63,13 @@ const dict = {
     },
     about: { label: "O nas", title: "Poznaj Mysterium", findUs: "Jak do nas trafić" },
     promo: { soon: "Już wkrótce", days: "dni", hours: "godz.", minutes: "min", seconds: "sek." },
+    features: [
+      { icon: "🗝️", title: "Autorskie zagadki", desc: "Wciągające, dopracowane łamigłówki" },
+      { icon: "👥", title: "2–8 graczy", desc: "Idealne na grupę znajomych i firmy" },
+      { icon: "🚐", title: "Dojazd do Ciebie", desc: "Mobilna Skrzynia na eventy i urodziny" },
+      { icon: "📅", title: "Rezerwacja online", desc: "Szybko i wygodnie przez LockMe" },
+    ],
+    splash: "Otwieramy zamek...",
     hero: {
       eyebrow: "Escape Room · Warszawa, ul. Ogrodowa",
       subtitle: "ESCAPE ROOM",
@@ -181,6 +188,13 @@ const dict = {
     },
     about: { label: "About", title: "Meet Mysterium", findUs: "How to find us" },
     promo: { soon: "Coming soon", days: "days", hours: "hrs", minutes: "min", seconds: "sec" },
+    features: [
+      { icon: "🗝️", title: "Original puzzles", desc: "Immersive, finely crafted riddles" },
+      { icon: "👥", title: "2–8 players", desc: "Perfect for friends and companies" },
+      { icon: "🚐", title: "We come to you", desc: "Mobile Box for events and birthdays" },
+      { icon: "📅", title: "Online booking", desc: "Fast and easy via LockMe" },
+    ],
+    splash: "Unlocking...",
     hero: {
       eyebrow: "Escape Room · Warsaw, Ogrodowa St.",
       subtitle: "ESCAPE ROOM",
