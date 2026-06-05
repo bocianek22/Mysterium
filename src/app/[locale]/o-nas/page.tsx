@@ -32,7 +32,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
     <>
       <PageHero label={t.about.label} title={t.about.title} />
       <About locale={locale} t={t} about={about} address={address} mapEmbed={settings?.mapEmbed} mapLink={settings?.mapLink} />
-      <Reviews locale={locale} t={t} reviews={reviews} />
+      <Reviews locale={locale} t={t} reviews={reviews} googleUrl={settings?.googleReviewsEnabled ? settings?.googleReviewsUrl : null} googleRating={settings?.googleReviewsEnabled ? settings?.googleRating : null} />
     </>
   );
 }

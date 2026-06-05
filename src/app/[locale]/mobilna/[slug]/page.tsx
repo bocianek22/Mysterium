@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 import QuoteForm from "@/components/site/QuoteForm";
+import PriceTable from "@/components/site/PriceTable";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +92,15 @@ export default async function MobileDetail({ params }: { params: { locale: strin
           )}
         </div>
       </section>
+
+      {/* Cennik gry (wg liczby osób) */}
+      {offer.pricingJson && offer.pricingJson !== "[]" && (
+        <section className="px-6 md:px-[60px] py-10 relative z-[1]" style={{ background: "var(--navy-dd)" }}>
+          <div className="max-w-[1000px] mx-auto">
+            <PriceTable locale={locale} json={offer.pricingJson} title={t.pricing.label} />
+          </div>
+        </section>
+      )}
 
       {/* Cennik dojazdu + obszar + wymagania */}
       {(zones.length > 0 || area || requirements) && (

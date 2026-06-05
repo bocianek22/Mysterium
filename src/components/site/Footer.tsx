@@ -35,10 +35,10 @@ export default function Footer({
           <ul className="list-none flex flex-col gap-[10px]">
             {[
               ["/pokoje", t.nav.rooms],
-              ["/galeria", t.nav.gallery],
+              ["/mobilna", t.nav.mobile],
+              ["/eventy", t.nav.events],
               ["/cennik", t.nav.pricing],
               ["/o-nas", t.nav.about],
-              ["/rezerwacja", t.nav.book],
               ["/kontakt", t.nav.contact],
             ].map(([href, label]) => (
               <li key={href}>

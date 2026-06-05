@@ -402,12 +402,17 @@
 }
 
 /* === Hero: zamek (dziurka + klucz, który wchodzi i się przekręca) === */
-.hero-lock-wrap { display: inline-block; }
+/* .lock-box ma docelowy (przeskalowany) rozmiar w układzie i robi „shake”;
+   .hero-lock skaluje zawartość od lewego-górnego rogu, by box layoutu się zgadzał. */
+.lock-box {
+  position: relative;
+  animation: lockShake 4s 0.8s 1 both;
+}
 .hero-lock {
   position: relative;
   width: 140px;
   height: 240px;
-  animation: lockShake 4s 0.8s 1 both;
+  transform-origin: top left;
 }
 .hero-keyhole {
   position: absolute;
@@ -470,5 +475,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-key { animation: none; transform: translate(-50%, -6px) rotate(90deg); opacity: 1; }
-  .hero-kh-glow, .hero-lock { animation: none; }
+  .hero-kh-glow, .lock-box { animation: none; }
 }

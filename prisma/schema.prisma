@@ -99,6 +99,7 @@ model Room {
   badgePl       String   @default("Stacjonarny")
   badgeEn       String   @default("On-site")
   imagesJson    String?  @default("[]") // galeria pokoju (JSON: tablica URLi)
+  pricingJson   String?  @default("[]") // cennik wg liczby osób (JSON: [{labelPl,labelEn,price}])
   reservations  Reservation[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
   bookingUrl    String?
@@ -125,6 +126,7 @@ model MobileOffer {
   maxPlayers      Int      @default(8)
   priceInfoPl     String?  // cena samej gry (tekst, np. "od 299 zł")
   priceInfoEn     String?
+  pricingJson     String?  @default("[]") // cennik wg liczby osób (JSON: [{labelPl,labelEn,price}])
   travelZonesJson String?  @default("[]") // strefy dojazdu (JSON: [{labelPl,labelEn,price}])
   areaPl          String?  // obszar działania
   areaEn          String?
@@ -175,6 +177,7 @@ model Review {
   textPl     String
   textEn     String
   rating     Int      @default(5)
+  source     String   @default("MANUAL") // MANUAL | GOOGLE
   order      Int      @default(0)
   published  Boolean  @default(true)
   createdAt  DateTime @default(now())
@@ -230,6 +233,9 @@ model SiteSettings {
   lockmeUrl     String  @default("https://lock.me")
   instagram     String?
   facebook      String?
+  googleReviewsEnabled Boolean @default(false)
+  googleReviewsUrl     String?
+  googleRating         String? // np. "4.9"
   hoursPl       String  @default("Pon–Nd: 9:00–22:00")
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")

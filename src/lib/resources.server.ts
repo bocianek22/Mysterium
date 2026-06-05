@@ -9,7 +9,6 @@ const delegates = {
   gallery: prisma.galleryImage,
   videos: prisma.video,
   reviews: prisma.review,
-  pricing: prisma.pricingPlan,
   faq: prisma.faqItem,
   messages: prisma.contactMessage,
 } as const;

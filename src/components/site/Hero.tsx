@@ -111,8 +111,8 @@ export default function Hero({
         {/* Emblemat: zamek — klucz wchodzi w dziurkę i się przekręca */}
         <div className="mx-auto mb-6 flex items-center justify-center gap-4" style={{ height: 124, animation: "fadeUp .8s .5s both" }}>
           <span aria-hidden style={{ width: 70, height: 1, background: "linear-gradient(90deg,transparent,var(--gold))" }} />
-          <div className="hero-lock-wrap" style={{ transform: "scale(0.5)" }} aria-hidden>
-            <div className="hero-lock">
+          <div className="lock-box" style={{ width: 70, height: 120 }} aria-hidden>
+            <div className="hero-lock" style={{ transform: "scale(0.5)" }}>
               <div className="hero-kh-glow" />
               <svg className="hero-keyhole" viewBox="0 0 100 140" fill="none">
                 <defs>
