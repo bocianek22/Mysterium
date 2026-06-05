@@ -68,6 +68,7 @@ export default function Hero({
         }}
       />
 
+
       <div className="relative z-[2] max-w-[820px]">
         <div
           className="font-serif text-[11px] tracking-[6px] mb-6 flex items-center justify-center gap-[14px]"
@@ -107,7 +108,19 @@ export default function Hero({
           </span>
         </h1>
 
-        <div className="mx-auto mb-7" style={{ width: 120, height: 1, background: "linear-gradient(90deg,transparent,var(--gold),transparent)", animation: "fadeUp .8s .5s both" }} />
+        {/* Emblemat: dziurka od klucza + wsuwający się klucz */}
+        <div className="relative mx-auto mb-7 flex items-center justify-center" style={{ height: 64, width: 64, animation: "fadeUp .8s .5s both" }}>
+          <span aria-hidden style={{ position: "absolute", width: 90, height: 1, background: "linear-gradient(90deg,transparent,var(--gold),transparent)", left: -100 }} />
+          <span aria-hidden style={{ position: "absolute", width: 90, height: 1, background: "linear-gradient(90deg,var(--gold),transparent)", right: -100 }} />
+          <svg aria-hidden viewBox="0 0 100 140" className="keyhole-motif" style={{ width: 40, height: 56, position: "relative", opacity: 0.85, filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))" }}>
+            <circle cx="50" cy="46" r="28" stroke="var(--gold)" strokeWidth="5" fill="none" />
+            <path d="M50 70 L64 122 H36 Z" stroke="var(--gold)" strokeWidth="5" fill="none" strokeLinejoin="round" />
+            <circle cx="50" cy="46" r="12" fill="rgba(201,168,76,.12)" />
+          </svg>
+          <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" style={{ position: "absolute", width: 26, height: 26, top: 6, color: "var(--gold-ll)", transformOrigin: "50% 28%", animation: "keyInsert 3s 1.2s ease-in-out both" }}>
+            <path d="M12 2a5 5 0 0 0-5 5c0 1.9 1.1 3.6 2.7 4.4L9 13v2H7v2h2v2h2v-2.6l1-1V11.4A5 5 0 0 0 12 2zm0 2.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6z" />
+          </svg>
+        </div>
 
         <p className="mx-auto mb-12 text-[17px] leading-[1.9] max-w-[580px]" style={{ color: "var(--muted)", animation: "fadeUp .8s .6s both" }}>
           {desc}

@@ -221,6 +221,7 @@ model ContactMessage {
 // Ustawienia strony (pojedynczy wiersz, id = "main")
 model SiteSettings {
   id            String  @id @default("main")
+  logoUrl       String? // logo w nawigacji (upload w panelu lub /logo.png)
   addressPl     String  @default("ul. Ogrodowa, Warszawa")
   addressEn     String  @default("Ogrodowa St., Warsaw")
   phone         String  @default("+48 571 080 192")

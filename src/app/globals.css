@@ -400,3 +400,20 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* Keyhole w hero — pulsujący blask */
+@keyframes keyholePulse {
+  0%, 100% { opacity: 0.10; filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.25)); }
+  50% { opacity: 0.22; filter: drop-shadow(0 0 22px rgba(201, 168, 76, 0.55)); }
+}
+.keyhole-motif {
+  animation: keyholePulse 5s ease-in-out infinite;
+}
+/* Klucz wsuwany do dziurki */
+@keyframes keyInsert {
+  0% { transform: translateY(26px) rotate(-4deg); opacity: 0; }
+  35% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  60% { transform: translateY(0) rotate(0deg); }
+  72% { transform: translateY(0) rotate(32deg); }
+  100% { transform: translateY(0) rotate(32deg); }
+}
