@@ -4,6 +4,7 @@ import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
 import { getHomeData } from "@/lib/data";
 import Hero from "@/components/site/Hero";
+import FeatureStrip from "@/components/site/FeatureStrip";
 import Promo from "@/components/site/Promo";
 import Rooms from "@/components/site/Rooms";
 import VideoSection from "@/components/site/VideoSection";
@@ -38,6 +39,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
   return (
     <>
       <Hero locale={locale} t={t} desc={heroDesc || ""} />
+      <FeatureStrip t={t} />
 
       {settings?.promoMode && settings.promoMode !== "OFF" && (
         <Promo

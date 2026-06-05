@@ -401,19 +401,66 @@
   to { transform: rotate(360deg); }
 }
 
-/* Keyhole w hero — pulsujący blask */
-@keyframes keyholePulse {
-  0%, 100% { opacity: 0.10; filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.25)); }
-  50% { opacity: 0.22; filter: drop-shadow(0 0 22px rgba(201, 168, 76, 0.55)); }
+/* === Hero: zamek (dziurka + klucz, który wchodzi i się przekręca) === */
+.hero-lock {
+  position: relative;
+  width: 90px;
+  height: 150px;
+  transform: scale(0.62);
+  transform-origin: center;
 }
-.keyhole-motif {
-  animation: keyholePulse 5s ease-in-out infinite;
+.hero-keyhole {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 92px;
+  filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.3));
 }
-/* Klucz wsuwany do dziurki */
-@keyframes keyInsert {
-  0% { transform: translateY(26px) rotate(-4deg); opacity: 0; }
-  35% { transform: translateY(0) rotate(0deg); opacity: 1; }
-  60% { transform: translateY(0) rotate(0deg); }
-  72% { transform: translateY(0) rotate(32deg); }
-  100% { transform: translateY(0) rotate(32deg); }
+.hero-kh-glow {
+  position: absolute;
+  left: 50%;
+  top: 30px;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.75), transparent 65%);
+  opacity: 0;
+  animation: khFlash 4s 0.8s 1 ease-out both;
+  pointer-events: none;
+}
+.hero-key {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 34px;
+  height: 96px;
+  transform-origin: 50% 90px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  animation: keyEnter 4s 0.8s 1 cubic-bezier(0.3, 0.8, 0.3, 1) both;
+}
+@keyframes keyEnter {
+  0%   { opacity: 0; transform: translate(-50%, -78px) rotate(0deg); }
+  18%  { opacity: 1; transform: translate(-50%, -40px) rotate(0deg); }
+  40%  { opacity: 1; transform: translate(-50%, -6px) rotate(0deg); }
+  55%  { transform: translate(-50%, -6px) rotate(0deg); }
+  60%  { transform: translate(-50%, -6px) rotate(-6deg); }
+  82%  { transform: translate(-50%, -6px) rotate(86deg); }
+  88%  { transform: translate(-50%, -6px) rotate(92deg); }
+  100% { transform: translate(-50%, -6px) rotate(90deg); }
+}
+@keyframes khFlash {
+  0%, 72% { opacity: 0; }
+  82% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+/* Szybsza wersja w ekranie ładowania */
+.splash-lock .hero-key { animation-duration: 1.7s; animation-delay: 0.2s; }
+.splash-lock .hero-kh-glow { animation-duration: 1.7s; animation-delay: 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-key { animation: none; transform: translate(-50%, -6px) rotate(90deg); opacity: 1; }
+  .hero-kh-glow { animation: none; }
 }
