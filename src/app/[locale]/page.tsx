@@ -20,10 +20,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   const locale = params.locale as Locale;
   return pageMeta({
     locale,
-    title: locale === "pl" ? "MYSTERIUM — Escape Room Warszawa" : "MYSTERIUM — Escape Room Warsaw",
+    title: "MYSTERIUM — Escape Room Nowy Dwór Mazowiecki",
     description: locale === "pl"
-      ? "Stacjonarny escape room w Warszawie i mobilna Skrzynia na eventy. Wybierz pokój, rozwiąż zagadki i ucieknij przed czasem."
-      : "On-site escape room in Warsaw and a Mobile Box for events. Pick a room, solve the puzzles and escape before time runs out.",
+      ? "Escape room w Nowym Dworze Mazowieckim i mobilna Skrzynia „Pułapka” na eventy. Rozwiąż zagadki i ucieknij przed czasem."
+      : "Escape room in Nowy Dwór Mazowiecki and the mobile box 'The Trap' for events. Solve the puzzles and escape before time runs out.",
     path: "",
   });
 }

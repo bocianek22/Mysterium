@@ -5,14 +5,14 @@ import { siteUrl } from "@/lib/seo";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "MYSTERIUM — Escape Room Warszawa | ul. Ogrodowa",
+    default: "MYSTERIUM — Escape Room Nowy Dwór Mazowiecki",
     template: "%s | MYSTERIUM",
   },
   description:
-    "Mysterium — stacjonarny escape room w Warszawie przy ul. Ogrodowej. Pokoje zagadek i mobilna Skrzynia na eventy. Rezerwuj przez LockMe!",
+    "Mysterium — escape room w Nowym Dworze Mazowieckim przy ul. Warszawskiej 40. Pokój „Pułapka” oraz mobilna Skrzynia na eventy. Rezerwuj online!",
   icons: { icon: "/logo.png", apple: "/logo.png" },
   openGraph: {
-    title: "MYSTERIUM — Escape Room Warszawa",
+    title: "MYSTERIUM — Escape Room Nowy Dwór Mazowiecki",
     siteName: "MYSTERIUM",
     type: "website",
   },

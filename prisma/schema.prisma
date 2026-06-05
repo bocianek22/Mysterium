@@ -222,8 +222,8 @@ model ContactMessage {
 model SiteSettings {
   id            String  @id @default("main")
   logoUrl       String? // logo w nawigacji (upload w panelu lub /logo.png)
-  addressPl     String  @default("ul. Ogrodowa, Warszawa")
-  addressEn     String  @default("Ogrodowa St., Warsaw")
+  addressPl     String  @default("Warszawska 40, 05-100 Nowy Dwór Mazowiecki")
+  addressEn     String  @default("Warszawska 40, 05-100 Nowy Dwór Mazowiecki")
   phone         String  @default("+48 571 080 192")
   email         String  @default("artsmysterium@gmail.com")
   whatsapp      String  @default("48571080192")
@@ -238,7 +238,7 @@ model SiteSettings {
   aboutPl       String  @default("")
   aboutEn       String  @default("")
   mapEmbed      String? // src iframe mapy (Google Maps → Udostępnij → Umieść mapę)
-  mapLink       String? @default("https://maps.app.goo.gl/EanoTZX2GWReqSC46")
+  mapLink       String? @default("https://maps.app.goo.gl/xWrTVhzXAN6J7UDv8")
   // Sekcja promo / odliczanie
   promoMode     String  @default("OFF") // OFF | COUNTDOWN | BANNER
   promoTitlePl  String  @default("")

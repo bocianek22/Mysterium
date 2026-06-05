@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   if (!isLocale(params.locale)) return {};
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  return pageMeta({ locale, title: t.rooms.title, description: locale === "pl" ? "Nasze pokoje zagadek w Warszawie — wybierz misję dla swojej grupy." : "Our escape rooms in Warsaw — choose a mission for your group.", path: "/pokoje" });
+  return pageMeta({ locale, title: t.rooms.title, description: locale === "pl" ? "Nasze pokoje zagadek w Nowym Dworze Mazowieckim — wybierz misję dla swojej grupy." : "Our escape rooms in Nowy Dwór Mazowiecki — choose a mission for your group.", path: "/pokoje" });
 }
 
 export default async function RoomsPage({ params }: { params: { locale: string } }) {

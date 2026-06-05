@@ -22,24 +22,24 @@ async function main() {
     create: {
       id: "main",
       aboutPl:
-        "Mysterium to escape roomy z duszą — mroczne, dopracowane i pełne napięcia.\n\nZaczynamy od „Pułapki”: mobilnej skrzyni, którą przywozimy na Twój event, urodziny czy integrację. To skrzynia mordercy — sieć zamków i szyfrów do rozpracowania w 60 minut. Wkrótce otworzymy też stacjonarny pokój w Warszawie.\n\nTworzymy gry, które wciągają od pierwszej sekundy — idealne na wieczór ze znajomymi, randkę z dreszczykiem czy firmowy team building.",
+        "Mysterium to escape roomy z duszą — mroczne, dopracowane i pełne napięcia.\n\nNasza „Pułapka” — skrzynia mordercy — czeka na Was w dwóch wersjach: stacjonarnie w Nowym Dworze Mazowieckim (ul. Warszawska 40) oraz mobilnie, gdy przywozimy ją na Twój event, urodziny czy integrację. Sieć zamków i szyfrów do rozpracowania w 60 minut.\n\nTworzymy gry, które wciągają od pierwszej sekundy — idealne na wieczór ze znajomymi, randkę z dreszczykiem czy firmowy team building.",
       aboutEn:
-        "Mysterium is escape rooms with a soul — dark, polished and full of tension.\n\nWe start with 'The Trap': a mobile box we bring to your event, birthday or team day. It's the murderer's chest — a web of locks and ciphers to crack in 60 minutes. An on-site room in Warsaw is coming soon.\n\nWe craft games that grip you from the first second — perfect for a night out, a thrilling date or corporate team building.",
+        "Mysterium is escape rooms with a soul — dark, polished and full of tension.\n\nOur 'Trap' — the murderer's chest — awaits in two forms: on-site in Nowy Dwór Mazowiecki (Warszawska 40) and mobile, brought to your event, birthday or team day. A web of locks and ciphers to crack in 60 minutes.\n\nWe craft games that grip you from the first second — perfect for a night out, a thrilling date or corporate team building.",
     },
   });
 
   // --- Pokoje ---
   const rooms = [
     {
-      slug: "pokoj-nr-1",
-      namePl: "Pokój stacjonarny",
-      nameEn: "On-site Room",
-      taglinePl: "Stacjonarny escape room w Warszawie. Wkrótce otwieramy drzwi.",
-      taglineEn: "On-site escape room in Warsaw. We open the doors soon.",
+      slug: "pulapka-stacjonarna",
+      namePl: "Pułapka",
+      nameEn: "The Trap",
+      taglinePl: "Stacjonarna wersja skrzyni mordercy. Zamknięci w jednym pomieszczeniu macie 60 minut, by ją rozpracować.",
+      taglineEn: "The on-site version of the murderer's chest. Locked in one room, you have 60 minutes to crack it.",
       descriptionPl:
-        "Za tymi drzwiami powstaje coś, czego jeszcze nie widzieliście.\n\nStacjonarny escape room Mysterium — mroczny klimat, presja czasu i zagadki, które wciągają bez reszty. Już wkrótce w Warszawie.",
+        "To ta sama skrzynia, która zna już niejeden sekret — tym razem czeka na Was u nas, na miejscu.\n\nWchodzicie do pomieszczenia, w którym morderca ukrył swoją grę. Zamki, szyfry i wskazówki prowadzą jedna do drugiej, a zegar nie zwalnia. Macie 60 minut, żeby otworzyć skrzynię i wydostać to, co skrył — zanim pułapka się zatrzaśnie.\n\nWersja stacjonarna „Pułapki” — pełna scenografia, mocniejszy klimat i to samo mrożące krew w żyłach napięcie.",
       descriptionEn:
-        "Behind these doors we're building something you haven't seen yet.\n\nMysterium's on-site escape room — a dark atmosphere, time pressure and puzzles that pull you right in. Coming soon to Warsaw.",
+        "It's the same chest that already keeps more than one secret — this time it waits for you at our place.\n\nYou enter the room where the murderer hid his game. Locks, ciphers and clues lead from one to the next, and the clock won't slow down. You have 60 minutes to open the chest and recover what he hid — before the trap snaps shut.\n\nThe on-site version of 'The Trap' — full set design, deeper atmosphere and the same blood-chilling tension.",
       durationMin: 60,
       minPlayers: 2,
       maxPlayers: 8,
@@ -47,8 +47,8 @@ async function main() {
       difficultyEn: "Medium",
       badgePl: "Stacjonarny",
       badgeEn: "On-site",
-      status: "SOON",
-      order: 2,
+      status: "ACTIVE",
+      order: 1,
     },
   ];
   for (const r of rooms) {
@@ -78,12 +78,12 @@ async function main() {
     priceInfoPl: "od 299 zł",
     priceInfoEn: "from 299 zł",
     travelZonesJson: JSON.stringify([
-      { labelPl: "Warszawa", labelEn: "Warsaw", price: "gratis" },
-      { labelPl: "do 30 km od Warszawy", labelEn: "up to 30 km from Warsaw", price: "100 zł" },
-      { labelPl: "powyżej 30 km", labelEn: "over 30 km", price: "wycena indyw." },
+      { labelPl: "Nowy Dwór Mazowiecki", labelEn: "Nowy Dwór Mazowiecki", price: "gratis" },
+      { labelPl: "Warszawa i okolice", labelEn: "Warsaw area", price: "100 zł" },
+      { labelPl: "powyżej 40 km", labelEn: "over 40 km", price: "wycena indyw." },
     ]),
-    areaPl: "Warszawa i okolice do ok. 50 km. Dalsze lokalizacje po indywidualnym ustaleniu.",
-    areaEn: "Warsaw and surroundings up to ~50 km. Farther locations by arrangement.",
+    areaPl: "Nowy Dwór Mazowiecki, Warszawa i okolice. Dalsze lokalizacje po indywidualnym ustaleniu.",
+    areaEn: "Nowy Dwór Mazowiecki, Warsaw and surroundings. Farther locations by arrangement.",
     requirementsPl: "Przestrzeń ok. 9 m², dostęp do gniazdka 230V, stół. Możliwość gry w pomieszczeniu lub pod zadaszeniem.",
     requirementsEn: "About 9 m² of space, a 230V socket, a table. Indoors or under cover.",
     occasionsPl: "Eventy firmowe\nUrodziny\nIntegracje zespołów\nSzkoły i festyny\nWieczory panieńskie/kawalerskie",
@@ -121,7 +121,7 @@ async function main() {
 
   // --- FAQ ---
   const faq = [
-    { questionPl: "Gdzie znajduje się Mysterium?", questionEn: "Where is Mysterium located?", answerPl: "Nasz stacjonarny pokój zagadek mieści się przy ul. Ogrodowej w Warszawie. Posiadamy też Mobilną Skrzynię na eventy.", answerEn: "Our on-site escape room is located at Ogrodowa St. in Warsaw. We also have a Mobile Box for events.", order: 1 },
+    { questionPl: "Gdzie znajduje się Mysterium?", questionEn: "Where is Mysterium located?", answerPl: "Nasz stacjonarny escape room mieści się przy ul. Warszawskiej 40 w Nowym Dworze Mazowieckim. Posiadamy też mobilną „Pułapkę” na eventy.", answerEn: "Our on-site escape room is located at Warszawska 40 in Nowy Dwór Mazowiecki. We also have the mobile 'Trap' for events.", order: 1 },
     { questionPl: "Ile osób może grać jednocześnie?", questionEn: "How many people can play at once?", answerPl: "Od 2 do 8 osób. Dla większych grup możemy zorganizować specjalne rozwiązania.", answerEn: "From 2 to 8 people. For larger groups we can arrange special solutions.", order: 2 },
     { questionPl: "Jak długo trwa jedna gra?", questionEn: "How long does one game last?", answerPl: "60 minut + brief i podsumowanie. Z przyjazdem warto zarezerwować ok. 1,5 godziny.", answerEn: "60 minutes + briefing and summary. Plan for about 1.5 hours including arrival.", order: 3 },
     { questionPl: "Jak dokonać rezerwacji?", questionEn: "How do I make a booking?", answerPl: "Przez platformę LockMe — przycisk Zarezerwuj na stronie. Dla Mobilnej Skrzyni przez formularz lub WhatsApp.", answerEn: "Via the LockMe platform — the Book button on the site. For the Mobile Box use the form or WhatsApp.", order: 4 },

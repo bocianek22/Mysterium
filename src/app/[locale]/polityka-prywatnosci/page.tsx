@@ -16,8 +16,8 @@ export default function PrivacyPage({ params }: { params: { locale: string } }) 
       <div className="space-y-5 text-[15px] leading-[1.9]" style={{ color: "var(--muted)" }}>
         <p>
           {pl
-            ? "Administratorem danych osobowych jest Mysterium Escape Room z siedzibą w Warszawie. Dane zbierane przez formularz kontaktowy (imię, e-mail, telefon, treść wiadomości) przetwarzane są wyłącznie w celu odpowiedzi na zapytanie oraz obsługi rezerwacji."
-            : "The data controller is Mysterium Escape Room, based in Warsaw. Data collected via the contact form (name, e-mail, phone, message) is processed solely to respond to your inquiry and handle bookings."}
+            ? "Administratorem danych osobowych jest Mysterium Escape Room z siedzibą w Nowym Dworze Mazowieckim (ul. Warszawska 40). Dane zbierane przez formularz kontaktowy (imię, e-mail, telefon, treść wiadomości) przetwarzane są wyłącznie w celu odpowiedzi na zapytanie oraz obsługi rezerwacji."
+            : "The data controller is Mysterium Escape Room, based in Nowy Dwór Mazowiecki (Warszawska 40). Data collected via the contact form (name, e-mail, phone, message) is processed solely to respond to your inquiry and handle bookings."}
         </p>
         <p>
           {pl

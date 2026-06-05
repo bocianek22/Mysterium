@@ -43,6 +43,11 @@ export async function POST(
     );
   }
   const data = pickFields(config, parsed.data);
-  const item = await getDelegate(params.resource).create({ data });
-  return NextResponse.json({ item });
+  try {
+    const item = await getDelegate(params.resource).create({ data });
+    return NextResponse.json({ item });
+  } catch (e: any) {
+    const msg = e?.code === "P2002" ? "Taki slug/adres już istnieje" : "Nie udało się utworzyć pozycji";
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
 }

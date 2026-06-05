@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   if (!isLocale(params.locale)) return {};
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  return pageMeta({ locale, title: t.about.title, description: locale === "pl" ? "Poznaj Mysterium — stacjonarny escape room w sercu Warszawy." : "Meet Mysterium — an on-site escape room in the heart of Warsaw.", path: "/o-nas" });
+  return pageMeta({ locale, title: t.about.title, description: locale === "pl" ? "Poznaj Mysterium — escape room w Nowym Dworze Mazowieckim." : "Meet Mysterium — an escape room in Nowy Dwór Mazowiecki.", path: "/o-nas" });
 }
 
 export default async function AboutPage({ params }: { params: { locale: string } }) {
@@ -26,7 +26,7 @@ export default async function AboutPage({ params }: { params: { locale: string }
   ]);
 
   const about = (locale === "pl" ? settings?.aboutPl : settings?.aboutEn) || "";
-  const address = (locale === "pl" ? settings?.addressPl : settings?.addressEn) || "ul. Ogrodowa, Warszawa";
+  const address = (locale === "pl" ? settings?.addressPl : settings?.addressEn) || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki";
 
   return (
     <>
