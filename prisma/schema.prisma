@@ -238,7 +238,7 @@ model SiteSettings {
   aboutPl       String  @default("")
   aboutEn       String  @default("")
   mapEmbed      String? // src iframe mapy (Google Maps → Udostępnij → Umieść mapę)
-  mapLink       String? @default("https://maps.app.goo.gl/EanoTZX2GWReqSC46")
+  mapLink       String? @default("https://maps.app.goo.gl/xWrTVhzXAN6J7UDv8")
   // Sekcja promo / odliczanie
   promoMode     String  @default("OFF") // OFF | COUNTDOWN | BANNER
   promoTitlePl  String  @default("")
