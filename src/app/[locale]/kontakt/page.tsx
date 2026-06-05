@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import Contact from "@/components/site/Contact";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const t = getDict(locale);
+  return pageMeta({ locale, title: t.contact.title, description: locale === "pl" ? "Skontaktuj się z Mysterium — telefon, e-mail, WhatsApp, formularz." : "Contact Mysterium — phone, e-mail, WhatsApp, form.", path: "/kontakt" });
+}
 
 export default async function ContactPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();

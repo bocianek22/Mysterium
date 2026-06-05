@@ -1,11 +1,20 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/site/PageHero";
 import Gallery from "@/components/site/Gallery";
 import VideoSection from "@/components/site/VideoSection";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const t = getDict(locale);
+  return pageMeta({ locale, title: t.gallery.title, description: locale === "pl" ? "Zdjęcia i filmy z naszych pokoi zagadek." : "Photos and videos from our escape rooms.", path: "/galeria" });
+}
 
 export default async function GalleryPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();

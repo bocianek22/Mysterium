@@ -1,10 +1,19 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/site/PageHero";
 import MobileCard from "@/components/site/MobileCard";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const t = getDict(locale);
+  return pageMeta({ locale, title: t.mobile.title, description: t.mobile.sub, path: "/mobilna" });
+}
 
 export default async function MobilePage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();

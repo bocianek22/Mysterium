@@ -1,10 +1,22 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { isLocale, getDict, pick, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string; slug: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const room = await prisma.room.findUnique({ where: { slug: params.slug } });
+  if (!room) return {};
+  const name = pick(room, "name", locale);
+  const desc = (pick(room, "tagline", locale) || pick(room, "description", locale) || name).slice(0, 160);
+  return pageMeta({ locale, title: name, description: desc, path: `/pokoje/${room.slug}`, image: room.image });
+}
 
 export default async function RoomDetail({
   params,

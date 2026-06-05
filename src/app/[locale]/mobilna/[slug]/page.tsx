@@ -1,11 +1,23 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { isLocale, getDict, pick, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 import QuoteForm from "@/components/site/QuoteForm";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string; slug: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const offer = await prisma.mobileOffer.findUnique({ where: { slug: params.slug } });
+  if (!offer) return {};
+  const name = pick(offer, "name", locale);
+  const desc = (pick(offer, "tagline", locale) || pick(offer, "description", locale) || name).slice(0, 160);
+  return pageMeta({ locale, title: name, description: desc, path: `/mobilna/${offer.slug}`, image: offer.image });
+}
 
 function parseJson<T>(s: string | null | undefined, fb: T): T {
   try { const v = s ? JSON.parse(s) : fb; return Array.isArray(v) || typeof v === "object" ? v : fb; } catch { return fb; }
