@@ -7,6 +7,10 @@ import Particles from "@/components/site/Particles";
 import WhatsappFloat from "@/components/site/WhatsappFloat";
 import SiteFX from "@/components/site/FX";
 
+// Renderowanie na żądanie — strona pobiera treści z bazy w czasie żądania,
+// dzięki czemu build (np. na Vercel) nie wymaga połączenia z bazą.
+export const dynamic = "force-dynamic";
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }

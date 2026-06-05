@@ -8,24 +8,22 @@ Przewodnik krok po kroku. Czas: ~10–15 minut. Nie wymaga znajomości kodu.
 
 ---
 
+> Projekt jest już skonfigurowany pod **Postgres** (`prisma/schema.prisma`).
+
 ## 1. Baza danych — Neon (darmowa)
 
 1. Wejdź na **https://neon.tech** → załóż konto → **Create project**.
 2. Skopiuj **connection string** (zaczyna się od `postgresql://...`). Zaznacz opcję
    „Pooled connection" jeśli dostępna.
 
-## 2. Przełącz projekt na Postgres
+## 2. Utwórz tabele i dane startowe (raz, na swoim komputerze)
 
-W pliku `prisma/schema.prisma` zmień **jedną linię**:
-
-```prisma
-datasource db {
-  provider = "postgresql"   // było: "sqlite"
-  url      = env("DATABASE_URL")
-}
+```bash
+# w pliku .env ustaw DATABASE_URL na adres z Neon, potem:
+npm install
+npx prisma db push     # tworzy tabele w bazie Neon
+npm run db:seed        # konto właściciela + treści startowe
 ```
-
-Zatwierdź zmianę (commit) i wypchnij do gałęzi, z której wdrażasz.
 
 ## 3. Vercel — import projektu
 
@@ -49,16 +47,6 @@ Zatwierdź zmianę (commit) i wypchnij do gałęzi, z której wdrażasz.
    (Kod automatycznie użyje Blob, gdy ta zmienna istnieje.)
 3. **Redeploy** projektu (Deployments → … → Redeploy), by token został wczytany.
 
-## 5. Utwórz tabele i dane startowe
-
-Jednorazowo, na swoim komputerze (z connection stringiem z Neon):
-
-```bash
-# w pliku .env ustaw DATABASE_URL na adres z Neon, potem:
-npx prisma db push     # tworzy tabele w bazie Neon
-npm run db:seed        # konto właściciela + treści startowe
-```
-
 Gotowe — wchodzisz na swój adres `https://twoja-nazwa.vercel.app`, a panel pod
 `/admin`. **Zmień hasło administratora** po pierwszym logowaniu (zakładka Pracownicy).
 
@@ -75,11 +63,14 @@ Vercel → **Settings → Domains** → dodaj swoją domenę i ustaw rekordy DNS
   serwisowego; każde konto ma też gotowy link iCal w swoim pulpicie.
 - **Mapa** — *Ustawienia → O nas i mapa*: wklej „embed" z Google Maps.
 
-## Alternatywa: VPS (bez zmian)
+## Alternatywa: VPS
 
-Na zwykłym serwerze VPS z Node.js działa też SQLite i zapis plików na dysk:
+Na zwykłym serwerze VPS z Node.js możesz użyć Postgresa (jak wyżej) albo wrócić do
+**SQLite** — wtedy w `prisma/schema.prisma` ustaw `provider = "sqlite"` i:
 
 ```bash
 npm install && npm run db:push && npm run db:seed
 npm run build && npm run start   # port 3000 (ustaw reverse proxy / PM2)
 ```
+
+Na VPS pliki zapisują się na dysk (bez Vercel Blob) — nie ustawiaj `BLOB_READ_WRITE_TOKEN`.

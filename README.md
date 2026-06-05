@@ -39,13 +39,18 @@ Role: **OWNER/ADMIN** widzą wszystko; **EMPLOYEE** widzi tylko swój grafik, dy
 
 ## 🚀 Uruchomienie lokalnie
 
+> Projekt jest skonfigurowany pod **Postgres** (`provider = "postgresql"`).
+> Do uruchomienia lokalnego ustaw `DATABASE_URL` na bazę Postgres (np. darmowy
+> [Neon](https://neon.tech)). **Chcesz szybko, bez Postgresa?** Zmień w
+> `prisma/schema.prisma` `provider` na `"sqlite"` i `DATABASE_URL="file:./dev.db"`.
+
 ```bash
 # 1. Zainstaluj zależności
 npm install
 
 # 2. Skopiuj konfigurację i ustaw dane
 cp .env.example .env
-#   - DATABASE_URL zostaw jak jest (SQLite) do testów
+#   - DATABASE_URL: adres bazy Postgres (Neon) lub SQLite (patrz wyżej)
 #   - AUTH_SECRET zmień na długi losowy ciąg
 #   - ADMIN_EMAIL / ADMIN_PASSWORD ustaw swoje dane logowania
 
