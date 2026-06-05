@@ -1,11 +1,20 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/site/PageHero";
 import About from "@/components/site/About";
 import Reviews from "@/components/site/Reviews";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  const t = getDict(locale);
+  return pageMeta({ locale, title: t.about.title, description: locale === "pl" ? "Poznaj Mysterium — stacjonarny escape room w sercu Warszawy." : "Meet Mysterium — an on-site escape room in the heart of Warsaw.", path: "/o-nas" });
+}
 
 export default async function AboutPage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();

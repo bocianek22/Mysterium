@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isLocale, getDict, type Locale } from "@/lib/i18n";
+import { pageMeta } from "@/lib/seo";
 import { getHomeData } from "@/lib/data";
 import Hero from "@/components/site/Hero";
 import Promo from "@/components/site/Promo";
@@ -11,6 +13,19 @@ import Reviews from "@/components/site/Reviews";
 import Faq from "@/components/site/Faq";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  if (!isLocale(params.locale)) return {};
+  const locale = params.locale as Locale;
+  return pageMeta({
+    locale,
+    title: locale === "pl" ? "MYSTERIUM — Escape Room Warszawa" : "MYSTERIUM — Escape Room Warsaw",
+    description: locale === "pl"
+      ? "Stacjonarny escape room w Warszawie i mobilna Skrzynia na eventy. Wybierz pokój, rozwiąż zagadki i ucieknij przed czasem."
+      : "On-site escape room in Warsaw and a Mobile Box for events. Pick a room, solve the puzzles and escape before time runs out.",
+    path: "",
+  });
+}
 
 export default async function HomePage({ params }: { params: { locale: string } }) {
   if (!isLocale(params.locale)) notFound();
