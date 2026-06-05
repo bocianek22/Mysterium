@@ -28,6 +28,7 @@ const dict = {
       contact: "Kontakt",
       about: "O nas",
       mobile: "Mobilna Skrzynia",
+      events: "Eventy firmowe",
       book: "Zarezerwuj",
     },
     mobile: {
@@ -153,6 +154,7 @@ const dict = {
       contact: "Contact",
       about: "About",
       mobile: "Mobile Box",
+      events: "Corporate events",
       book: "Book now",
     },
     mobile: {

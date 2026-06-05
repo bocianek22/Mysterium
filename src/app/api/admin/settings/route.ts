@@ -39,6 +39,9 @@ const schema = z.object({
   promoCtaLabelEn: z.string().optional(),
   promoCtaUrl: z.string().optional().nullable(),
   promoDate: z.string().optional().nullable(),
+  googleReviewsEnabled: z.coerce.boolean().optional(),
+  googleReviewsUrl: z.string().optional().nullable(),
+  googleRating: z.string().optional().nullable(),
 });
 
 export async function GET() {

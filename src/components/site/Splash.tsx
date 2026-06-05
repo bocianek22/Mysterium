@@ -27,8 +27,8 @@ export default function Splash({ label }: { label: string }) {
       style={{ background: "var(--navy-dd)", transition: "opacity .6s ease", opacity: hide ? 0 : 1, pointerEvents: hide ? "none" : "all" }}
       aria-hidden
     >
-      <div style={{ transform: "scale(0.8)" }}>
-        <div className="hero-lock splash-lock">
+      <div className="lock-box splash-lock" style={{ width: 112, height: 192 }}>
+        <div className="hero-lock" style={{ transform: "scale(0.8)" }}>
           <div className="hero-kh-glow" />
           <svg className="hero-keyhole" viewBox="0 0 100 140" fill="none">
             <defs>

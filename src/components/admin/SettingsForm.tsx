@@ -50,6 +50,13 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Opinie Google",
+    fields: [
+      { name: "googleReviewsUrl", label: "Link do opinii Google", help: "Adres Twojej wizytówki Google (przycisk „Zobacz nas w Google” w sekcji opinii)." },
+      { name: "googleRating", label: "Ocena Google (np. 4.9)" },
+    ],
+  },
+  {
     title: "Rezerwacje — LockMe",
     fields: [
       { name: "lockmeUrl", label: "Link do rezerwacji LockMe (przycisk)" },
@@ -96,10 +103,16 @@ export default function SettingsForm() {
       {groups.map((g) => (
         <div key={g.title} className="mb-8">
           <h2 className="font-serif text-sm tracking-[2px] uppercase mb-4 pb-2" style={{ color: "var(--gold)", borderBottom: "1px solid var(--border)" }}>{g.title}</h2>
-          {g.title.startsWith("Google") && (
+          {g.title.startsWith("Google Calendar") && (
             <label className="flex items-center gap-3 mb-4">
               <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
               <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
+            </label>
+          )}
+          {g.title === "Opinie Google" && (
+            <label className="flex items-center gap-3 mb-4">
+              <input type="checkbox" checked={!!data.googleReviewsEnabled} onChange={(e) => set("googleReviewsEnabled", e.target.checked)} />
+              <span className="text-sm" style={{ color: "var(--text)" }}>Pokaż sekcję opinii Google (przycisk + ocena)</span>
             </label>
           )}
           <div className="grid grid-cols-1 gap-4">

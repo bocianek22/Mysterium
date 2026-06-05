@@ -9,7 +9,6 @@ import Promo from "@/components/site/Promo";
 import Rooms from "@/components/site/Rooms";
 import VideoSection from "@/components/site/VideoSection";
 import HowItWorks from "@/components/site/HowItWorks";
-import Pricing from "@/components/site/Pricing";
 import Reviews from "@/components/site/Reviews";
 import Faq from "@/components/site/Faq";
 
@@ -32,7 +31,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
   if (!isLocale(params.locale)) notFound();
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  const { settings, rooms, videos, reviews, pricing, faq } = await getHomeData();
+  const { settings, rooms, videos, reviews, faq } = await getHomeData();
 
   const heroDesc = locale === "pl" ? settings?.heroDescPl : settings?.heroDescEn;
 
@@ -74,8 +73,7 @@ export default async function HomePage({ params }: { params: { locale: string } 
 
       <VideoSection locale={locale} t={t} videos={videos} />
       <HowItWorks t={t} />
-      <Pricing locale={locale} t={t} plans={pricing} />
-      <Reviews locale={locale} t={t} reviews={reviews} />
+      <Reviews locale={locale} t={t} reviews={reviews} googleUrl={settings?.googleReviewsEnabled ? settings?.googleReviewsUrl : null} googleRating={settings?.googleReviewsEnabled ? settings?.googleRating : null} />
       <Faq locale={locale} t={t} items={faq} />
 
       {/* CTA końcowe */}

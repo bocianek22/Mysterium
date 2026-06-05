@@ -47,6 +47,11 @@ async function main() {
       difficultyEn: "Medium",
       badgePl: "Stacjonarny",
       badgeEn: "On-site",
+      pricingJson: JSON.stringify([
+        { labelPl: "2 osoby", labelEn: "2 people", price: "199 zł" },
+        { labelPl: "3–4 osoby", labelEn: "3–4 people", price: "259 zł" },
+        { labelPl: "5–6 osób", labelEn: "5–6 people", price: "319 zł" },
+      ]),
       status: "ACTIVE",
       order: 1,
     },
@@ -77,6 +82,11 @@ async function main() {
     maxPlayers: 8,
     priceInfoPl: "od 299 zł",
     priceInfoEn: "from 299 zł",
+    pricingJson: JSON.stringify([
+      { labelPl: "2–4 osoby", labelEn: "2–4 people", price: "299 zł" },
+      { labelPl: "5–8 osób", labelEn: "5–8 people", price: "399 zł" },
+      { labelPl: "powyżej 8 osób", labelEn: "8+ people", price: "wycena" },
+    ]),
     travelZonesJson: JSON.stringify([
       { labelPl: "Nowy Dwór Mazowiecki", labelEn: "Nowy Dwór Mazowiecki", price: "gratis" },
       { labelPl: "Warszawa i okolice", labelEn: "Warsaw area", price: "100 zł" },
@@ -110,8 +120,8 @@ async function main() {
 
   // --- Opinie ---
   const reviews = [
-    { authorName: "Anna K.", eventPl: "Urodziny", eventEn: "Birthday", textPl: "Niesamowite doświadczenie! Pokój Nr 1 to coś wyjątkowego — klimat, zagadki, profesjonalizm na najwyższym poziomie.", textEn: "An amazing experience! Room No. 1 is something special — atmosphere, puzzles and top-level professionalism.", rating: 5, order: 1 },
-    { authorName: "Marek W.", eventPl: "Event firmowy", eventEn: "Corporate event", textPl: "Team building z Mobilną Skrzynią — absolutny hit! Nasz zespół był zachwycony. Na pewno wrócimy!", textEn: "Team building with the Mobile Box — an absolute hit! Our team was thrilled. We'll be back for sure!", rating: 5, order: 2 },
+    { authorName: "Anna K.", eventPl: "Urodziny", eventEn: "Birthday", textPl: "Niesamowite doświadczenie! „Pułapka” to coś wyjątkowego — klimat, zagadki, profesjonalizm na najwyższym poziomie.", textEn: "An amazing experience! 'The Trap' is something special — atmosphere, puzzles and top-level professionalism.", rating: 5, source: "GOOGLE", order: 1 },
+    { authorName: "Marek W.", eventPl: "Event firmowy", eventEn: "Corporate event", textPl: "Team building z mobilną „Pułapką” — absolutny hit! Nasz zespół był zachwycony. Na pewno wrócimy!", textEn: "Team building with the mobile 'Trap' — an absolute hit! Our team was thrilled. We'll be back for sure!", rating: 5, source: "GOOGLE", order: 2 },
     { authorName: "Kasia & Tomek", eventPl: "Wieczór panieński", eventEn: "Hen party", textPl: "Wieczór panieński z Mysterium — strzał w dziesiątkę. Cudowne wspomnienia na całe życie!", textEn: "A hen party with Mysterium — bullseye. Wonderful memories for a lifetime!", rating: 5, order: 3 },
   ];
   if ((await prisma.review.count()) === 0) {
@@ -126,6 +136,11 @@ async function main() {
     { questionPl: "Jak długo trwa jedna gra?", questionEn: "How long does one game last?", answerPl: "60 minut + brief i podsumowanie. Z przyjazdem warto zarezerwować ok. 1,5 godziny.", answerEn: "60 minutes + briefing and summary. Plan for about 1.5 hours including arrival.", order: 3 },
     { questionPl: "Jak dokonać rezerwacji?", questionEn: "How do I make a booking?", answerPl: "Przez platformę LockMe — przycisk Zarezerwuj na stronie. Dla Mobilnej Skrzyni przez formularz lub WhatsApp.", answerEn: "Via the LockMe platform — the Book button on the site. For the Mobile Box use the form or WhatsApp.", order: 4 },
     { questionPl: "Czy można anulować rezerwację?", questionEn: "Can I cancel a booking?", answerPl: "Tak, do 48 godzin przed planowaną datą bez kosztów.", answerEn: "Yes, up to 48 hours before the scheduled date at no cost.", order: 5 },
+    { questionPl: "Ile kosztuje gra?", questionEn: "How much does it cost?", answerPl: "Cena zależy od pokoju i liczby osób — pełny cennik znajdziesz na podstronie każdej gry oraz w zakładce Cennik.", answerEn: "The price depends on the room and group size — see the full pricing on each game's page and in the Pricing tab.", order: 6 },
+    { questionPl: "Czy to jest straszne?", questionEn: "Is it scary?", answerPl: "„Pułapka” ma mroczny klimat i buduje napięcie, ale to przede wszystkim gra logiczna — nie horror z aktorami. Spokojnie poradzą sobie też mniej odważni.", answerEn: "'The Trap' has a dark atmosphere and builds tension, but it's primarily a logic game — not an actor-driven horror. Even the less brave will be fine.", order: 7 },
+    { questionPl: "Od ilu lat można grać?", questionEn: "What's the minimum age?", answerPl: "Polecamy od 12 lat; młodsi gracze mile widziani pod opieką dorosłych.", answerEn: "We recommend ages 12+; younger players are welcome with an adult.", order: 8 },
+    { questionPl: "Czy organizujecie eventy firmowe?", questionEn: "Do you host corporate events?", answerPl: "Tak! Robimy integracje i eventy — u nas na miejscu lub z dojazdem (mobilna „Pułapka”). Szczegóły w zakładce Eventy firmowe.", answerEn: "Yes! We run team-building and events — at our place or on-site (mobile 'Trap'). See the Corporate events tab.", order: 9 },
+    { questionPl: "Czy dojeżdżacie z Mobilną Skrzynią?", questionEn: "Do you travel with the Mobile Box?", answerPl: "Tak — Nowy Dwór Mazowiecki, Warszawa i okolice. Koszt dojazdu zależy od strefy (szczegóły na stronie oferty mobilnej).", answerEn: "Yes — Nowy Dwór Mazowiecki, Warsaw and surroundings. Travel cost depends on the zone (details on the mobile offer page).", order: 10 },
   ];
   if ((await prisma.faqItem.count()) === 0) {
     await prisma.faqItem.createMany({ data: faq });

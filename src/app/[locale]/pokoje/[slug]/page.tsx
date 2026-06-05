@@ -5,6 +5,7 @@ import { isLocale, getDict, pick, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
+import PriceTable from "@/components/site/PriceTable";
 
 export const dynamic = "force-dynamic";
 
@@ -76,13 +77,16 @@ export default async function RoomDetail({
         </div>
       </section>
 
-      {/* Opis */}
-      {description && (
+      {/* Opis + cennik */}
+      {(description || room.pricingJson) && (
         <section className="px-6 md:px-[60px] py-12 md:py-16 relative z-[1]" style={{ background: "var(--navy-dd)" }}>
-          <div className="max-w-[760px] mx-auto reveal">
-            {description.split(/\n{2,}/).filter(Boolean).map((p, i) => (
-              <p key={i} className="text-[15px] md:text-base leading-[1.95] mb-4" style={{ color: "var(--muted)" }}>{p}</p>
-            ))}
+          <div className="max-w-[760px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+            <div className="reveal">
+              {(description || "").split(/\n{2,}/).filter(Boolean).map((p, i) => (
+                <p key={i} className="text-[15px] md:text-base leading-[1.95] mb-4" style={{ color: "var(--muted)" }}>{p}</p>
+              ))}
+            </div>
+            <PriceTable locale={locale} json={room.pricingJson} title={t.pricing.label} />
           </div>
         </section>
       )}
