@@ -16,14 +16,13 @@ Przewodnik krok po kroku. Czas: ~10–15 minut. Nie wymaga znajomości kodu.
 2. Skopiuj **connection string** (zaczyna się od `postgresql://...`). Zaznacz opcję
    „Pooled connection" jeśli dostępna.
 
-## 2. Utwórz tabele i dane startowe (raz, na swoim komputerze)
+## 2. Tabele i dane startowe — automatycznie ✨
 
-```bash
-# w pliku .env ustaw DATABASE_URL na adres z Neon, potem:
-npm install
-npx prisma db push     # tworzy tabele w bazie Neon
-npm run db:seed        # konto właściciela + treści startowe
-```
+Nie musisz nic uruchamiać w terminalu. Przy pierwszym wdrożeniu Vercel uruchomi
+skrypt `vercel-build`, który **sam utworzy tabele i wgra dane startowe** (konto
+właściciela + treści). Wymóg: ustaw zmienne (krok 3) **przed** kliknięciem Deploy.
+
+> Wolisz ręcznie? Lokalnie z `DATABASE_URL` z Neon: `npx prisma db push && npm run db:seed`.
 
 ## 3. Vercel — import projektu
 
