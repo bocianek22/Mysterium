@@ -4,6 +4,7 @@ import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
+  logoUrl: z.string().optional().nullable(),
   addressPl: z.string().optional(),
   addressEn: z.string().optional(),
   phone: z.string().optional(),

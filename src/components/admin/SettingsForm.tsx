@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import FileUpload from "./FileUpload";
 
 type Field = { name: string; label: string; type?: string; help?: string; options?: { value: string; label: string }[] };
 
@@ -7,6 +8,7 @@ const groups: { title: string; fields: Field[] }[] = [
   {
     title: "Kontakt i strona",
     fields: [
+      { name: "logoUrl", label: "Logo (w nawigacji)", type: "image", help: "Wgraj logo — pojawi się w menu na górze strony. Najlepiej PNG na przezroczystym tle." },
       { name: "phone", label: "Telefon" },
       { name: "email", label: "E-mail" },
       { name: "whatsapp", label: "Numer WhatsApp", help: "Same cyfry z kodem kraju, np. 48571080192" },
@@ -106,6 +108,8 @@ export default function SettingsForm() {
                 <label className="field-label">{f.label}</label>
                 {f.type === "textarea" ? (
                   <textarea value={data[f.name] || ""} onChange={(e) => set(f.name, e.target.value)} className="field-input h-20 resize-none" />
+                ) : f.type === "image" ? (
+                  <FileUpload value={data[f.name] || ""} onChange={(url) => set(f.name, url)} accept="image/*" kind="image" />
                 ) : f.type === "select" ? (
                   <select value={data[f.name] || ""} onChange={(e) => set(f.name, e.target.value)} className="field-input">
                     {f.options?.map((o) => <option key={o.value} value={o.value} style={{ background: "var(--navy-d)" }}>{o.label}</option>)}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Locale, Dict } from "@/lib/i18n";
 
-export default function Nav({ locale, t }: { locale: Locale; t: Dict }) {
+export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; logoUrl?: string | null }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -52,7 +52,7 @@ export default function Nav({ locale, t }: { locale: Locale; t: Dict }) {
       <Link href={`/${locale}`} className="flex items-center gap-3 no-underline">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/uploads/logo.png"
+          src={logoUrl || "/logo.png"}
           alt="Mysterium"
           className="h-9 md:h-11"
           style={{ filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))", display: "none" }}

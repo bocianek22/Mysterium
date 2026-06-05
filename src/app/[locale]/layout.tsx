@@ -36,7 +36,7 @@ export default async function LocaleLayout({
     <>
       <SiteFX />
       <Particles />
-      <Nav locale={locale} t={t} />
+      <Nav locale={locale} t={t} logoUrl={settings?.logoUrl} />
       <main>{children}</main>
       <Footer locale={locale} t={t} phone={phone} email={email} />
       <WhatsappFloat whatsapp={whatsapp} />
