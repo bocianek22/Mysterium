@@ -42,6 +42,19 @@ export default async function HomePage({ params }: { params: { locale: string } 
         <a href={`/${locale}/pokoje`} className="btn-outline">{t.common.seeAllRooms}</a>
       </div>
 
+      {/* Teaser oferty mobilnej */}
+      <section className="px-6 md:px-[60px] py-16 md:py-20 relative z-[1] aurora" style={{ background: "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>
+        <div className="relative z-[1] max-w-[1000px] mx-auto flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+          <div className="text-6xl md:text-7xl floaty">📦</div>
+          <div className="flex-1">
+            <div className="sec-label reveal">{t.mobile.label}</div>
+            <h2 className="font-display text-gold-grad shimmer text-3xl md:text-4xl mb-3 reveal reveal-d1">{t.mobile.title}</h2>
+            <p className="text-base mb-5 max-w-[560px] reveal reveal-d2" style={{ color: "var(--muted)" }}>{t.mobile.sub}</p>
+            <a href={`/${locale}/mobilna`} className="btn-gold reveal reveal-d3">{t.mobile.explore}</a>
+          </div>
+        </div>
+      </section>
+
       <VideoSection locale={locale} t={t} videos={videos} />
       <HowItWorks t={t} />
       <Pricing locale={locale} t={t} plans={pricing} />

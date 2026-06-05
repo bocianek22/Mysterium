@@ -108,6 +108,39 @@ model Room {
   updatedAt     DateTime @updatedAt
 }
 
+// Oferty mobilne / wyjazdowe (np. Mobilna Skrzynia) — osobny typ z podstronami
+model MobileOffer {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  namePl          String
+  nameEn          String
+  taglinePl       String?
+  taglineEn       String?
+  descriptionPl   String?
+  descriptionEn   String?
+  image           String?
+  imagesJson      String?  @default("[]") // galeria (JSON: tablica URLi)
+  durationMin     Int      @default(60)
+  minPlayers      Int      @default(2)
+  maxPlayers      Int      @default(8)
+  priceInfoPl     String?  // cena samej gry (tekst, np. "od 299 zł")
+  priceInfoEn     String?
+  travelZonesJson String?  @default("[]") // strefy dojazdu (JSON: [{labelPl,labelEn,price}])
+  areaPl          String?  // obszar działania
+  areaEn          String?
+  requirementsPl  String?  // wymagania na miejscu
+  requirementsEn  String?
+  occasionsPl     String?  // dla kogo / okazje (linie lub przecinki)
+  occasionsEn     String?
+  badgePl         String   @default("Wyjazdowy")
+  badgeEn         String   @default("Mobile")
+  status          String   @default("ACTIVE") // ACTIVE | SOON
+  order           Int      @default(0)
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 // Galeria zdjęć
 model GalleryImage {
   id        String   @id @default(cuid())

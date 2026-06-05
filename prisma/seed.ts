@@ -42,24 +42,6 @@ async function main() {
       status: "ACTIVE",
       order: 1,
     },
-    {
-      slug: "mobilna-skrzynia",
-      namePl: "Mobilna Skrzynia",
-      nameEn: "Mobile Box",
-      taglinePl: "Escape Room przyjeżdża do Ciebie! Na eventy i urodziny.",
-      taglineEn: "The Escape Room comes to you! For events and birthdays.",
-      descriptionPl:
-        "Mobilna wersja naszego escape roomu — idealna na eventy firmowe, urodziny i imprezy. Przyjeżdżamy z kompletem zagadek tam, gdzie chcesz.",
-      descriptionEn:
-        "A mobile version of our escape room — perfect for corporate events, birthdays and parties. We bring the full set of puzzles wherever you want.",
-      durationMin: 60,
-      minPlayers: 2,
-      maxPlayers: 8,
-      badgePl: "Mobilny",
-      badgeEn: "Mobile",
-      status: "ACTIVE",
-      order: 2,
-    },
   ];
   for (const r of rooms) {
     await prisma.room.upsert({
@@ -69,6 +51,42 @@ async function main() {
     });
   }
   console.log(`✓ Pokoje: ${rooms.length}`);
+
+  // --- Oferty mobilne ---
+  const mobile = {
+    slug: "mobilna-skrzynia",
+    namePl: "Mobilna Skrzynia",
+    nameEn: "Mobile Box",
+    taglinePl: "Escape Room przyjeżdża do Ciebie! Na eventy, urodziny i integracje.",
+    taglineEn: "The Escape Room comes to you! For events, birthdays and team-building.",
+    descriptionPl:
+      "Mobilna wersja naszego escape roomu — przywozimy komplet zagadek tam, gdzie chcesz.\n\nIdealna na eventy firmowe, urodziny, festyny i integracje. Rozstawiamy się w kilkanaście minut i zapewniamy pełną obsługę.",
+    descriptionEn:
+      "A mobile version of our escape room — we bring the full set of puzzles wherever you want.\n\nPerfect for corporate events, birthdays, festivals and team-building.",
+    image: null,
+    durationMin: 60,
+    minPlayers: 2,
+    maxPlayers: 8,
+    priceInfoPl: "od 299 zł",
+    priceInfoEn: "from 299 zł",
+    travelZonesJson: JSON.stringify([
+      { labelPl: "Warszawa", labelEn: "Warsaw", price: "gratis" },
+      { labelPl: "do 30 km od Warszawy", labelEn: "up to 30 km from Warsaw", price: "100 zł" },
+      { labelPl: "powyżej 30 km", labelEn: "over 30 km", price: "wycena indyw." },
+    ]),
+    areaPl: "Warszawa i okolice do ok. 50 km. Dalsze lokalizacje po indywidualnym ustaleniu.",
+    areaEn: "Warsaw and surroundings up to ~50 km. Farther locations by arrangement.",
+    requirementsPl: "Przestrzeń ok. 9 m², dostęp do gniazdka 230V, stół. Możliwość gry w pomieszczeniu lub pod zadaszeniem.",
+    requirementsEn: "About 9 m² of space, a 230V socket, a table. Indoors or under cover.",
+    occasionsPl: "Eventy firmowe\nUrodziny\nIntegracje zespołów\nSzkoły i festyny\nWieczory panieńskie/kawalerskie",
+    occasionsEn: "Corporate events\nBirthdays\nTeam integrations\nSchools & festivals\nStag/hen parties",
+    badgePl: "Wyjazdowy",
+    badgeEn: "Mobile",
+    status: "ACTIVE",
+    order: 1,
+  };
+  await prisma.mobileOffer.upsert({ where: { slug: mobile.slug }, update: mobile, create: mobile });
+  console.log(`✓ Oferty mobilne: 1`);
 
   // --- Cennik ---
   const plans = [

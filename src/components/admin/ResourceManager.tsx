@@ -282,6 +282,27 @@ function GalleryField({ value, onChange }: { value: any; onChange: (v: any) => v
   );
 }
 
+type Zone = { labelPl: string; labelEn: string; price: string };
+function ZonesField({ value, onChange }: { value: any; onChange: (v: any) => void }) {
+  let list: Zone[] = [];
+  try { list = value ? JSON.parse(value) : []; if (!Array.isArray(list)) list = []; } catch { list = []; }
+  const update = (arr: Zone[]) => onChange(JSON.stringify(arr));
+  const setRow = (i: number, k: keyof Zone, v: string) => { const a = [...list]; a[i] = { ...a[i], [k]: v }; update(a); };
+  return (
+    <div className="flex flex-col gap-2">
+      {list.map((z, i) => (
+        <div key={i} className="flex gap-2 items-center">
+          <input className="field-input text-sm" placeholder="Strefa (PL)" value={z.labelPl || ""} onChange={(e) => setRow(i, "labelPl", e.target.value)} />
+          <input className="field-input text-sm" placeholder="Zone (EN)" value={z.labelEn || ""} onChange={(e) => setRow(i, "labelEn", e.target.value)} />
+          <input className="field-input text-sm" style={{ maxWidth: 120 }} placeholder="np. 100 zł" value={z.price || ""} onChange={(e) => setRow(i, "price", e.target.value)} />
+          <button type="button" onClick={() => update(list.filter((_, j) => j !== i))} className="text-xs px-2 py-1 rounded flex-shrink-0" style={{ border: "1px solid rgba(239,68,68,.3)", color: "#fca5a5" }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={() => update([...list, { labelPl: "", labelEn: "", price: "" }])} className="text-xs px-3 py-2 rounded self-start" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>+ Dodaj strefę</button>
+    </div>
+  );
+}
+
 function FieldInput({ field, value, onChange }: { field: Field; value: any; onChange: (v: any) => void }) {
   if (field.type === "boolean") {
     return (
@@ -315,6 +336,8 @@ function FieldInput({ field, value, onChange }: { field: Field; value: any; onCh
         <FileUpload value={value || ""} onChange={onChange} accept="video/*" kind="video" />
       ) : field.type === "gallery" ? (
         <GalleryField value={value} onChange={onChange} />
+      ) : field.type === "zones" ? (
+        <ZonesField value={value} onChange={onChange} />
       ) : (
         <input type="text" value={value || ""} onChange={(e) => onChange(e.target.value)} className="field-input" placeholder={field.placeholder} />
       )}

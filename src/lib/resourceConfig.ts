@@ -9,7 +9,8 @@ export type FieldType =
   | "select"
   | "image"
   | "video"
-  | "gallery";
+  | "gallery"
+  | "zones";
 
 export type Field = {
   name: string;
@@ -67,6 +68,41 @@ export const resources: Record<string, ResourceConfig> = {
       { name: "bookingUrl", label: "Link rezerwacji (opcjonalnie)", type: "text", placeholder: "https://lock.me/..." },
       { name: "order", label: "Kolejność", type: "number", default: 0 },
       { name: "published", label: "Widoczny na stronie", type: "boolean", default: true },
+    ],
+  },
+
+  mobile: {
+    label: "Oferty mobilne",
+    singular: "ofertę",
+    icon: "📦",
+    listColumns: ["namePl", "badgePl", "status"],
+    fields: [
+      { name: "namePl", label: "Nazwa (PL)", type: "text", required: true },
+      { name: "nameEn", label: "Nazwa (EN)", type: "text", required: true },
+      { name: "slug", label: "Slug (adres URL)", type: "text", required: true, placeholder: "mobilna-skrzynia" },
+      { name: "taglinePl", label: "Krótki opis (PL)", type: "text" },
+      { name: "taglineEn", label: "Krótki opis (EN)", type: "text" },
+      { name: "descriptionPl", label: "Pełny opis (PL)", type: "textarea" },
+      { name: "descriptionEn", label: "Pełny opis (EN)", type: "textarea" },
+      { name: "image", label: "Zdjęcie główne", type: "image" },
+      { name: "imagesJson", label: "Galeria oferty", type: "gallery" },
+      { name: "durationMin", label: "Czas gry (min)", type: "number", default: 60 },
+      { name: "minPlayers", label: "Min. osób", type: "number", default: 2 },
+      { name: "maxPlayers", label: "Maks. osób", type: "number", default: 8 },
+      { name: "priceInfoPl", label: "Cena gry (PL)", type: "text", placeholder: "np. od 299 zł" },
+      { name: "priceInfoEn", label: "Cena gry (EN)", type: "text", placeholder: "e.g. from 299 zł" },
+      { name: "travelZonesJson", label: "Cennik dojazdu (strefy)", type: "zones", help: "Np. Warszawa — 0 zł, do 30 km — 100 zł." },
+      { name: "areaPl", label: "Obszar działania (PL)", type: "textarea", placeholder: "np. Warszawa i okolice do 50 km" },
+      { name: "areaEn", label: "Obszar działania (EN)", type: "textarea" },
+      { name: "requirementsPl", label: "Wymagania na miejscu (PL)", type: "textarea", placeholder: "np. ok. 9 m², gniazdko 230V, stół" },
+      { name: "requirementsEn", label: "Wymagania na miejscu (EN)", type: "textarea" },
+      { name: "occasionsPl", label: "Dla kogo / okazje (PL)", type: "textarea", help: "Każda pozycja w osobnej linii." },
+      { name: "occasionsEn", label: "Dla kogo / okazje (EN)", type: "textarea" },
+      { name: "badgePl", label: "Etykieta (PL)", type: "text", default: "Wyjazdowy" },
+      { name: "badgeEn", label: "Etykieta (EN)", type: "text", default: "Mobile" },
+      { name: "status", label: "Status", type: "select", default: "ACTIVE", options: [{ value: "ACTIVE", label: "Aktywny" }, { value: "SOON", label: "Wkrótce" }] },
+      { name: "order", label: "Kolejność", type: "number", default: 0 },
+      { name: "published", label: "Widoczna na stronie", type: "boolean", default: true },
     ],
   },
 

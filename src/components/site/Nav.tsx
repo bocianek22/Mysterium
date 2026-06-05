@@ -30,6 +30,7 @@ export default function Nav({ locale, t }: { locale: Locale; t: Dict }) {
 
   const links = [
     { href: `/${locale}/pokoje`, label: t.nav.rooms },
+    { href: `/${locale}/mobilna`, label: t.nav.mobile },
     { href: `/${locale}/galeria`, label: t.nav.gallery },
     { href: `/${locale}/cennik`, label: t.nav.pricing },
     { href: `/${locale}/o-nas`, label: t.nav.about },

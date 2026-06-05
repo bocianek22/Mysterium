@@ -5,6 +5,7 @@ import { resources, type ResourceConfig } from "./resourceConfig";
 // Mapowanie nazwy zasobu -> delegat Prisma
 const delegates = {
   rooms: prisma.room,
+  mobile: prisma.mobileOffer,
   gallery: prisma.galleryImage,
   videos: prisma.video,
   reviews: prisma.review,
@@ -42,8 +43,8 @@ export function buildSchema(config: ResourceConfig) {
       default:
         s = z.string();
     }
-    if (f.type === "gallery") {
-      s = z.string().optional().nullable(); // JSON tablicy URLi (string)
+    if (f.type === "gallery" || f.type === "zones") {
+      s = z.string().optional().nullable(); // JSON (string)
     } else if (f.required && (f.type === "text" || f.type === "textarea" || f.type === "select" || f.type === "image" || f.type === "video")) {
       s = (s as z.ZodString).min(1, `Pole "${f.label}" jest wymagane`);
     } else if (!f.required) {
