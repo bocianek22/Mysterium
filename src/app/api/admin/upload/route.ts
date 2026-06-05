@@ -40,9 +40,25 @@ export async function POST(req: NextRequest) {
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const name = `${Date.now()}-${randomBytes(6).toString("hex")}${ext}`;
+
+  // Produkcja (Vercel): zapis do Vercel Blob, jeśli skonfigurowany token.
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(`uploads/${name}`, buffer, {
+        access: "public",
+        contentType: file.type,
+      });
+      return NextResponse.json({ url: blob.url });
+    } catch (e) {
+      console.error("[upload] blob error", e);
+      return NextResponse.json({ error: "Błąd zapisu pliku (Blob)" }, { status: 500 });
+    }
+  }
+
+  // Lokalnie / VPS: zapis na dysk
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), buffer);
-
   return NextResponse.json({ url: `/uploads/${name}` });
 }
