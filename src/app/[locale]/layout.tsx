@@ -7,6 +7,7 @@ import Particles from "@/components/site/Particles";
 import WhatsappFloat from "@/components/site/WhatsappFloat";
 import SiteFX from "@/components/site/FX";
 import Splash from "@/components/site/Splash";
+import HtmlLang from "@/components/site/HtmlLang";
 
 // Renderowanie na żądanie — strona pobiera treści z bazy w czasie żądania,
 // dzięki czemu build (np. na Vercel) nie wymaga połączenia z bazą.
@@ -35,6 +36,7 @@ export default async function LocaleLayout({
 
   return (
     <>
+      <HtmlLang locale={locale} />
       <Splash label={t.splash} />
       <SiteFX />
       <Particles />

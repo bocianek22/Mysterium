@@ -58,7 +58,9 @@ export default function Gallery({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={img.url}
-              alt={pick(img, "caption", locale) || "Mysterium"}
+              alt={pick(img, "caption", locale) || "Mysterium escape room"}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <span className="absolute inset-0 transition-all duration-300 group-hover:bg-[rgba(201,168,76,.08)]" style={{ border: "1px solid rgba(201,168,76,.06)" }} />
