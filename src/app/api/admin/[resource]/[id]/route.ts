@@ -1,0 +1,63 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getSession, isManager } from "@/lib/auth";
+import {
+  isResource,
+  getDelegate,
+  getConfig,
+  buildSchema,
+  pickFields,
+} from "@/lib/resources.server";
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { resource: string; id: string } }
+) {
+  {
+    const s = await getSession();
+    if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
+  if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const config = getConfig(params.resource);
+  const body = await req.json();
+
+  // Wiadomości: dozwolona tylko zmiana statusu "przeczytane"
+  if (config.readOnly) {
+    if (typeof body.read !== "boolean") {
+      return NextResponse.json({ error: "Read only" }, { status: 403 });
+    }
+    const item = await getDelegate(params.resource).update({
+      where: { id: params.id },
+      data: { read: body.read },
+    });
+    return NextResponse.json({ item });
+  }
+
+  const parsed = buildSchema(config).partial().safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: parsed.error.issues[0]?.message || "Nieprawidłowe dane" },
+      { status: 400 }
+    );
+  }
+  const data = pickFields(config, parsed.data);
+  const item = await getDelegate(params.resource).update({
+    where: { id: params.id },
+    data,
+  });
+  return NextResponse.json({ item });
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: { resource: string; id: string } }
+) {
+  {
+    const s = await getSession();
+    if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  }
+  if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await getDelegate(params.resource).delete({ where: { id: params.id } });
+  return NextResponse.json({ ok: true });
+}
