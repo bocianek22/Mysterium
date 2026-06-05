@@ -222,8 +222,8 @@ model ContactMessage {
 model SiteSettings {
   id            String  @id @default("main")
   logoUrl       String? // logo w nawigacji (upload w panelu lub /logo.png)
-  addressPl     String  @default("ul. Ogrodowa, Warszawa")
-  addressEn     String  @default("Ogrodowa St., Warsaw")
+  addressPl     String  @default("Warszawska 40, 05-100 Nowy Dwór Mazowiecki")
+  addressEn     String  @default("Warszawska 40, 05-100 Nowy Dwór Mazowiecki")
   phone         String  @default("+48 571 080 192")
   email         String  @default("artsmysterium@gmail.com")
   whatsapp      String  @default("48571080192")

@@ -109,23 +109,36 @@ export default function Hero({
         </h1>
 
         {/* Emblemat: zamek — klucz wchodzi w dziurkę i się przekręca */}
-        <div className="mx-auto mb-7 flex items-center justify-center gap-3" style={{ height: 96, animation: "fadeUp .8s .5s both" }}>
+        <div className="mx-auto mb-6 flex items-center justify-center gap-4" style={{ height: 124, animation: "fadeUp .8s .5s both" }}>
           <span aria-hidden style={{ width: 70, height: 1, background: "linear-gradient(90deg,transparent,var(--gold))" }} />
-          <div className="hero-lock" aria-hidden>
-            <div className="hero-kh-glow" />
-            <svg className="hero-keyhole" viewBox="0 0 100 140" fill="none">
-              <circle cx="50" cy="46" r="28" stroke="var(--gold)" strokeWidth="5" />
-              <path d="M50 70 L64 122 H36 Z" stroke="var(--gold)" strokeWidth="5" strokeLinejoin="round" />
-              <circle cx="50" cy="46" r="12" fill="rgba(201,168,76,.14)" />
-            </svg>
-            <svg className="hero-key" viewBox="0 0 40 110" fill="none">
-              <circle cx="20" cy="16" r="13" stroke="var(--gold-l)" strokeWidth="5" />
-              <circle cx="20" cy="16" r="4" fill="var(--gold-l)" />
-              <rect x="17" y="28" width="6" height="64" fill="var(--gold-l)" />
-              <rect x="23" y="74" width="9" height="5" fill="var(--gold-l)" />
-              <rect x="23" y="84" width="6" height="5" fill="var(--gold-l)" />
-              <path d="M17 92 L23 92 L20 100 Z" fill="var(--gold-l)" />
-            </svg>
+          <div className="hero-lock-wrap" style={{ transform: "scale(0.5)" }} aria-hidden>
+            <div className="hero-lock">
+              <div className="hero-kh-glow" />
+              <svg className="hero-keyhole" viewBox="0 0 100 140" fill="none">
+                <defs>
+                  <linearGradient id="hkh" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#F5E4B0" /><stop offset=".5" stopColor="#C9A84C" /><stop offset="1" stopColor="#8B6914" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="46" r="30" stroke="url(#hkh)" strokeWidth="6" />
+                <path d="M50 72 L66 126 H34 Z" stroke="url(#hkh)" strokeWidth="6" strokeLinejoin="round" />
+                <circle cx="50" cy="46" r="13" fill="rgba(201,168,76,.16)" />
+              </svg>
+              <svg className="hero-key" viewBox="0 0 48 150" fill="none">
+                <defs>
+                  <linearGradient id="hk" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#F5E4B0" /><stop offset=".55" stopColor="#E8C97A" /><stop offset="1" stopColor="#C9A84C" />
+                  </linearGradient>
+                </defs>
+                <circle cx="24" cy="22" r="17" stroke="url(#hk)" strokeWidth="6" />
+                <circle cx="24" cy="22" r="6.5" fill="url(#hk)" />
+                <circle cx="24" cy="6" r="3.2" fill="url(#hk)" />
+                <rect x="20.5" y="40" width="7" height="86" rx="2" fill="url(#hk)" />
+                <rect x="27.5" y="104" width="13" height="6" rx="1" fill="url(#hk)" />
+                <rect x="27.5" y="116" width="9" height="6" rx="1" fill="url(#hk)" />
+                <path d="M20.5 126 L27.5 126 L24 136 Z" fill="url(#hk)" />
+              </svg>
+            </div>
           </div>
           <span aria-hidden style={{ width: 70, height: 1, background: "linear-gradient(90deg,var(--gold),transparent)" }} />
         </div>

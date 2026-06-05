@@ -71,14 +71,14 @@ const dict = {
     ],
     splash: "Otwieramy zamek...",
     hero: {
-      eyebrow: "Escape Room · Warszawa, ul. Ogrodowa",
+      eyebrow: "Escape Room · Nowy Dwór Mazowiecki",
       subtitle: "ESCAPE ROOM",
       bookNow: "🗝️ Zarezerwuj teraz",
       exploreRooms: "Poznaj pokoje",
       scroll: "ODKRYJ",
       tagOnsite: "Stacjonarny",
       tagMobile: "Mobilna Skrzynia",
-      tagLocation: "ul. Ogrodowa · Warszawa",
+      tagLocation: "Warszawska 40 · Nowy Dwór Maz.",
     },
     rooms: {
       label: "Nasze pokoje",
@@ -135,7 +135,7 @@ const dict = {
       ],
     },
     footer: {
-      tagline: "Stacjonarny Escape Room w Warszawie. ul. Ogrodowa · Mobilna Skrzynia na eventy.",
+      tagline: "Escape Room w Nowym Dworze Mazowieckim. Warszawska 40 · Mobilna Skrzynia na eventy.",
       nav: "Nawigacja",
       info: "Informacje",
       privacy: "Polityka prywatności",
@@ -196,14 +196,14 @@ const dict = {
     ],
     splash: "Unlocking...",
     hero: {
-      eyebrow: "Escape Room · Warsaw, Ogrodowa St.",
+      eyebrow: "Escape Room · Nowy Dwór Mazowiecki",
       subtitle: "ESCAPE ROOM",
       bookNow: "🗝️ Book now",
       exploreRooms: "Explore rooms",
       scroll: "DISCOVER",
       tagOnsite: "On-site",
       tagMobile: "Mobile Box",
-      tagLocation: "Ogrodowa St. · Warsaw",
+      tagLocation: "Warszawska 40 · Nowy Dwór Maz.",
     },
     rooms: {
       label: "Our rooms",
@@ -260,7 +260,7 @@ const dict = {
       ],
     },
     footer: {
-      tagline: "On-site Escape Room in Warsaw. Ogrodowa St. · Mobile Box for events.",
+      tagline: "Escape Room in Nowy Dwór Mazowiecki. Warszawska 40 · Mobile Box for events.",
       nav: "Navigation",
       info: "Information",
       privacy: "Privacy policy",

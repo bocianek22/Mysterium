@@ -55,16 +55,15 @@ export function buildSchema(config: ResourceConfig) {
   return z.object(shape);
 }
 
-// Czyści dane wejściowe do pól zdefiniowanych w konfiguracji
+// Czyści dane wejściowe do pól zdefiniowanych w konfiguracji.
+// Pustych stringów NIE zamieniamy na null — część kolumn jest NOT NULL
+// (np. etykieta, trudność, status), a null powodowałby błąd zapisu.
 export function pickFields(config: ResourceConfig, data: Record<string, any>) {
   const out: Record<string, any> = {};
   for (const f of config.fields) {
     if (f.name in data) {
-      let v = data[f.name];
-      if (f.type === "text" || f.type === "textarea" || f.type === "select" || f.type === "image" || f.type === "video") {
-        if (v === "" ) v = f.required ? "" : null;
-      }
-      out[f.name] = v;
+      const v = data[f.name];
+      out[f.name] = v === undefined ? undefined : v;
     }
   }
   return out;

@@ -41,11 +41,16 @@ export async function PATCH(
     );
   }
   const data = pickFields(config, parsed.data);
-  const item = await getDelegate(params.resource).update({
-    where: { id: params.id },
-    data,
-  });
-  return NextResponse.json({ item });
+  try {
+    const item = await getDelegate(params.resource).update({
+      where: { id: params.id },
+      data,
+    });
+    return NextResponse.json({ item });
+  } catch (e: any) {
+    const msg = e?.code === "P2002" ? "Taki slug/adres już istnieje" : "Nie udało się zapisać zmian";
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
 }
 
 export async function DELETE(
