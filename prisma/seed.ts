@@ -10,7 +10,7 @@ async function main() {
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.upsert({
     where: { email },
-    update: { passwordHash, role: "OWNER", active: true },
+    update: {}, // nie nadpisujemy istniejącego konta (chronimy zmiany z panelu)
     create: { email, passwordHash, name: "Właściciel", role: "OWNER" },
   });
   console.log(`✓ Właściciel: ${email}`);
@@ -19,34 +19,42 @@ async function main() {
   await prisma.siteSettings.upsert({
     where: { id: "main" },
     update: {},
-    create: { id: "main" },
+    create: {
+      id: "main",
+      aboutPl:
+        "Mysterium to escape roomy z duszą — mroczne, dopracowane i pełne napięcia.\n\nZaczynamy od „Pułapki”: mobilnej skrzyni, którą przywozimy na Twój event, urodziny czy integrację. To skrzynia mordercy — sieć zamków i szyfrów do rozpracowania w 60 minut. Wkrótce otworzymy też stacjonarny pokój w Warszawie.\n\nTworzymy gry, które wciągają od pierwszej sekundy — idealne na wieczór ze znajomymi, randkę z dreszczykiem czy firmowy team building.",
+      aboutEn:
+        "Mysterium is escape rooms with a soul — dark, polished and full of tension.\n\nWe start with 'The Trap': a mobile box we bring to your event, birthday or team day. It's the murderer's chest — a web of locks and ciphers to crack in 60 minutes. An on-site room in Warsaw is coming soon.\n\nWe craft games that grip you from the first second — perfect for a night out, a thrilling date or corporate team building.",
+    },
   });
 
   // --- Pokoje ---
   const rooms = [
     {
       slug: "pokoj-nr-1",
-      namePl: "Pokój Nr 1",
-      nameEn: "Room No. 1",
-      taglinePl: "Stacjonarny escape room przy ul. Ogrodowej w Warszawie.",
-      taglineEn: "On-site escape room at Ogrodowa St. in Warsaw.",
+      namePl: "Pokój stacjonarny",
+      nameEn: "On-site Room",
+      taglinePl: "Stacjonarny escape room w Warszawie. Wkrótce otwieramy drzwi.",
+      taglineEn: "On-site escape room in Warsaw. We open the doors soon.",
       descriptionPl:
-        "Wciągająca przygoda pełna zagadek i tajemnic. Macie 60 minut, by rozwikłać kolejne łamigłówki i wydostać się na wolność.",
+        "Za tymi drzwiami powstaje coś, czego jeszcze nie widzieliście.\n\nStacjonarny escape room Mysterium — mroczny klimat, presja czasu i zagadki, które wciągają bez reszty. Już wkrótce w Warszawie.",
       descriptionEn:
-        "An immersive adventure full of puzzles and mysteries. You have 60 minutes to crack every riddle and escape.",
+        "Behind these doors we're building something you haven't seen yet.\n\nMysterium's on-site escape room — a dark atmosphere, time pressure and puzzles that pull you right in. Coming soon to Warsaw.",
       durationMin: 60,
       minPlayers: 2,
       maxPlayers: 8,
+      difficultyPl: "Średni",
+      difficultyEn: "Medium",
       badgePl: "Stacjonarny",
       badgeEn: "On-site",
-      status: "ACTIVE",
-      order: 1,
+      status: "SOON",
+      order: 2,
     },
   ];
   for (const r of rooms) {
     await prisma.room.upsert({
       where: { slug: r.slug },
-      update: r,
+      update: {}, // nie nadpisujemy treści edytowanych w panelu
       create: r,
     });
   }
@@ -54,15 +62,15 @@ async function main() {
 
   // --- Oferty mobilne ---
   const mobile = {
-    slug: "mobilna-skrzynia",
-    namePl: "Mobilna Skrzynia",
-    nameEn: "Mobile Box",
-    taglinePl: "Escape Room przyjeżdża do Ciebie! Na eventy, urodziny i integracje.",
-    taglineEn: "The Escape Room comes to you! For events, birthdays and team-building.",
+    slug: "pulapka",
+    namePl: "Pułapka",
+    nameEn: "The Trap",
+    taglinePl: "Mobilny escape box, który przyjeżdża do Ciebie. Otwórz skrzynię mordercy — jeśli zdążysz.",
+    taglineEn: "A mobile escape box delivered to you. Open the murderer's chest — if you dare.",
     descriptionPl:
-      "Mobilna wersja naszego escape roomu — przywozimy komplet zagadek tam, gdzie chcesz.\n\nIdealna na eventy firmowe, urodziny, festyny i integracje. Rozstawiamy się w kilkanaście minut i zapewniamy pełną obsługę.",
+      "Na stole staje skrzynia. Nikt nie przyznaje się, skąd ją ma — wiadomo tylko, że jej poprzedni właściciel już nie żyje.\n\nW środku morderca zostawił swoją grę: splątaną sieć zamków, szyfrów i niepokojących wskazówek. Macie 60 minut, żeby wejść do jego umysłu, otworzyć kolejne skrytki i odkryć, co ukrył — zanim pułapka zatrzaśnie się na dobre.\n\n„Pułapka” to nasza mobilna skrzynia — przywozimy mroczny escape room na Twój event, urodziny czy integrację. Bez wychodzenia z sali: emocje, presja czasu i zagadki rozstawiamy na miejscu.",
     descriptionEn:
-      "A mobile version of our escape room — we bring the full set of puzzles wherever you want.\n\nPerfect for corporate events, birthdays, festivals and team-building.",
+      "A chest is placed on the table. No one admits where it came from — all that's certain is that its previous owner is dead.\n\nInside, the murderer left his game: a tangled web of locks, ciphers and unsettling clues. You have 60 minutes to step into his mind, open every compartment and uncover what he hid — before the trap snaps shut for good.\n\n'The Trap' is our mobile box — we bring a dark escape room to your event, birthday or team day. No need to leave the room: the thrill, the time pressure and the puzzles come to you.",
     image: null,
     durationMin: 60,
     minPlayers: 2,
@@ -85,7 +93,7 @@ async function main() {
     status: "ACTIVE",
     order: 1,
   };
-  await prisma.mobileOffer.upsert({ where: { slug: mobile.slug }, update: mobile, create: mobile });
+  await prisma.mobileOffer.upsert({ where: { slug: mobile.slug }, update: {}, create: mobile });
   console.log(`✓ Oferty mobilne: 1`);
 
   // --- Cennik ---
