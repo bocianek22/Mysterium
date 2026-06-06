@@ -24,6 +24,10 @@ model User {
   rateDay       Float          @default(0)
   rateNight     Float          @default(0)
   rateWeekend   Float          @default(0)
+  // Auto-grafik: umiejętności i cel godzinowy
+  canStationary Boolean        @default(true)  // może obsługiwać stacjonarne
+  canMobile     Boolean        @default(true)  // może jeździć na wyjazdy
+  targetHours   Float          @default(0)      // cel godzin / miesiąc
   // Kalendarz
   calendarToken String         @unique @default(cuid()) // token subskrypcji iCal
   calendarEmbed String?        // URL osadzonego kalendarza Google w panelu
@@ -99,6 +103,18 @@ model DiscountCode {
   usageLimit    Int      @default(0) // 0 = bez limitu
   usedCount     Int      @default(0)
   createdAt     DateTime @default(now())
+}
+
+// Zapotrzebowanie na pracowników danego dnia (ustala właściciel)
+model StaffingDemand {
+  id          String   @id @default(cuid())
+  date        DateTime @unique // dzień (00:00)
+  stationary  Int      @default(0)
+  mobile      Int      @default(0)
+  startTime   String   @default("16:00")
+  endTime     String   @default("22:00")
+  note        String?
+  createdAt   DateTime @default(now())
 }
 
 // Pokoje zagadek (stacjonarne + mobilne)

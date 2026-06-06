@@ -31,6 +31,7 @@ export default function Sidebar({
         { href: "/admin", label: "Pulpit", icon: "📊" },
         { href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" },
         { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
+        { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
         { href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" },
         { href: "/admin/users", label: "Pracownicy", icon: "👥" },
       ]

@@ -21,7 +21,7 @@ const ROLES = [
   { value: "OWNER", label: "Właściciel" },
 ];
 
-const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, rateDay: 0, rateNight: 0, rateWeekend: 0, calendarEmbed: "" };
+const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, rateDay: 0, rateNight: 0, rateWeekend: 0, canStationary: true, canMobile: true, targetHours: 0, telegramChatId: "", calendarEmbed: "" };
 
 export default function UsersManager({ currentUserId }: { currentUserId: string }) {
   const [items, setItems] = useState<User[]>([]);
@@ -122,6 +122,20 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
                 <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Noc (22–6)</label><input type="number" step="0.01" className="field-input" value={form.rateNight} onChange={(e) => set("rateNight", e.target.value)} /></div>
                 <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Weekend</label><input type="number" step="0.01" className="field-input" value={form.rateWeekend} onChange={(e) => set("rateWeekend", e.target.value)} /></div>
               </div>
+            </div>
+
+            <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+              <div className="field-label mb-2">Auto-grafik</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 items-center">
+                <label className="flex items-center gap-2 text-sm" style={{ color: "var(--text)" }}><input type="checkbox" checked={form.canStationary} onChange={(e) => set("canStationary", e.target.checked)} /> Stacjonarne</label>
+                <label className="flex items-center gap-2 text-sm" style={{ color: "var(--text)" }}><input type="checkbox" checked={form.canMobile} onChange={(e) => set("canMobile", e.target.checked)} /> Wyjazdy</label>
+                <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Cel godzin / mies.</label><input type="number" className="field-input" value={form.targetHours} onChange={(e) => set("targetHours", e.target.value)} /></div>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="field-label">Telegram — ID czatu (powiadomienia 1:1, opcjonalnie)</label>
+              <input type="text" className="field-input" value={form.telegramChatId || ""} onChange={(e) => set("telegramChatId", e.target.value)} />
             </div>
 
             <div className="mt-4">
