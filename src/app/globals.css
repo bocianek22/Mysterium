@@ -24,6 +24,10 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* blokada powiększania (pinch / double-tap), zachowuje przewijanie */
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   body {
     background: var(--navy-dd);
@@ -31,6 +35,7 @@
     font-family: "Raleway", sans-serif;
     font-weight: 300;
     overflow-x: hidden;
+    touch-action: pan-x pan-y;
   }
 }
 

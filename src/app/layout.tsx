@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { siteUrl } from "@/lib/seo";
+import NoZoom from "@/components/NoZoom";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -34,6 +35,7 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className="noise-bg">
+        <NoZoom />
         <div className="hex-bg" aria-hidden />
         {children}
       </body>
