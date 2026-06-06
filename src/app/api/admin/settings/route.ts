@@ -42,6 +42,13 @@ const schema = z.object({
   googleReviewsEnabled: z.coerce.boolean().optional(),
   googleReviewsUrl: z.string().optional().nullable(),
   googleRating: z.string().optional().nullable(),
+  telegramEnabled: z.coerce.boolean().optional(),
+  telegramBotToken: z.string().optional().nullable(),
+  telegramChatId: z.string().optional().nullable(),
+  emailNotifyEnabled: z.coerce.boolean().optional(),
+  notifyOnReservation: z.coerce.boolean().optional(),
+  notifyOnMessage: z.coerce.boolean().optional(),
+  notifyOnSchedule: z.coerce.boolean().optional(),
 });
 
 export async function GET() {

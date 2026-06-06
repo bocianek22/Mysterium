@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { pushEventToGoogle } from "@/lib/google";
+import { notify } from "@/lib/notify";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -59,6 +60,17 @@ export async function POST(req: NextRequest) {
       source: "MANUAL",
     },
   });
+
+  notify({
+    type: "reservation",
+    title: "Nowa rezerwacja",
+    lines: [
+      item.title,
+      new Date(item.start).toLocaleString("pl-PL", { dateStyle: "full", timeStyle: "short" }),
+      item.customerName ? `Klient: ${item.customerName}${item.customerPhone ? " · " + item.customerPhone : ""}` : "",
+      item.people ? `Osób: ${item.people}` : "",
+    ],
+  }).catch(() => {});
 
   // Opcjonalny zapis do Google Calendar (nie blokuje odpowiedzi przy błędzie)
   pushEventToGoogle({

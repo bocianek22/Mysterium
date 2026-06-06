@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { notify } from "@/lib/notify";
 
 const schema = z.object({
   name: z.string().min(1).max(200),
@@ -34,6 +35,17 @@ export async function POST(req: NextRequest) {
         coupon: d.coupon || null,
       },
     });
+    notify({
+      type: "message",
+      title: "Nowa wiadomość z formularza",
+      lines: [
+        `Od: ${d.name}${d.phone ? " · " + d.phone : ""}`,
+        `E-mail: ${d.email}`,
+        d.subject ? `Temat: ${d.subject}` : "",
+        "",
+        d.message.slice(0, 500),
+      ],
+    }).catch(() => {});
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });

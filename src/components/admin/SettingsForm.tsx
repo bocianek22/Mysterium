@@ -2,6 +2,25 @@
 import { useEffect, useState } from "react";
 import FileUpload from "./FileUpload";
 
+function NotifyTestButton() {
+  const [msg, setMsg] = useState("");
+  async function test() {
+    setMsg("Wysyłanie...");
+    try {
+      const res = await fetch("/api/admin/notify-test", { method: "POST" });
+      const d = await res.json();
+      if (!res.ok) { setMsg("Błąd"); return; }
+      setMsg(`Telegram: ${d.telegram ? "✓" : "—"} · E-mail: ${d.email ? "✓" : "—"}`);
+    } catch { setMsg("Błąd połączenia"); }
+  }
+  return (
+    <div className="flex items-center gap-3 mt-1">
+      <button type="button" onClick={test} className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>Wyślij testowe powiadomienie</button>
+      {msg && <span className="text-xs" style={{ color: "var(--muted)" }}>{msg} <span style={{ color: "var(--dim)" }}>(najpierw zapisz ustawienia)</span></span>}
+    </div>
+  );
+}
+
 type Field = { name: string; label: string; type?: string; help?: string; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
@@ -47,6 +66,13 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "promoCtaLabelPl", label: "Przycisk — tekst (PL)" },
       { name: "promoCtaLabelEn", label: "Przycisk — tekst (EN)" },
       { name: "promoCtaUrl", label: "Przycisk — link" },
+    ],
+  },
+  {
+    title: "Powiadomienia",
+    fields: [
+      { name: "telegramBotToken", label: "Telegram — token bota", help: "Utwórz bota u @BotFather (komenda /newbot) i wklej token. Dodaj bota do grupy zespołu." },
+      { name: "telegramChatId", label: "Telegram — ID czatu/grupy", help: "Napisz coś na grupie, otwórz https://api.telegram.org/bot<TOKEN>/getUpdates i skopiuj wartość chat→id (dla grup zaczyna się od minusa)." },
     ],
   },
   {
@@ -108,6 +134,18 @@ export default function SettingsForm() {
               <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
               <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
             </label>
+          )}
+          {g.title === "Powiadomienia" && (
+            <div className="mb-4 flex flex-col gap-2">
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.telegramEnabled} onChange={(e) => set("telegramEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz powiadomienia Telegram</span></label>
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.emailNotifyEnabled} onChange={(e) => set("emailNotifyEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz powiadomienia e-mail (wymaga klucza Resend na serwerze)</span></label>
+              <div className="flex flex-wrap gap-4 mt-1 text-sm" style={{ color: "var(--muted)" }}>
+                <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnReservation ?? true} onChange={(e) => set("notifyOnReservation", e.target.checked)} /> Nowe rezerwacje</label>
+                <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnMessage ?? true} onChange={(e) => set("notifyOnMessage", e.target.checked)} /> Nowe wiadomości</label>
+                <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnSchedule ?? true} onChange={(e) => set("notifyOnSchedule", e.target.checked)} /> Zmiany grafiku</label>
+              </div>
+              <NotifyTestButton />
+            </div>
           )}
           {g.title === "Opinie Google" && (
             <label className="flex items-center gap-3 mb-4">

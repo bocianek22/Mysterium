@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { notify, sendTelegram } from "@/lib/notify";
 
 const schema = z.object({
   userId: z.string().min(1),
@@ -53,5 +54,13 @@ export async function POST(req: NextRequest) {
       note: d.note || null,
     },
   });
+
+  prisma.user.findUnique({ where: { id: d.userId } }).then((u) => {
+    if (!u) return;
+    const when = `${new Date(shift.start).toLocaleString("pl-PL", { weekday: "long", day: "2-digit", month: "2-digit" })} ${new Date(shift.start).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}–${new Date(shift.end).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}`;
+    notify({ type: "schedule", title: "Nowa zmiana w grafiku", lines: [`${u.name || u.email}: ${when}`, shift.note || ""] }).catch(() => {});
+    if (u.telegramChatId) sendTelegram(`🗓️ <b>Masz nową zmianę</b>\n${when}${shift.note ? "\n" + shift.note : ""}`, u.telegramChatId).catch(() => {});
+  }).catch(() => {});
+
   return NextResponse.json({ item: shift });
 }
