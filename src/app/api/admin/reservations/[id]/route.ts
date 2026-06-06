@@ -17,6 +17,12 @@ const schema = z.object({
   assignedUserId: z.string().optional().nullable(),
   deposit: z.coerce.number().min(0).optional(),
   paid: z.coerce.boolean().optional(),
+  price: z.coerce.number().min(0).optional(),
+  invoiceUrl: z.string().optional().nullable(),
+  fuelCost: z.coerce.number().min(0).optional(),
+  fuelInvoiceUrl: z.string().optional().nullable(),
+  otherCost: z.coerce.number().min(0).optional(),
+  otherInvoiceUrl: z.string().optional().nullable(),
 });
 
 export async function PATCH(
@@ -46,6 +52,12 @@ export async function PATCH(
       assignedUserId: d.assignedUserId === undefined ? undefined : d.assignedUserId || null,
       deposit: d.deposit,
       paid: d.paid,
+      price: d.price,
+      invoiceUrl: d.invoiceUrl ?? undefined,
+      fuelCost: d.fuelCost,
+      fuelInvoiceUrl: d.fuelInvoiceUrl ?? undefined,
+      otherCost: d.otherCost,
+      otherInvoiceUrl: d.otherInvoiceUrl ?? undefined,
     },
   });
   return NextResponse.json({ item });

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession, isManager } from "@/lib/auth";
 import { shiftBreakdown, sumBreakdowns, monthRange } from "@/lib/earnings";
 import CopyField from "@/components/admin/CopyField";
+import EmployeeCosts from "@/components/admin/EmployeeCosts";
 
 export const dynamic = "force-dynamic";
 
@@ -148,6 +149,8 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
           <CopyField value={icalUrl} />
         </div>
       </div>
+
+      <EmployeeCosts />
 
       {user.calendarEmbed && (
         <div className="mt-6 p-3 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>

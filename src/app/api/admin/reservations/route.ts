@@ -19,16 +19,35 @@ const schema = z.object({
   assignedUserId: z.string().optional().nullable(),
   deposit: z.coerce.number().min(0).optional(),
   paid: z.coerce.boolean().optional(),
+  price: z.coerce.number().min(0).optional(),
+  invoiceUrl: z.string().optional().nullable(),
+  fuelCost: z.coerce.number().min(0).optional(),
+  fuelInvoiceUrl: z.string().optional().nullable(),
+  otherCost: z.coerce.number().min(0).optional(),
+  otherInvoiceUrl: z.string().optional().nullable(),
 });
+
+// Generuje kolejny numer zlecenia: MYS-RRRR-NNNN
+async function nextRefNo(): Promise<string> {
+  const year = new Date().getFullYear();
+  const count = await prisma.reservation.count();
+  for (let i = 1; i <= 5; i++) {
+    const candidate = `MYS-${year}-${String(count + i).padStart(4, "0")}`;
+    const exists = await prisma.reservation.findUnique({ where: { refNo: candidate } });
+    if (!exists) return candidate;
+  }
+  return `MYS-${year}-${Date.now().toString().slice(-5)}`;
+}
 
 export async function GET(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isManager(s.role))
-    return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  if (!s) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   const { searchParams } = new URL(req.url);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
   const where: any = {};
+  // pracownik widzi tylko zlecenia, do których jest przypisany
+  if (!isManager(s.role)) where.assignedUserId = s.sub;
   if (from || to) {
     where.start = {};
     if (from) where.start.gte = new Date(from);
@@ -50,6 +69,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success)
     return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
   const d = parsed.data;
+  const refNo = await nextRefNo();
   const item = await prisma.reservation.create({
     data: {
       title: d.title,
@@ -66,6 +86,13 @@ export async function POST(req: NextRequest) {
       assignedUserId: d.assignedUserId || null,
       deposit: d.deposit || 0,
       paid: d.paid || false,
+      refNo,
+      price: d.price || 0,
+      invoiceUrl: d.invoiceUrl || null,
+      fuelCost: d.fuelCost || 0,
+      fuelInvoiceUrl: d.fuelInvoiceUrl || null,
+      otherCost: d.otherCost || 0,
+      otherInvoiceUrl: d.otherInvoiceUrl || null,
     },
   });
 

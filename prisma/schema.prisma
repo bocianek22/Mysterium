@@ -86,6 +86,13 @@ model Reservation {
   assignedUser  User?    @relation("AssignedReservations", fields: [assignedUserId], references: [id], onDelete: SetNull)
   deposit       Float    @default(0)
   paid          Boolean  @default(false)
+  refNo         String?  @unique // automatyczny numer zlecenia, np. MYS-2026-0001
+  price         Float    @default(0)  // wartość/przychód
+  invoiceUrl    String?  // faktura/paragon za rozgrywkę (przychód)
+  fuelCost      Float    @default(0)  // koszt paliwa (wyjazdy)
+  fuelInvoiceUrl String? // faktura za paliwo
+  otherCost     Float    @default(0)  // inne koszty
+  otherInvoiceUrl String? // faktura za inne koszty
   createdAt     DateTime @default(now())
 
   @@index([start])

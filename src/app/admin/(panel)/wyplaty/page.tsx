@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getSession, isManager } from "@/lib/auth";
+import { getSession, isManager, isOwner } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { shiftBreakdown, sumBreakdowns, monthRange } from "@/lib/earnings";
 
@@ -41,7 +41,12 @@ export default async function WyplatyPage({
 
   return (
     <div>
-      <h1 className="font-display text-gold-grad text-3xl mb-2 flex items-center gap-3"><span>💵</span> Wypłaty</h1>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h1 className="font-display text-gold-grad text-3xl mb-2 flex items-center gap-3"><span>💵</span> Wypłaty</h1>
+        {isOwner(session.role) && (
+          <a href={`/api/admin/export/payroll?y=${year}&m=${month}`} className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ Eksport CSV</a>
+        )}
+      </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>
         Wynagrodzenie liczone z grafiku: godziny dzienne, nocne (22–6) i weekendowe × stawki pracownika.
       </p>

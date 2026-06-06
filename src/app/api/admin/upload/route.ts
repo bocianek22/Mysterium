@@ -15,6 +15,7 @@ const ALLOWED: Record<string, string> = {
   "image/avif": ".avif",
   "video/mp4": ".mp4",
   "video/webm": ".webm",
+  "application/pdf": ".pdf",
 };
 
 export async function POST(req: NextRequest) {
