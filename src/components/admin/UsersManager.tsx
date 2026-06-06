@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
+import { WORK_CATEGORIES, CONTRACT_TYPES } from "@/lib/categories";
 
 type User = {
   id: string;
@@ -21,7 +22,7 @@ const ROLES = [
   { value: "OWNER", label: "Właściciel" },
 ];
 
-const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, rateDay: 0, rateNight: 0, rateWeekend: 0, canStationary: true, canMobile: true, targetHours: 0, telegramChatId: "", calendarEmbed: "" };
+const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, canStationary: true, canMobile: true, targetHours: 0, ratesJson: "{}", contractType: "", telegramHandle: "", telegramChatId: "", calendarEmbed: "" };
 
 export default function UsersManager({ currentUserId }: { currentUserId: string }) {
   const [items, setItems] = useState<User[]>([]);
@@ -84,7 +85,7 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
                   {!u.active && <span className="ml-2 text-[10px]" style={{ color: "#fca5a5" }}>nieaktywne</span>}
                 </div>
                 <div className="text-[11px] mt-[2px]" style={{ color: "var(--muted)" }}>
-                  {ROLES.find((r) => r.value === u.role)?.label} · stawki: {u.rateDay}/{u.rateNight}/{u.rateWeekend} zł/h (dzień/noc/wknd)
+                  {ROLES.find((r) => r.value === u.role)?.label}{(u as any).contractType ? ` · ${(u as any).contractType}` : ""}{(u as any).telegramHandle ? ` · ${(u as any).telegramHandle}` : ""}
                 </div>
               </div>
               <button onClick={() => startEdit(u)} className="text-xs px-3 py-1 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>Edytuj</button>
@@ -116,12 +117,14 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
             </div>
 
             <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
-              <div className="field-label mb-2">Stawki godzinowe (zł/h)</div>
-              <div className="grid grid-cols-3 gap-3">
-                <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Dzień</label><input type="number" step="0.01" className="field-input" value={form.rateDay} onChange={(e) => set("rateDay", e.target.value)} /></div>
-                <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Noc (22–6)</label><input type="number" step="0.01" className="field-input" value={form.rateNight} onChange={(e) => set("rateNight", e.target.value)} /></div>
-                <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Weekend</label><input type="number" step="0.01" className="field-input" value={form.rateWeekend} onChange={(e) => set("rateWeekend", e.target.value)} /></div>
+              <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+                <div className="field-label" style={{ margin: 0 }}>Stawki (zł/h) — netto / brutto</div>
+                <select className="field-input text-xs" style={{ width: "auto" }} value={form.contractType || ""} onChange={(e) => set("contractType", e.target.value)}>
+                  <option value="" style={{ background: "var(--navy-d)" }}>Typ umowy…</option>
+                  {CONTRACT_TYPES.map((c) => <option key={c} value={c} style={{ background: "var(--navy-d)" }}>{c}</option>)}
+                </select>
               </div>
+              <RatesEditor value={form.ratesJson} onChange={(v) => set("ratesJson", v)} />
             </div>
 
             <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
@@ -133,9 +136,15 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
               </div>
             </div>
 
-            <div className="mt-4">
-              <label className="field-label">Telegram — ID czatu (powiadomienia 1:1, opcjonalnie)</label>
-              <input type="text" className="field-input" value={form.telegramChatId || ""} onChange={(e) => set("telegramChatId", e.target.value)} />
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="field-label">Telegram — @nick</label>
+                <input type="text" className="field-input" value={form.telegramHandle || ""} onChange={(e) => set("telegramHandle", e.target.value)} placeholder="@nick" />
+              </div>
+              <div>
+                <label className="field-label">Telegram — ID czatu (powiadomienia 1:1)</label>
+                <input type="text" className="field-input" value={form.telegramChatId || ""} onChange={(e) => set("telegramChatId", e.target.value)} />
+              </div>
             </div>
 
             <div className="mt-4">
@@ -150,6 +159,27 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
           </form>
         </div>
       )}
+    </div>
+  );
+}
+
+function RatesEditor({ value, onChange }: { value: any; onChange: (v: string) => void }) {
+  let rates: Record<string, { net?: number; brutto?: number }> = {};
+  try { rates = value ? JSON.parse(value) : {}; if (typeof rates !== "object" || !rates) rates = {}; } catch { rates = {}; }
+  const setRate = (key: string, field: "net" | "brutto", v: string) => {
+    const next = { ...rates, [key]: { ...(rates[key] || {}), [field]: v === "" ? undefined : Number(v) } };
+    onChange(JSON.stringify(next));
+  };
+  return (
+    <div className="flex flex-col gap-2">
+      {WORK_CATEGORIES.map((c) => (
+        <div key={c.key} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center">
+          <span className="text-[12px]" style={{ color: "var(--text)" }}>{c.label}</span>
+          <input type="number" step="0.01" className="field-input" style={{ width: 90 }} placeholder="netto" value={rates[c.key]?.net ?? ""} onChange={(e) => setRate(c.key, "net", e.target.value)} />
+          <input type="number" step="0.01" className="field-input" style={{ width: 90 }} placeholder="brutto" value={rates[c.key]?.brutto ?? ""} onChange={(e) => setRate(c.key, "brutto", e.target.value)} />
+        </div>
+      ))}
+      <div className="flex gap-2 text-[10px] justify-end pr-1" style={{ color: "var(--dim)" }}><span style={{ width: 90, textAlign: "center" }}>netto</span><span style={{ width: 90, textAlign: "center" }}>brutto</span></div>
     </div>
   );
 }

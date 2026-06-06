@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession, isOwner } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { shiftBreakdown, sumBreakdowns, monthRange } from "@/lib/earnings";
+import { computePayroll, monthRange } from "@/lib/payroll";
 
 export const dynamic = "force-dynamic";
 const MONTHS = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
@@ -18,10 +18,9 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
   const month = searchParams.m !== undefined ? Number(searchParams.m) : now.getUTCMonth();
   const { start, end } = monthRange(year, month);
 
-  const [reservations, shifts, employees, vouchers, codes] = await Promise.all([
+  const [reservations, employees, vouchers, codes] = await Promise.all([
     prisma.reservation.findMany({ where: { start: { gte: start, lt: end } } }),
-    prisma.shift.findMany({ where: { start: { gte: start, lt: end } }, include: { user: true } }),
-    prisma.user.findMany({ where: { role: "EMPLOYEE" } }),
+    prisma.user.findMany({ where: { role: "EMPLOYEE" }, include: { timesheets: { where: { date: { gte: start, lt: end } } } } }),
     prisma.voucher.findMany(),
     prisma.discountCode.findMany(),
   ]);
@@ -29,7 +28,7 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
   const active = reservations.filter((r) => r.status !== "CANCELLED");
   const revenue = active.reduce((a, r) => a + (r.price || 0), 0);
   const costs = active.reduce((a, r) => a + (r.fuelCost || 0) + (r.otherCost || 0), 0);
-  const payroll = sumBreakdowns(shifts.map((sh) => shiftBreakdown(sh.start, sh.end, { rateDay: sh.user.rateDay, rateNight: sh.user.rateNight, rateWeekend: sh.user.rateWeekend }))).pay;
+  const payroll = employees.reduce((a, u) => a + computePayroll(u.timesheets, u.ratesJson).brutto, 0);
   const profit = revenue - costs - payroll;
 
   // wykres przychodu po dniach
