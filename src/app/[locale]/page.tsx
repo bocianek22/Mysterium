@@ -7,6 +7,8 @@ import Hero from "@/components/site/Hero";
 import FeatureStrip from "@/components/site/FeatureStrip";
 import Promo from "@/components/site/Promo";
 import Rooms from "@/components/site/Rooms";
+import MobileCard from "@/components/site/MobileCard";
+import SectionHeader from "@/components/site/SectionHeader";
 import VideoSection from "@/components/site/VideoSection";
 import HowItWorks from "@/components/site/HowItWorks";
 import Reviews from "@/components/site/Reviews";
@@ -31,13 +33,14 @@ export default async function HomePage({ params }: { params: { locale: string } 
   if (!isLocale(params.locale)) notFound();
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  const { settings, rooms, videos, reviews, faq } = await getHomeData();
+  const { settings, rooms, mobile, videos, reviews, faq } = await getHomeData();
 
   const heroDesc = locale === "pl" ? settings?.heroDescPl : settings?.heroDescEn;
+  const address = (locale === "pl" ? settings?.addressPl : settings?.addressEn) || "";
 
   return (
     <>
-      <Hero locale={locale} t={t} desc={heroDesc || ""} />
+      <Hero locale={locale} t={t} desc={heroDesc || ""} address={address} />
       <FeatureStrip t={t} />
 
       {settings?.promoMode && settings.promoMode !== "OFF" && (
@@ -58,18 +61,20 @@ export default async function HomePage({ params }: { params: { locale: string } 
         <a href={`/${locale}/pokoje`} className="btn-outline">{t.common.seeAllRooms}</a>
       </div>
 
-      {/* Teaser oferty mobilnej */}
-      <section className="px-6 md:px-[60px] py-16 md:py-20 relative z-[1] aurora" style={{ background: "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>
-        <div className="relative z-[1] max-w-[1000px] mx-auto flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-          <div className="text-6xl md:text-7xl floaty">📦</div>
-          <div className="flex-1">
-            <div className="sec-label reveal">{t.mobile.label}</div>
-            <h2 className="font-display text-gold-grad shimmer text-3xl md:text-4xl mb-3 reveal reveal-d1">{t.mobile.title}</h2>
-            <p className="text-base mb-5 max-w-[560px] reveal reveal-d2" style={{ color: "var(--muted)" }}>{t.mobile.sub}</p>
-            <a href={`/${locale}/mobilna`} className="btn-gold reveal reveal-d3">{t.mobile.explore}</a>
+      {/* Oferty mobilne — karty jak pokoje */}
+      {mobile.length > 0 && (
+        <section className="px-6 md:px-[60px] py-20 md:py-[120px] relative z-[1] aurora" style={{ background: "linear-gradient(180deg,var(--navy-dd) 0%,var(--teal-m) 50%,var(--navy-dd) 100%)" }}>
+          <div className="relative z-[1]">
+            <SectionHeader label={t.mobile.label} title={t.mobile.title} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-[2px] max-w-[1200px] mx-auto">
+              {mobile.slice(0, 3).map((o) => <MobileCard key={o.id} offer={o} locale={locale} t={t} />)}
+            </div>
+            <div className="text-center mt-10">
+              <a href={`/${locale}/mobilna`} className="btn-outline">{t.mobile.explore}</a>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <VideoSection locale={locale} t={t} videos={videos} />
       <HowItWorks t={t} />

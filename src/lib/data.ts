@@ -2,10 +2,14 @@ import { prisma } from "./prisma";
 
 // Pobiera wszystkie opublikowane treści potrzebne na stronie głównej.
 export async function getHomeData() {
-  const [settings, rooms, gallery, videos, reviews, pricing, faq] =
+  const [settings, rooms, mobile, gallery, videos, reviews, pricing, faq] =
     await Promise.all([
       prisma.siteSettings.findUnique({ where: { id: "main" } }),
       prisma.room.findMany({
+        where: { published: true },
+        orderBy: { order: "asc" },
+      }),
+      prisma.mobileOffer.findMany({
         where: { published: true },
         orderBy: { order: "asc" },
       }),
@@ -31,7 +35,7 @@ export async function getHomeData() {
       }),
     ]);
 
-  return { settings, rooms, gallery, videos, reviews, pricing, faq };
+  return { settings, rooms, mobile, gallery, videos, reviews, pricing, faq };
 }
 
 export type HomeData = Awaited<ReturnType<typeof getHomeData>>;

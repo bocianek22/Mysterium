@@ -5,11 +5,13 @@ export default function Footer({
   t,
   phone,
   email,
+  address,
 }: {
   locale: Locale;
   t: Dict;
   phone: string;
   email: string;
+  address?: string;
 }) {
   return (
     <footer
@@ -24,6 +26,7 @@ export default function Footer({
           <div className="font-display text-gold-grad text-lg mb-3">MYSTERIUM</div>
           <p className="text-[13px] leading-[1.8]" style={{ color: "var(--dim)" }}>
             {t.footer.tagline}
+            {address && (<><br />📍 {address}</>)}
             <br />
             {email}
           </p>

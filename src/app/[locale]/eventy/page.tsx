@@ -26,6 +26,7 @@ export default async function EventsPage({ params }: { params: { locale: string 
   const pl = locale === "pl";
   const settings = await prisma.siteSettings.findUnique({ where: { id: "main" } });
   const whatsapp = settings?.whatsapp || "48571080192";
+  const address = (pl ? settings?.addressPl : settings?.addressEn) || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki";
 
   const benefits = pl
     ? [
@@ -43,11 +44,11 @@ export default async function EventsPage({ params }: { params: { locale: string 
 
   const formats = pl
     ? [
-        { icon: "🏠", title: "U nas — stacjonarnie", desc: "Zapraszamy do Nowego Dworu Mazowieckiego (ul. Warszawska 40). Idealne dla mniejszych grup." },
+        { icon: "🏠", title: "U nas — stacjonarnie", desc: `Zapraszamy pod adres ${address}. Idealne dla mniejszych grup.` },
         { icon: "🚐", title: "U Was — z dojazdem", desc: "Mobilna „Pułapka” przyjeżdża do biura, na salę czy plener. Obsłużymy nawet większą firmę w turach." },
       ]
     : [
-        { icon: "🏠", title: "At our place", desc: "Visit us in Nowy Dwór Mazowiecki (Warszawska 40). Perfect for smaller groups." },
+        { icon: "🏠", title: "At our place", desc: `Visit us at ${address}. Perfect for smaller groups.` },
         { icon: "🚐", title: "At your place", desc: "The mobile 'Trap' comes to your office or venue. We can handle a larger company in rounds." },
       ];
 

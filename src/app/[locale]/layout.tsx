@@ -35,6 +35,7 @@ export default async function LocaleLayout({
   const phone = settings?.phone ?? "+48 571 080 192";
   const email = settings?.email ?? "artsmysterium@gmail.com";
   const whatsapp = settings?.whatsapp ?? "48571080192";
+  const address = (locale === "pl" ? settings?.addressPl : settings?.addressEn) || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki";
 
   return (
     <>
@@ -44,11 +45,11 @@ export default async function LocaleLayout({
       <Particles />
       <Nav locale={locale} t={t} logoUrl={settings?.logoUrl} />
       <main>{children}</main>
-      <Footer locale={locale} t={t} phone={phone} email={email} />
+      <Footer locale={locale} t={t} phone={phone} email={email} address={address} />
       <WhatsappFloat whatsapp={whatsapp} />
       <CookieBanner locale={locale} />
       <JsonLd
-        address={(locale === "pl" ? settings?.addressPl : settings?.addressEn) || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki"}
+        address={address}
         phone={phone}
         email={email}
         hours={locale === "pl" ? settings?.hoursPl : settings?.hoursEn}
