@@ -105,6 +105,20 @@ model DiscountCode {
   createdAt     DateTime @default(now())
 }
 
+// Bony podarunkowe
+model Voucher {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  titlePl    String   @default("Bon podarunkowy")
+  titleEn    String   @default("Gift voucher")
+  amount     Float    @default(0) // wartość w zł (0 = bon na grę)
+  status     String   @default("NEW") // NEW | SOLD | REDEEMED
+  buyerName  String?
+  validUntil String?  // RRRR-MM-DD
+  note       String?
+  createdAt  DateTime @default(now())
+}
+
 // Zapotrzebowanie na pracowników danego dnia (ustala właściciel)
 model StaffingDemand {
   id          String   @id @default(cuid())

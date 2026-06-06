@@ -32,6 +32,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
     { href: `/${locale}/pokoje`, label: t.nav.rooms },
     { href: `/${locale}/mobilna`, label: t.nav.mobile },
     { href: `/${locale}/eventy`, label: t.nav.events },
+    { href: `/${locale}/bony`, label: t.nav.vouchers },
     { href: `/${locale}/galeria`, label: t.nav.gallery },
     { href: `/${locale}/cennik`, label: t.nav.pricing },
     { href: `/${locale}/o-nas`, label: t.nav.about },
@@ -63,7 +64,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
         <span className="font-display text-gold-grad text-[15px] md:text-base tracking-wide">MYSTERIUM</span>
       </Link>
 
-      <ul className="hidden lg:flex gap-6 list-none">
+      <ul className="hidden xl:flex gap-6 list-none">
         {links.map((l) => (
           <li key={l.href}>
             <Link
@@ -89,11 +90,11 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
         >
           {t.nav.book}
         </Link>
-        <button className="lg:hidden text-2xl" style={{ color: "var(--gold)" }} onClick={() => setOpen((o) => !o)} aria-label="Menu">☰</button>
+        <button className="xl:hidden text-2xl" style={{ color: "var(--gold)" }} onClick={() => setOpen((o) => !o)} aria-label="Menu">☰</button>
       </div>
 
       {open && (
-        <div className="lg:hidden absolute top-full left-0 right-0 flex flex-col gap-1 p-4" style={{ background: "rgba(4,12,20,.98)", borderBottom: "1px solid var(--border)" }}>
+        <div className="xl:hidden absolute top-full left-0 right-0 flex flex-col gap-1 p-4" style={{ background: "rgba(4,12,20,.98)", borderBottom: "1px solid var(--border)" }}>
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="font-serif text-xs tracking-[2px] uppercase py-3 no-underline" style={{ color: isActive(l.href) ? "var(--gold)" : "var(--muted)" }}>
               {l.label}

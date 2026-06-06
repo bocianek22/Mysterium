@@ -37,6 +37,7 @@ export default function Footer({
               ["/pokoje", t.nav.rooms],
               ["/mobilna", t.nav.mobile],
               ["/eventy", t.nav.events],
+              ["/bony", t.nav.vouchers],
               ["/cennik", t.nav.pricing],
               ["/o-nas", t.nav.about],
               ["/kontakt", t.nav.contact],

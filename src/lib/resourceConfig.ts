@@ -181,6 +181,23 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  vouchers: {
+    label: "Bony podarunkowe",
+    singular: "bon",
+    icon: "🎁",
+    listColumns: ["code", "titlePl", "status"],
+    fields: [
+      { name: "code", label: "Kod bonu", type: "text", required: true, placeholder: "MYS-XXXX" },
+      { name: "titlePl", label: "Na co (PL)", type: "text", required: true, placeholder: "Bon na grę dla 4 osób" },
+      { name: "titleEn", label: "Na co (EN)", type: "text" },
+      { name: "amount", label: "Wartość (zł, 0 = bon na grę)", type: "number", default: 0 },
+      { name: "status", label: "Status", type: "select", default: "NEW", options: [{ value: "NEW", label: "Nowy" }, { value: "SOLD", label: "Sprzedany" }, { value: "REDEEMED", label: "Zrealizowany" }] },
+      { name: "buyerName", label: "Kupujący", type: "text" },
+      { name: "validUntil", label: "Ważny do (RRRR-MM-DD)", type: "text", placeholder: "2026-12-31" },
+      { name: "note", label: "Notatka", type: "textarea" },
+    ],
+  },
+
   codes: {
     label: "Kody rabatowe",
     singular: "kod",
