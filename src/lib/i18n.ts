@@ -73,7 +73,7 @@ const dict = {
     ],
     splash: "Otwieramy zamek...",
     hero: {
-      eyebrow: "Escape Room · Nowy Dwór Mazowiecki",
+      eyebrow: "Escape Room",
       subtitle: "ESCAPE ROOM",
       bookNow: "🗝️ Zarezerwuj teraz",
       exploreRooms: "Poznaj pokoje",
@@ -137,7 +137,7 @@ const dict = {
       ],
     },
     footer: {
-      tagline: "Escape Room w Nowym Dworze Mazowieckim. Warszawska 40 · Mobilna Skrzynia na eventy.",
+      tagline: "Stacjonarny escape room i mobilna Skrzynia na eventy.",
       nav: "Nawigacja",
       info: "Informacje",
       privacy: "Polityka prywatności",
@@ -200,7 +200,7 @@ const dict = {
     ],
     splash: "Unlocking...",
     hero: {
-      eyebrow: "Escape Room · Nowy Dwór Mazowiecki",
+      eyebrow: "Escape Room",
       subtitle: "ESCAPE ROOM",
       bookNow: "🗝️ Book now",
       exploreRooms: "Explore rooms",
@@ -264,7 +264,7 @@ const dict = {
       ],
     },
     footer: {
-      tagline: "Escape Room in Nowy Dwór Mazowiecki. Warszawska 40 · Mobile Box for events.",
+      tagline: "On-site escape room and a Mobile Box for events.",
       nav: "Navigation",
       info: "Information",
       privacy: "Privacy policy",

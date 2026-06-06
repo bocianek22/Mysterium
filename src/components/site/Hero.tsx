@@ -1,17 +1,22 @@
 "use client";
 import { useEffect, useRef } from "react";
 import type { Locale, Dict } from "@/lib/i18n";
+import { addressCity, addressShort } from "@/lib/address";
 
 export default function Hero({
   locale,
   t,
   desc,
+  address,
 }: {
   locale: Locale;
   t: Dict;
   desc: string;
+  address?: string;
 }) {
-  const tags = [t.hero.tagOnsite, t.hero.tagMobile, t.hero.tagLocation];
+  const city = addressCity(address);
+  const eyebrow = city ? `${t.hero.eyebrow} · ${city}` : t.hero.eyebrow;
+  const tags = [t.hero.tagOnsite, t.hero.tagMobile, addressShort(address) || t.hero.tagLocation];
   const orb1 = useRef<HTMLDivElement>(null);
   const orb2 = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
@@ -75,7 +80,7 @@ export default function Hero({
           style={{ color: "var(--gold)", animation: "fadeUp .8s .2s both" }}
         >
           <span style={{ width: 40, height: 1, background: "linear-gradient(90deg,transparent,var(--gold))" }} />
-          {t.hero.eyebrow}
+          {eyebrow}
           <span style={{ width: 40, height: 1, background: "linear-gradient(90deg,var(--gold),transparent)" }} />
         </div>
 

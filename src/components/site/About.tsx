@@ -1,4 +1,5 @@
 import type { Locale, Dict } from "@/lib/i18n";
+import { addressCity } from "@/lib/address";
 
 export default function About({
   locale,
@@ -36,8 +37,8 @@ export default function About({
           ) : (
             <p className="text-[15px] leading-[1.95]" style={{ color: "var(--muted)" }}>
               {locale === "pl"
-                ? "Mysterium to escape room w Nowym Dworze Mazowieckim. Tworzymy wciągające historie, dopracowane zagadki i niepowtarzalny klimat — idealne na wieczór ze znajomymi, randkę, urodziny czy event firmowy."
-                : "Mysterium is an escape room in Nowy Dwór Mazowiecki. We craft immersive stories, polished puzzles and a one-of-a-kind atmosphere — perfect for a night out, a date, a birthday or a corporate event."}
+                ? `Mysterium to escape room${addressCity(address) ? " w " + addressCity(address) : ""}. Tworzymy wciągające historie, dopracowane zagadki i niepowtarzalny klimat — idealne na wieczór ze znajomymi, randkę, urodziny czy event firmowy.`
+                : `Mysterium is an escape room${addressCity(address) ? " in " + addressCity(address) : ""}. We craft immersive stories, polished puzzles and a one-of-a-kind atmosphere — perfect for a night out, a date, a birthday or a corporate event.`}
             </p>
           )}
           <div className="mt-6 flex flex-wrap gap-3">

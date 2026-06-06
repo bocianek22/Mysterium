@@ -1,4 +1,5 @@
 import { siteUrl } from "@/lib/seo";
+import { addressCity, addressStreet } from "@/lib/address";
 
 // Dane strukturalne LocalBusiness — pomagają Google pokazać adres,
 // telefon, godziny i gwiazdki w wynikach wyszukiwania.
@@ -15,23 +16,25 @@ export default function JsonLd({
   hours?: string | null;
   rating?: string | null;
 }) {
+  const postal = address.match(/\d{2}-\d{3}/)?.[0];
+  const city = addressCity(address);
   const data: any = {
     "@context": "https://schema.org",
     "@type": "EntertainmentBusiness",
     name: "MYSTERIUM Escape Room",
-    description: "Escape room w Nowym Dworze Mazowieckim — pokój „Pułapka” oraz mobilna skrzynia na eventy.",
+    description: `Escape room${city ? " w " + city : ""} — pokój „Pułapka” oraz mobilna skrzynia na eventy.`,
     url: siteUrl(),
     image: `${siteUrl()}/logo.png`,
     telephone: phone,
     email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Warszawska 40",
-      postalCode: "05-100",
-      addressLocality: "Nowy Dwór Mazowiecki",
+      streetAddress: addressStreet(address),
+      postalCode: postal,
+      addressLocality: city,
       addressCountry: "PL",
     },
-    areaServed: "Nowy Dwór Mazowiecki, Warszawa",
+    areaServed: city,
   };
   if (rating) {
     data.aggregateRating = { "@type": "AggregateRating", ratingValue: rating, reviewCount: 1, bestRating: "5" };
