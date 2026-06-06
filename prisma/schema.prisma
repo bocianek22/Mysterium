@@ -31,6 +31,7 @@ model User {
   createdAt     DateTime       @default(now())
   shifts        Shift[]
   availability  Availability[]
+  assignedReservations Reservation[] @relation("AssignedReservations")
 }
 
 // Zmiany w grafiku (przypisane przez admina)
@@ -76,9 +77,28 @@ model Reservation {
   notes         String?
   source        String   @default("MANUAL") // MANUAL | LOCKME
   externalId    String?  @unique // identyfikator rezerwacji z LockMe
+  status        String   @default("NEW") // NEW | CONFIRMED | DONE | CANCELLED
+  assignedUserId String?
+  assignedUser  User?    @relation("AssignedReservations", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  deposit       Float    @default(0)
+  paid          Boolean  @default(false)
   createdAt     DateTime @default(now())
 
   @@index([start])
+}
+
+// Kody rabatowe
+model DiscountCode {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  kind          String   @default("PERCENT") // PERCENT | AMOUNT
+  value         Float    @default(0)
+  descriptionPl String?
+  descriptionEn String?
+  active        Boolean  @default(true)
+  usageLimit    Int      @default(0) // 0 = bez limitu
+  usedCount     Int      @default(0)
+  createdAt     DateTime @default(now())
 }
 
 // Pokoje zagadek (stacjonarne + mobilne)

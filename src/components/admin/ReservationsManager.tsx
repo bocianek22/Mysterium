@@ -3,9 +3,17 @@ import { useEffect, useState, useCallback } from "react";
 import MonthCalendar, { CalEvent } from "./MonthCalendar";
 
 type Room = { id: string; namePl: string };
+type SimpleUser = { id: string; name?: string | null; email: string };
 type Res = any;
 
-export default function ReservationsManager({ rooms }: { rooms: Room[] }) {
+const STATUS: Record<string, { label: string; color: string }> = {
+  NEW: { label: "Wstępna", color: "#C9A84C" },
+  CONFIRMED: { label: "Potwierdzona", color: "#7eebb0" },
+  DONE: { label: "Zrealizowana", color: "#7dd3d0" },
+  CANCELLED: { label: "Anulowana", color: "#fca5a5" },
+};
+
+export default function ReservationsManager({ rooms, users }: { rooms: Room[]; users: SimpleUser[] }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -24,11 +32,11 @@ export default function ReservationsManager({ rooms }: { rooms: Room[] }) {
   const events: CalEvent[] = items.map((r) => ({
     id: r.id, start: r.start, end: r.end,
     title: r.title,
-    color: r.source === "LOCKME" ? "#7dd3d0" : "#C9A84C",
+    color: (STATUS[r.status]?.color) || (r.source === "LOCKME" ? "#7dd3d0" : "#C9A84C"),
   }));
 
   function add(date?: string) {
-    setEditing({ title: "", roomId: "", date: date || todayStr(), startTime: "18:00", endTime: "19:00", people: 0, customerName: "", customerPhone: "", customerEmail: "", notes: "" });
+    setEditing({ title: "", roomId: "", date: date || todayStr(), startTime: "18:00", endTime: "19:00", people: 0, customerName: "", customerPhone: "", customerEmail: "", notes: "", status: "NEW", assignedUserId: "", deposit: 0, paid: false });
     setMsg("");
   }
   function edit(id: string) {
@@ -40,12 +48,13 @@ export default function ReservationsManager({ rooms }: { rooms: Room[] }) {
       startTime: new Date(r.start).toTimeString().slice(0, 5),
       endTime: new Date(r.end).toTimeString().slice(0, 5),
       people: r.people, customerName: r.customerName || "", customerPhone: r.customerPhone || "", customerEmail: r.customerEmail || "", notes: r.notes || "",
+      status: r.status || "NEW", assignedUserId: r.assignedUserId || "", deposit: r.deposit || 0, paid: !!r.paid,
     });
   }
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const f = editing;
-    const body = { title: f.title, roomId: f.roomId || null, start: `${f.date}T${f.startTime}`, end: `${f.date}T${f.endTime}`, people: f.people, customerName: f.customerName, customerPhone: f.customerPhone, customerEmail: f.customerEmail, notes: f.notes };
+    const body = { title: f.title, roomId: f.roomId || null, start: `${f.date}T${f.startTime}`, end: `${f.date}T${f.endTime}`, people: f.people, customerName: f.customerName, customerPhone: f.customerPhone, customerEmail: f.customerEmail, notes: f.notes, status: f.status, assignedUserId: f.assignedUserId || null, deposit: f.deposit, paid: f.paid };
     const url = f.id ? `/api/admin/reservations/${f.id}` : "/api/admin/reservations";
     const res = await fetch(url, { method: f.id ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (res.ok) { setEditing(null); load(); }
@@ -77,9 +86,10 @@ export default function ReservationsManager({ rooms }: { rooms: Room[] }) {
 
       <div className="p-4 rounded mb-6" style={{ background: "rgba(13,27,42,.5)", border: "1px solid var(--border)" }}>
         <MonthCalendar events={events} year={year} month={month} onMonthChange={(y, m) => { setYear(y); setMonth(m); }} onDayClick={add} onEventClick={edit} />
-        <div className="flex gap-4 mt-3 text-[11px]" style={{ color: "var(--muted)" }}>
-          <span><span style={{ color: "#C9A84C" }}>■</span> ręczne</span>
-          <span><span style={{ color: "#7dd3d0" }}>■</span> LockMe</span>
+        <div className="flex gap-4 mt-3 text-[11px] flex-wrap" style={{ color: "var(--muted)" }}>
+          {Object.values(STATUS).map((s) => (
+            <span key={s.label}><span style={{ color: s.color }}>■</span> {s.label}</span>
+          ))}
         </div>
       </div>
 
@@ -108,6 +118,23 @@ export default function ReservationsManager({ rooms }: { rooms: Room[] }) {
                 <div><label className="field-label">Telefon</label><input className="field-input" value={editing.customerPhone} onChange={(e) => set("customerPhone", e.target.value)} /></div>
               </div>
               <div><label className="field-label">E-mail</label><input className="field-input" value={editing.customerEmail} onChange={(e) => set("customerEmail", e.target.value)} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="field-label">Status</label>
+                  <select className="field-input" value={editing.status} onChange={(e) => set("status", e.target.value)}>
+                    {Object.entries(STATUS).map(([k, v]) => <option key={k} value={k} style={{ background: "var(--navy-d)" }}>{v.label}</option>)}
+                  </select>
+                </div>
+                <div><label className="field-label">Prowadzi (pracownik)</label>
+                  <select className="field-input" value={editing.assignedUserId} onChange={(e) => set("assignedUserId", e.target.value)}>
+                    <option value="" style={{ background: "var(--navy-d)" }}>—</option>
+                    {users.map((u) => <option key={u.id} value={u.id} style={{ background: "var(--navy-d)" }}>{u.name || u.email}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 items-end">
+                <div><label className="field-label">Zaliczka (zł)</label><input type="number" step="0.01" className="field-input" value={editing.deposit} onChange={(e) => set("deposit", e.target.value)} /></div>
+                <label className="flex items-center gap-3 pb-2"><input type="checkbox" checked={editing.paid} onChange={(e) => set("paid", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Opłacone</span></label>
+              </div>
               <div><label className="field-label">Notatki</label><textarea className="field-input h-20 resize-none" value={editing.notes} onChange={(e) => set("notes", e.target.value)} /></div>
             </div>
             <div className="flex gap-3 mt-8 justify-between">

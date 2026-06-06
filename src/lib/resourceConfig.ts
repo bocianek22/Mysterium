@@ -181,6 +181,22 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  codes: {
+    label: "Kody rabatowe",
+    singular: "kod",
+    icon: "🏷️",
+    listColumns: ["code", "kind", "value", "active"],
+    fields: [
+      { name: "code", label: "Kod", type: "text", required: true, placeholder: "WELCOME10" },
+      { name: "kind", label: "Rodzaj", type: "select", default: "PERCENT", options: [{ value: "PERCENT", label: "Procent (%)" }, { value: "AMOUNT", label: "Kwota (zł)" }] },
+      { name: "value", label: "Wartość", type: "number", default: 10 },
+      { name: "descriptionPl", label: "Opis (PL)", type: "text", placeholder: "np. -10% na pierwszą grę" },
+      { name: "descriptionEn", label: "Opis (EN)", type: "text" },
+      { name: "usageLimit", label: "Limit użyć (0 = bez limitu)", type: "number", default: 0 },
+      { name: "active", label: "Aktywny", type: "boolean", default: true },
+    ],
+  },
+
   messages: {
     label: "Wiadomości",
     singular: "wiadomość",

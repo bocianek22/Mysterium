@@ -20,6 +20,25 @@ export default function Contact({
   whatsapp: string;
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "err">("idle");
+  const [coupon, setCoupon] = useState("");
+  const [couponMsg, setCouponMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  async function checkCoupon() {
+    if (!coupon.trim()) return;
+    setCouponMsg({ ok: false, text: "..." });
+    try {
+      const res = await fetch(`/api/coupon?code=${encodeURIComponent(coupon)}`);
+      const d = await res.json();
+      if (d.valid) {
+        const desc = (locale === "pl" ? d.descriptionPl : d.descriptionEn) || (d.kind === "PERCENT" ? `-${d.value}%` : `-${d.value} zł`);
+        setCouponMsg({ ok: true, text: `✓ ${locale === "pl" ? "Kod aktywny" : "Code valid"}: ${desc}` });
+      } else {
+        setCouponMsg({ ok: false, text: locale === "pl" ? "Kod nieprawidłowy lub wygasł" : "Invalid or expired code" });
+      }
+    } catch {
+      setCouponMsg({ ok: false, text: locale === "pl" ? "Błąd sprawdzania" : "Check failed" });
+    }
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -131,7 +150,11 @@ export default function Contact({
             </div>
             <div className="mb-[14px]">
               <label className="field-label">{t.contact.couponLabel}</label>
-              <input type="text" name="coupon" className="field-input uppercase" placeholder="np. WELCOME10" />
+              <div className="flex gap-2">
+                <input type="text" name="coupon" value={coupon} onChange={(e) => { setCoupon(e.target.value.toUpperCase()); setCouponMsg(null); }} className="field-input uppercase flex-1" placeholder="np. WELCOME10" />
+                <button type="button" onClick={checkCoupon} className="px-4 text-xs rounded whitespace-nowrap" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{locale === "pl" ? "Sprawdź" : "Check"}</button>
+              </div>
+              {couponMsg && <p className="text-[12px] mt-1" style={{ color: couponMsg.ok ? "#7eebb0" : "#fca5a5" }}>{couponMsg.text}</p>}
             </div>
             <div className="mb-[14px]">
               <label className="field-label">{t.contact.message} *</label>
