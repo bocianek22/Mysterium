@@ -181,6 +181,39 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  vouchers: {
+    label: "Bony podarunkowe",
+    singular: "bon",
+    icon: "🎁",
+    listColumns: ["code", "titlePl", "status"],
+    fields: [
+      { name: "code", label: "Kod bonu", type: "text", required: true, placeholder: "MYS-XXXX" },
+      { name: "titlePl", label: "Na co (PL)", type: "text", required: true, placeholder: "Bon na grę dla 4 osób" },
+      { name: "titleEn", label: "Na co (EN)", type: "text" },
+      { name: "amount", label: "Wartość (zł, 0 = bon na grę)", type: "number", default: 0 },
+      { name: "status", label: "Status", type: "select", default: "NEW", options: [{ value: "NEW", label: "Nowy" }, { value: "SOLD", label: "Sprzedany" }, { value: "REDEEMED", label: "Zrealizowany" }] },
+      { name: "buyerName", label: "Kupujący", type: "text" },
+      { name: "validUntil", label: "Ważny do (RRRR-MM-DD)", type: "text", placeholder: "2026-12-31" },
+      { name: "note", label: "Notatka", type: "textarea" },
+    ],
+  },
+
+  codes: {
+    label: "Kody rabatowe",
+    singular: "kod",
+    icon: "🏷️",
+    listColumns: ["code", "kind", "value", "active"],
+    fields: [
+      { name: "code", label: "Kod", type: "text", required: true, placeholder: "WELCOME10" },
+      { name: "kind", label: "Rodzaj", type: "select", default: "PERCENT", options: [{ value: "PERCENT", label: "Procent (%)" }, { value: "AMOUNT", label: "Kwota (zł)" }] },
+      { name: "value", label: "Wartość", type: "number", default: 10 },
+      { name: "descriptionPl", label: "Opis (PL)", type: "text", placeholder: "np. -10% na pierwszą grę" },
+      { name: "descriptionEn", label: "Opis (EN)", type: "text" },
+      { name: "usageLimit", label: "Limit użyć (0 = bez limitu)", type: "number", default: 0 },
+      { name: "active", label: "Aktywny", type: "boolean", default: true },
+    ],
+  },
+
   messages: {
     label: "Wiadomości",
     singular: "wiadomość",

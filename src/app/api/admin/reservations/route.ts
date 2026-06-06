@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { pushEventToGoogle } from "@/lib/google";
+import { notify } from "@/lib/notify";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -14,6 +15,10 @@ const schema = z.object({
   customerPhone: z.string().optional().nullable(),
   customerEmail: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  status: z.enum(["NEW", "CONFIRMED", "DONE", "CANCELLED"]).optional(),
+  assignedUserId: z.string().optional().nullable(),
+  deposit: z.coerce.number().min(0).optional(),
+  paid: z.coerce.boolean().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -32,7 +37,7 @@ export async function GET(req: NextRequest) {
   const items = await prisma.reservation.findMany({
     where,
     orderBy: { start: "asc" },
-    include: { room: { select: { id: true, namePl: true } } },
+    include: { room: { select: { id: true, namePl: true } }, assignedUser: { select: { id: true, name: true, email: true } } },
   });
   return NextResponse.json({ items });
 }
@@ -57,8 +62,23 @@ export async function POST(req: NextRequest) {
       customerEmail: d.customerEmail || null,
       notes: d.notes || null,
       source: "MANUAL",
+      status: d.status || "NEW",
+      assignedUserId: d.assignedUserId || null,
+      deposit: d.deposit || 0,
+      paid: d.paid || false,
     },
   });
+
+  notify({
+    type: "reservation",
+    title: "Nowa rezerwacja",
+    lines: [
+      item.title,
+      new Date(item.start).toLocaleString("pl-PL", { dateStyle: "full", timeStyle: "short" }),
+      item.customerName ? `Klient: ${item.customerName}${item.customerPhone ? " · " + item.customerPhone : ""}` : "",
+      item.people ? `Osób: ${item.people}` : "",
+    ],
+  }).catch(() => {});
 
   // Opcjonalny zapis do Google Calendar (nie blokuje odpowiedzi przy błędzie)
   pushEventToGoogle({

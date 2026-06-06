@@ -9,9 +9,9 @@ export default async function RezerwacjePage() {
   const session = await getSession();
   if (!session) redirect("/admin/login");
   if (!isManager(session.role)) redirect("/admin");
-  const rooms = await prisma.room.findMany({
-    select: { id: true, namePl: true },
-    orderBy: { order: "asc" },
-  });
-  return <ReservationsManager rooms={rooms} />;
+  const [rooms, users] = await Promise.all([
+    prisma.room.findMany({ select: { id: true, namePl: true }, orderBy: { order: "asc" } }),
+    prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, email: true }, orderBy: { name: "asc" } }),
+  ]);
+  return <ReservationsManager rooms={rooms} users={users} />;
 }

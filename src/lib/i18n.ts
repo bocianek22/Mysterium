@@ -29,6 +29,7 @@ const dict = {
       about: "O nas",
       mobile: "Mobilna Skrzynia",
       events: "Eventy firmowe",
+      vouchers: "Bony",
       book: "Zarezerwuj",
     },
     mobile: {
@@ -155,6 +156,7 @@ const dict = {
       about: "About",
       mobile: "Mobile Box",
       events: "Corporate events",
+      vouchers: "Vouchers",
       book: "Book now",
     },
     mobile: {

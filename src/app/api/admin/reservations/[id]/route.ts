@@ -13,6 +13,10 @@ const schema = z.object({
   customerPhone: z.string().optional().nullable(),
   customerEmail: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
+  status: z.enum(["NEW", "CONFIRMED", "DONE", "CANCELLED"]).optional(),
+  assignedUserId: z.string().optional().nullable(),
+  deposit: z.coerce.number().min(0).optional(),
+  paid: z.coerce.boolean().optional(),
 });
 
 export async function PATCH(
@@ -38,6 +42,10 @@ export async function PATCH(
       customerPhone: d.customerPhone ?? undefined,
       customerEmail: d.customerEmail ?? undefined,
       notes: d.notes ?? undefined,
+      status: d.status,
+      assignedUserId: d.assignedUserId === undefined ? undefined : d.assignedUserId || null,
+      deposit: d.deposit,
+      paid: d.paid,
     },
   });
   return NextResponse.json({ item });

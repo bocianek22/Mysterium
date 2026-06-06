@@ -8,6 +8,8 @@ import WhatsappFloat from "@/components/site/WhatsappFloat";
 import SiteFX from "@/components/site/FX";
 import Splash from "@/components/site/Splash";
 import HtmlLang from "@/components/site/HtmlLang";
+import CookieBanner from "@/components/site/CookieBanner";
+import JsonLd from "@/components/site/JsonLd";
 
 // Renderowanie na żądanie — strona pobiera treści z bazy w czasie żądania,
 // dzięki czemu build (np. na Vercel) nie wymaga połączenia z bazą.
@@ -44,6 +46,14 @@ export default async function LocaleLayout({
       <main>{children}</main>
       <Footer locale={locale} t={t} phone={phone} email={email} />
       <WhatsappFloat whatsapp={whatsapp} />
+      <CookieBanner locale={locale} />
+      <JsonLd
+        address={(locale === "pl" ? settings?.addressPl : settings?.addressEn) || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki"}
+        phone={phone}
+        email={email}
+        hours={locale === "pl" ? settings?.hoursPl : settings?.hoursEn}
+        rating={settings?.googleReviewsEnabled ? settings?.googleRating : null}
+      />
     </>
   );
 }

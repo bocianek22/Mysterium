@@ -13,6 +13,10 @@ const updateSchema = z.object({
   rateDay: z.coerce.number().min(0).optional(),
   rateNight: z.coerce.number().min(0).optional(),
   rateWeekend: z.coerce.number().min(0).optional(),
+  canStationary: z.coerce.boolean().optional(),
+  canMobile: z.coerce.boolean().optional(),
+  targetHours: z.coerce.number().min(0).optional(),
+  telegramChatId: z.string().optional().nullable(),
   calendarEmbed: z.string().optional().nullable(),
 });
 
@@ -53,6 +57,10 @@ export async function PATCH(
     rateDay: d.rateDay,
     rateNight: d.rateNight,
     rateWeekend: d.rateWeekend,
+    canStationary: d.canStationary,
+    canMobile: d.canMobile,
+    targetHours: d.targetHours,
+    telegramChatId: d.telegramChatId ?? undefined,
     calendarEmbed: d.calendarEmbed ?? undefined,
   };
   if (d.password) data.passwordHash = await hashPassword(d.password);
