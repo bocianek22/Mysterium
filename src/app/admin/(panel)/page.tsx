@@ -2,9 +2,11 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { getSession, isManager } from "@/lib/auth";
-import { shiftBreakdown, sumBreakdowns, monthRange } from "@/lib/earnings";
+import { monthRange } from "@/lib/earnings";
+import { computePayroll } from "@/lib/payroll";
 import CopyField from "@/components/admin/CopyField";
 import EmployeeCosts from "@/components/admin/EmployeeCosts";
+import TimesheetWidget from "@/components/admin/TimesheetWidget";
 
 export const dynamic = "force-dynamic";
 
@@ -39,27 +41,22 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
     prisma.contactMessage.count({ where: { read: false } }),
     prisma.room.count(),
     prisma.user.count({ where: { role: "EMPLOYEE" } }),
-    prisma.shift.findMany({
-      where: { start: { gte: start, lt: end } },
-      include: { user: true },
-    }),
+    prisma.user.findMany({ where: { role: "EMPLOYEE" }, include: { timesheets: { where: { date: { gte: start, lt: end } } } } }),
   ]);
 
-  const payroll = sumBreakdowns(
-    monthShifts.map((s) =>
-      shiftBreakdown(s.start, s.end, {
-        rateDay: s.user.rateDay,
-        rateNight: s.user.rateNight,
-        rateWeekend: s.user.rateWeekend,
-      })
-    )
-  );
+  let payHours = 0;
+  let payBrutto = 0;
+  for (const u of monthShifts) {
+    const p = computePayroll(u.timesheets, u.ratesJson);
+    payHours += p.totalHours;
+    payBrutto += p.brutto;
+  }
 
   const stats = [
     { label: "Nadchodzące rezerwacje", value: upcomingRes, icon: "📅", href: "/admin/rezerwacje" },
     { label: "Rezerwacje w tym miesiącu", value: monthRes, icon: "🗓️", href: "/admin/rezerwacje" },
-    { label: "Godziny w tym miesiącu", value: payroll.totalHours.toFixed(1), icon: "⏱️", href: "/admin/grafik" },
-    { label: "Wypłaty (ten miesiąc)", value: payroll.pay.toFixed(2) + " zł", icon: "💵", href: "/admin/wyplaty" },
+    { label: "Godziny w tym miesiącu", value: payHours.toFixed(1), icon: "⏱️", href: "/admin/wyplaty" },
+    { label: "Wypłaty brutto (ten mies.)", value: payBrutto.toFixed(2) + " zł", icon: "💵", href: "/admin/wyplaty" },
     { label: "Nieprzeczytane wiadomości", value: unread, icon: "✉️", href: "/admin/messages", badge: unread > 0 },
     { label: "Pracownicy", value: employees, icon: "👥", href: "/admin/users" },
     { label: "Pokoje", value: rooms, icon: "🚪", href: "/admin/rooms" },
@@ -97,8 +94,8 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
     orderBy: { start: "asc" },
     take: 5,
   });
-  const rates = { rateDay: user.rateDay, rateNight: user.rateNight, rateWeekend: user.rateWeekend };
-  const total = sumBreakdowns(monthShifts.map((s) => shiftBreakdown(s.start, s.end, rates)));
+  const timesheets = await prisma.dailyTimesheet.findMany({ where: { userId, date: { gte: start, lt: end } } });
+  const pay = computePayroll(timesheets, user.ratesJson);
   const icalUrl = `${baseUrl()}/api/calendar/${user.calendarToken}`;
 
   return (
@@ -108,9 +105,9 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Godziny (ten miesiąc)", value: total.totalHours.toFixed(1) },
-          { label: "Do wypłaty (szac.)", value: total.pay.toFixed(2) + " zł" },
-          { label: "Dzień / Noc / Wknd (h)", value: `${total.dayHours.toFixed(0)}/${total.nightHours.toFixed(0)}/${total.weekendHours.toFixed(0)}` },
+          { label: "Godziny (ten miesiąc)", value: pay.totalHours.toFixed(1) },
+          { label: "Netto (szac.)", value: pay.net.toFixed(2) + " zł" },
+          { label: "Brutto (szac.)", value: pay.brutto.toFixed(2) + " zł" },
           { label: "Nadchodzące zmiany", value: upcoming.length },
         ].map((s) => (
           <div key={s.label} className="p-5 rounded" style={{ background: "rgba(13,27,42,.7)", border: "1px solid var(--border)" }}>
@@ -150,6 +147,7 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
         </div>
       </div>
 
+      <TimesheetWidget />
       <EmployeeCosts />
 
       {user.calendarEmbed && (

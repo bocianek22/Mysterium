@@ -16,6 +16,9 @@ const updateSchema = z.object({
   canStationary: z.coerce.boolean().optional(),
   canMobile: z.coerce.boolean().optional(),
   targetHours: z.coerce.number().min(0).optional(),
+  ratesJson: z.string().optional().nullable(),
+  contractType: z.string().optional().nullable(),
+  telegramHandle: z.string().optional().nullable(),
   telegramChatId: z.string().optional().nullable(),
   calendarEmbed: z.string().optional().nullable(),
 });
@@ -60,6 +63,9 @@ export async function PATCH(
     canStationary: d.canStationary,
     canMobile: d.canMobile,
     targetHours: d.targetHours,
+    ratesJson: d.ratesJson ?? undefined,
+    contractType: d.contractType ?? undefined,
+    telegramHandle: d.telegramHandle ?? undefined,
     telegramChatId: d.telegramChatId ?? undefined,
     calendarEmbed: d.calendarEmbed ?? undefined,
   };

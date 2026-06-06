@@ -28,6 +28,10 @@ model User {
   canStationary Boolean        @default(true)  // może obsługiwać stacjonarne
   canMobile     Boolean        @default(true)  // może jeździć na wyjazdy
   targetHours   Float          @default(0)      // cel godzin / miesiąc
+  // Wynagrodzenie: stawki netto/brutto per kategoria (JSON) + typ umowy
+  ratesJson     String?        @default("{}")   // {stationary:{net,brutto},mobile:{...},travel:{...},cleaning:{...}}
+  contractType  String?        // UoP | Zlecenie | UoD | B2B (informacyjnie)
+  telegramHandle String?       // @nick na Telegramie (referencyjnie)
   // Kalendarz
   calendarToken String         @unique @default(cuid()) // token subskrypcji iCal
   calendarEmbed String?        // URL osadzonego kalendarza Google w panelu
@@ -35,7 +39,25 @@ model User {
   createdAt     DateTime       @default(now())
   shifts        Shift[]
   availability  Availability[]
+  timesheets    DailyTimesheet[] @relation("Timesheets")
   assignedReservations Reservation[] @relation("AssignedReservations")
+}
+
+// Dzienna tabelka godzin wg kategorii (wypełnia pracownik) — podstawa wypłat
+model DailyTimesheet {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("Timesheets", fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  stationaryH Float    @default(0)
+  mobileH     Float    @default(0)
+  travelH     Float    @default(0)
+  cleaningH   Float    @default(0)
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, date])
+  @@index([date])
 }
 
 // Zmiany w grafiku (przypisane przez admina)
