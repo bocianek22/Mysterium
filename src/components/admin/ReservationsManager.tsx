@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import MonthCalendar, { CalEvent } from "./MonthCalendar";
+import FileUpload from "./FileUpload";
 
 type Room = { id: string; namePl: string };
 type SimpleUser = { id: string; name?: string | null; email: string };
@@ -36,25 +37,26 @@ export default function ReservationsManager({ rooms, users }: { rooms: Room[]; u
   }));
 
   function add(date?: string) {
-    setEditing({ title: "", roomId: "", date: date || todayStr(), startTime: "18:00", endTime: "19:00", people: 0, customerName: "", customerPhone: "", customerEmail: "", notes: "", status: "NEW", assignedUserId: "", deposit: 0, paid: false });
+    setEditing({ title: "", roomId: "", date: date || todayStr(), startTime: "18:00", endTime: "19:00", people: 0, customerName: "", customerPhone: "", customerEmail: "", notes: "", status: "NEW", assignedUserId: "", deposit: 0, paid: false, price: 0, invoiceUrl: "", fuelCost: 0, fuelInvoiceUrl: "", otherCost: 0, otherInvoiceUrl: "" });
     setMsg("");
   }
   function edit(id: string) {
     const r = items.find((x) => x.id === id);
     if (!r) return;
     setEditing({
-      id: r.id, title: r.title, roomId: r.roomId || "",
+      id: r.id, refNo: r.refNo, title: r.title, roomId: r.roomId || "",
       date: r.start.slice(0, 10),
       startTime: new Date(r.start).toTimeString().slice(0, 5),
       endTime: new Date(r.end).toTimeString().slice(0, 5),
       people: r.people, customerName: r.customerName || "", customerPhone: r.customerPhone || "", customerEmail: r.customerEmail || "", notes: r.notes || "",
       status: r.status || "NEW", assignedUserId: r.assignedUserId || "", deposit: r.deposit || 0, paid: !!r.paid,
+      price: r.price || 0, invoiceUrl: r.invoiceUrl || "", fuelCost: r.fuelCost || 0, fuelInvoiceUrl: r.fuelInvoiceUrl || "", otherCost: r.otherCost || 0, otherInvoiceUrl: r.otherInvoiceUrl || "",
     });
   }
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const f = editing;
-    const body = { title: f.title, roomId: f.roomId || null, start: `${f.date}T${f.startTime}`, end: `${f.date}T${f.endTime}`, people: f.people, customerName: f.customerName, customerPhone: f.customerPhone, customerEmail: f.customerEmail, notes: f.notes, status: f.status, assignedUserId: f.assignedUserId || null, deposit: f.deposit, paid: f.paid };
+    const body = { title: f.title, roomId: f.roomId || null, start: `${f.date}T${f.startTime}`, end: `${f.date}T${f.endTime}`, people: f.people, customerName: f.customerName, customerPhone: f.customerPhone, customerEmail: f.customerEmail, notes: f.notes, status: f.status, assignedUserId: f.assignedUserId || null, deposit: f.deposit, paid: f.paid, price: f.price, invoiceUrl: f.invoiceUrl || null, fuelCost: f.fuelCost, fuelInvoiceUrl: f.fuelInvoiceUrl || null, otherCost: f.otherCost, otherInvoiceUrl: f.otherInvoiceUrl || null };
     const url = f.id ? `/api/admin/reservations/${f.id}` : "/api/admin/reservations";
     const res = await fetch(url, { method: f.id ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (res.ok) { setEditing(null); load(); }
@@ -96,7 +98,9 @@ export default function ReservationsManager({ rooms, users }: { rooms: Room[]; u
       {editing && (
         <div className="fixed inset-0 z-[5000] flex items-start justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,.8)" }} onClick={() => setEditing(null)}>
           <form onClick={(e) => e.stopPropagation()} onSubmit={save} className="w-full max-w-[520px] my-8 p-6 md:p-8 rounded" style={{ background: "var(--navy-d)", border: "1px solid var(--border-h)" }}>
-            <h2 className="font-display text-gold-grad text-2xl mb-6">{editing.id ? "Edytuj rezerwację" : "Nowa rezerwacja"}</h2>
+            <h2 className="font-display text-gold-grad text-2xl mb-1">{editing.id ? "Edytuj rezerwację" : "Nowa rezerwacja"}</h2>
+            {editing.refNo && <div className="text-[11px] mb-5 font-serif tracking-[1px]" style={{ color: "var(--gold)" }}>Nr zlecenia: {editing.refNo}</div>}
+            {!editing.refNo && <div className="mb-5" />}
             <div className="grid grid-cols-1 gap-4">
               <div><label className="field-label">Tytuł *</label><input className="field-input" value={editing.title} onChange={(e) => set("title", e.target.value)} required placeholder="np. Urodziny / Pokój Nr 1" /></div>
               <div className="grid grid-cols-2 gap-3">
@@ -134,6 +138,22 @@ export default function ReservationsManager({ rooms, users }: { rooms: Room[]; u
               <div className="grid grid-cols-2 gap-3 items-end">
                 <div><label className="field-label">Zaliczka (zł)</label><input type="number" step="0.01" className="field-input" value={editing.deposit} onChange={(e) => set("deposit", e.target.value)} /></div>
                 <label className="flex items-center gap-3 pb-2"><input type="checkbox" checked={editing.paid} onChange={(e) => set("paid", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Opłacone</span></label>
+              </div>
+
+              <div className="pt-3 mt-1" style={{ borderTop: "1px solid var(--border)" }}>
+                <div className="field-label mb-2">💰 Finanse zlecenia</div>
+                <div className="grid grid-cols-2 gap-3 items-start">
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Przychód / wartość (zł)</label><input type="number" step="0.01" className="field-input" value={editing.price} onChange={(e) => set("price", e.target.value)} /></div>
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Faktura/paragon (przychód)</label><FileUpload value={editing.invoiceUrl || ""} onChange={(u) => set("invoiceUrl", u)} accept="image/*,application/pdf" kind="doc" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 items-start mt-3">
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Koszt paliwa (zł)</label><input type="number" step="0.01" className="field-input" value={editing.fuelCost} onChange={(e) => set("fuelCost", e.target.value)} /></div>
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Faktura za paliwo</label><FileUpload value={editing.fuelInvoiceUrl || ""} onChange={(u) => set("fuelInvoiceUrl", u)} accept="image/*,application/pdf" kind="doc" /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3 items-start mt-3">
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Inne koszty (zł)</label><input type="number" step="0.01" className="field-input" value={editing.otherCost} onChange={(e) => set("otherCost", e.target.value)} /></div>
+                  <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Faktura — inne koszty</label><FileUpload value={editing.otherInvoiceUrl || ""} onChange={(u) => set("otherInvoiceUrl", u)} accept="image/*,application/pdf" kind="doc" /></div>
+                </div>
               </div>
               <div><label className="field-label">Notatki</label><textarea className="field-input h-20 resize-none" value={editing.notes} onChange={(e) => set("notes", e.target.value)} /></div>
             </div>

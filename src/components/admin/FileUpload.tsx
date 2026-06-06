@@ -10,7 +10,7 @@ export default function FileUpload({
   value: string;
   onChange: (url: string) => void;
   accept: string;
-  kind: "image" | "video";
+  kind: "image" | "video" | "doc";
 }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -41,6 +41,9 @@ export default function FileUpload({
         )}
         {value && kind === "video" && (
           <video src={value} className="w-32 h-20 object-cover rounded" style={{ border: "1px solid var(--border)" }} />
+        )}
+        {value && kind === "doc" && (
+          <a href={value} target="_blank" rel="noopener noreferrer" className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>📄 Otwórz załącznik</a>
         )}
         <div className="flex-1 min-w-[200px]">
           <input

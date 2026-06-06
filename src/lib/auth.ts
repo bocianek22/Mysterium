@@ -69,6 +69,10 @@ export function isManager(role?: Role) {
   return role === "OWNER" || role === "ADMIN";
 }
 
+export function isOwner(role?: Role) {
+  return role === "OWNER";
+}
+
 export async function requireSession(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");

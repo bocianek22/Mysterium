@@ -33,6 +33,10 @@ export default function Sidebar({
         { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
         { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
         { href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" },
+        ...(role === "OWNER" ? [
+          { href: "/admin/finanse", label: "Finanse", icon: "💰" },
+          { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
+        ] : []),
         { href: "/admin/users", label: "Pracownicy", icon: "👥" },
       ]
     : [
