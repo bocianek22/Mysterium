@@ -57,6 +57,7 @@ export default function Sidebar({
     ...(canOps ? [
       { href: "/admin/konserwacja", label: "Konserwacja", icon: "🛠️" },
       { href: "/admin/checklisty", label: "Checklisty", icon: "✅" },
+      { href: "/admin/magazyn", label: "Magazyn", icon: "📦" },
     ] : []),
     { href: "/admin/urlopy", label: isManager ? "Urlopy" : "Mój urlop", icon: "🏖️" },
     ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),

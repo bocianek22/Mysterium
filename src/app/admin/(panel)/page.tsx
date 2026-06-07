@@ -41,6 +41,7 @@ function OfficeDashboard({ role, name }: { role: string; name?: string }) {
   if (canOps(role as any)) {
     cards.push({ label: "Konserwacja", icon: "🛠️", href: "/admin/konserwacja" });
     cards.push({ label: "Checklisty", icon: "✅", href: "/admin/checklisty" });
+    cards.push({ label: "Magazyn", icon: "📦", href: "/admin/magazyn" });
   }
   cards.push({ label: "Mój urlop", icon: "🏖️", href: "/admin/urlopy" });
 
@@ -78,6 +79,8 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
   ]);
 
   const openMaintenance = await prisma.maintenanceLog.count({ where: { status: "OPEN" } });
+  const lowStockItems = await prisma.inventoryItem.findMany({ where: { lowStock: { gt: 0 } }, select: { quantity: true, lowStock: true } });
+  const lowStock = lowStockItems.filter((i) => i.quantity <= i.lowStock).length;
 
   let payHours = 0;
   let payBrutto = 0;
@@ -94,6 +97,7 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
     { label: "Wypłaty brutto (ten mies.)", value: payBrutto.toFixed(2) + " zł", icon: "💵", href: "/admin/wyplaty" },
     { label: "Nieprzeczytane wiadomości", value: unread, icon: "✉️", href: "/admin/messages", badge: unread > 0 },
     { label: "Otwarte usterki", value: openMaintenance, icon: "🛠️", href: "/admin/konserwacja", badge: openMaintenance > 0 },
+    { label: "Niski stan magazynu", value: lowStock, icon: "📦", href: "/admin/magazyn", badge: lowStock > 0 },
     { label: "Pracownicy", value: employees, icon: "👥", href: "/admin/users" },
     { label: "Pokoje", value: rooms, icon: "🚪", href: "/admin/rooms" },
   ];

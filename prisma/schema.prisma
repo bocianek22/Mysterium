@@ -197,6 +197,36 @@ model Customer {
   @@index([phone])
 }
 
+// Magazyn — pozycje (bilety, gadżety, akcesoria na wyjazdy)
+model InventoryItem {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   @default("INNE") // BILETY | GADZETY | AKCESORIA | MATERIALY | INNE
+  quantity  Int      @default(0)
+  unit      String   @default("szt.")
+  lowStock  Int      @default(0) // próg niskiego stanu (0 = brak alertu)
+  location  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements InventoryMovement[]
+
+  @@index([category])
+}
+
+// Ruch magazynowy (przyjęcie +/ wydanie -)
+model InventoryMovement {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  delta     Int
+  reason    String?
+  byName    String?
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
+}
+
 // Log konserwacji pokoju (resety rekwizytów, baterie, usterki, naprawy)
 model MaintenanceLog {
   id            String    @id @default(cuid())
