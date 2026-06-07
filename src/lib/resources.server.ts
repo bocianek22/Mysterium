@@ -7,6 +7,8 @@ const delegates = {
   rooms: prisma.room,
   mobile: prisma.mobileOffer,
   posts: prisma.post,
+  albums: prisma.eventAlbum,
+  leaderboard: prisma.leaderboardEntry,
   gallery: prisma.galleryImage,
   videos: prisma.video,
   reviews: prisma.review,

@@ -404,6 +404,40 @@ model Post {
   updatedAt  DateTime @updatedAt
 }
 
+// Galeria z eventów / realizacji (album per wydarzenie)
+model EventAlbum {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  titlePl    String
+  titleEn    String
+  dateLabel  String?  // np. „Marzec 2026" lub „12.03.2026"
+  roomName   String?  // której gry/eventu dotyczy
+  descPl     String?
+  descEn     String?
+  coverImage String?
+  imagesJson String?  @default("[]") // tablica URLi
+  order      Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Hall of Fame — ranking najlepszych drużyn (czasy ukończenia)
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  roomName  String   @default("") // której gry dotyczy (grupowanie)
+  teamName  String
+  timeMin   Int      @default(0)
+  timeSec   Int      @default(0)
+  players   Int      @default(0)
+  dateLabel String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([roomName])
+}
+
 // Galeria zdjęć
 model GalleryImage {
   id        String   @id @default(cuid())

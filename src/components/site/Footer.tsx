@@ -43,6 +43,7 @@ export default function Footer({
               ["/bony", t.nav.vouchers],
               ["/cennik", t.nav.pricing],
               ["/blog", t.nav.blog],
+              ["/hall-of-fame", t.hall.label],
               ["/o-nas", t.nav.about],
               ["/kontakt", t.nav.contact],
             ].map(([href, label]) => (

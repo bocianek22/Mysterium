@@ -127,6 +127,43 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  albums: {
+    label: "Galeria realizacji",
+    singular: "album",
+    icon: "📸",
+    listColumns: ["titlePl", "dateLabel", "published"],
+    fields: [
+      { name: "titlePl", label: "Tytuł (PL)", type: "text", required: true },
+      { name: "titleEn", label: "Tytuł (EN)", type: "text", required: true },
+      { name: "slug", label: "Slug (adres URL)", type: "text", required: true, placeholder: "np. urodziny-marzec-2026" },
+      { name: "dateLabel", label: "Data (etykieta)", type: "text", placeholder: "np. Marzec 2026" },
+      { name: "roomName", label: "Czego dotyczy (gra / event)", type: "text" },
+      { name: "descPl", label: "Opis (PL)", type: "textarea" },
+      { name: "descEn", label: "Opis (EN)", type: "textarea" },
+      { name: "coverImage", label: "Zdjęcie okładki", type: "image" },
+      { name: "imagesJson", label: "Zdjęcia z realizacji", type: "gallery" },
+      { name: "order", label: "Kolejność (większe = wyżej)", type: "number", default: 0 },
+      { name: "published", label: "Widoczny na stronie", type: "boolean", default: true },
+    ],
+  },
+
+  leaderboard: {
+    label: "Hall of Fame (ranking)",
+    singular: "wynik",
+    icon: "🏆",
+    listColumns: ["teamName", "roomName", "published"],
+    fields: [
+      { name: "teamName", label: "Nazwa drużyny", type: "text", required: true },
+      { name: "roomName", label: "Gra / pokój", type: "text", required: true, placeholder: "np. Pułapka" },
+      { name: "timeMin", label: "Czas — minuty", type: "number", default: 0 },
+      { name: "timeSec", label: "Czas — sekundy", type: "number", default: 0 },
+      { name: "players", label: "Liczba graczy", type: "number", default: 0 },
+      { name: "dateLabel", label: "Data (etykieta)", type: "text", placeholder: "np. 12.03.2026" },
+      { name: "order", label: "Kolejność (0 = wg czasu)", type: "number", default: 0 },
+      { name: "published", label: "Widoczny w rankingu", type: "boolean", default: true },
+    ],
+  },
+
   gallery: {
     label: "Galeria zdjęć",
     singular: "zdjęcie",
