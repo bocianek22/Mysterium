@@ -8,7 +8,21 @@ const secret = new TextEncoder().encode(
   process.env.AUTH_SECRET || "dev-secret-change-me"
 );
 
-export type Role = "OWNER" | "ADMIN" | "EMPLOYEE" | "CODE";
+export type Role = "OWNER" | "ADMIN" | "EMPLOYEE" | "CODE" | "RECEPCJA" | "KSIEGOWA" | "TECHNIK";
+
+export const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Właściciel",
+  ADMIN: "Admin",
+  EMPLOYEE: "Pracownik",
+  RECEPCJA: "Recepcja",
+  KSIEGOWA: "Księgowa",
+  TECHNIK: "Technik",
+  CODE: "Kod (kiosk)",
+};
+
+export function roleLabel(role?: string) {
+  return (role && ROLE_LABELS[role]) || "Pracownik";
+}
 
 export type SessionPayload = {
   sub: string; // user id
@@ -73,15 +87,29 @@ export function isOwner(role?: Role) {
   return role === "OWNER";
 }
 
-// Kto widzi finanse (Finanse, Faktury, eksporty finansowe).
-// Dziś: Właściciel + Admin. Pod 2D dojdzie tu rola Księgowa.
+// Kto widzi finanse (Finanse, Faktury, eksporty finansowe): zarządzający + Księgowa.
 export function canFinance(role?: Role) {
-  return role === "OWNER" || role === "ADMIN";
+  return isManager(role) || role === "KSIEGOWA";
+}
+
+// Kto obsługuje rezerwacje: zarządzający + Recepcja.
+export function canReservations(role?: Role) {
+  return isManager(role) || role === "RECEPCJA";
+}
+
+// Kto może dodawać wydatki: zarządzający + Księgowa + Technik.
+export function canExpenses(role?: Role) {
+  return isManager(role) || role === "KSIEGOWA" || role === "TECHNIK";
+}
+
+// Role „biurowe" o ograniczonym dostępie (nie pełni zarządzający, nie obsługa gier).
+export function isOffice(role?: Role) {
+  return role === "RECEPCJA" || role === "KSIEGOWA" || role === "TECHNIK";
 }
 
 // Kto może wyświetlać ekran kodu QR (RCP): zarządzający + rola „Kod" (kiosk).
 export function canShowCode(role?: Role) {
-  return role === "OWNER" || role === "ADMIN" || role === "CODE";
+  return isManager(role) || role === "CODE";
 }
 
 export async function requireSession(): Promise<SessionPayload> {

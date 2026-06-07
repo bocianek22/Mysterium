@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession, isManager } from "@/lib/auth";
+import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -30,7 +30,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const s = await getSession();
-  if (!s || !isManager(s.role))
+  if (!s || !canReservations(s.role))
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success)
@@ -68,7 +68,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const s = await getSession();
-  if (!s || !isManager(s.role))
+  if (!s || !canReservations(s.role))
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   await prisma.reservation.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });

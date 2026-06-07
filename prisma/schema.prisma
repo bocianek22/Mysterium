@@ -157,6 +157,25 @@ model Reservation {
   @@index([start])
 }
 
+// Wydatki firmowe (poza kosztami przypisanymi do rezerwacji) —
+// dodają Księgowa i Technik; wliczane do kosztów w pulpicie finansowym.
+model Expense {
+  id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  category      String   @default("INNE") // ZAKUP | NAPRAWA | KONSERWACJA | MEDIA | MARKETING | INNE
+  description   String
+  amount        Float    @default(0) // brutto zł
+  vendor        String?  // sprzedawca / kontrahent
+  invoiceNo     String?  // numer faktury/paragonu
+  invoiceUrl    String?  // skan faktury/paragonu
+  createdById   String?  // kto dodał (id konta)
+  createdByName String?  // kto dodał (nazwa — do podglądu)
+  createdAt     DateTime @default(now())
+
+  @@index([date])
+  @@index([category])
+}
+
 // Kody rabatowe
 model DiscountCode {
   id            String   @id @default(cuid())

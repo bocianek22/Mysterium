@@ -17,7 +17,10 @@ type User = {
 };
 
 const ROLES = [
-  { value: "EMPLOYEE", label: "Pracownik" },
+  { value: "EMPLOYEE", label: "Pracownik (obsługa gier)" },
+  { value: "RECEPCJA", label: "Recepcja (rezerwacje)" },
+  { value: "KSIEGOWA", label: "Księgowa (finanse + wydatki)" },
+  { value: "TECHNIK", label: "Technik (wydatki)" },
   { value: "ADMIN", label: "Admin" },
   { value: "OWNER", label: "Właściciel" },
   { value: "CODE", label: "Kod (kiosk — tylko ekran QR)" },

@@ -18,16 +18,19 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
   const month = searchParams.m !== undefined ? Number(searchParams.m) : now.getUTCMonth();
   const { start, end } = monthRange(year, month);
 
-  const [reservations, employees, vouchers, codes] = await Promise.all([
+  const [reservations, employees, vouchers, codes, expenses] = await Promise.all([
     prisma.reservation.findMany({ where: { start: { gte: start, lt: end } } }),
     prisma.user.findMany({ where: { role: "EMPLOYEE" }, include: { timesheets: { where: { date: { gte: start, lt: end } } } } }),
     prisma.voucher.findMany(),
     prisma.discountCode.findMany(),
+    prisma.expense.findMany({ where: { date: { gte: start, lt: end } } }),
   ]);
 
   const active = reservations.filter((r) => r.status !== "CANCELLED");
   const revenue = active.reduce((a, r) => a + (r.price || 0), 0);
-  const costs = active.reduce((a, r) => a + (r.fuelCost || 0) + (r.otherCost || 0), 0);
+  const resCosts = active.reduce((a, r) => a + (r.fuelCost || 0) + (r.otherCost || 0), 0);
+  const expensesTotal = expenses.reduce((a, e) => a + (e.amount || 0), 0);
+  const costs = resCosts + expensesTotal;
   const payroll = employees.reduce((a, u) => a + computePayroll(u.timesheets, u.ratesJson).brutto, 0);
   const profit = revenue - costs - payroll;
 
@@ -52,7 +55,7 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
 
   const cards = [
     { label: "Przychód", value: zl(revenue), color: "#7eebb0" },
-    { label: "Koszty (paliwo + inne)", value: zl(costs), color: "#fca5a5" },
+    { label: "Koszty (rezerwacje + wydatki)", value: zl(costs), color: "#fca5a5" },
     { label: "Wypłaty", value: zl(payroll), color: "#fca5a5" },
     { label: "Zysk", value: zl(profit), color: profit >= 0 ? "var(--gold)" : "#fca5a5", big: true },
   ];
@@ -85,7 +88,16 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <h2 className="font-serif text-sm tracking-[2px] uppercase mb-4" style={{ color: "var(--gold)" }}>Koszty</h2>
+          <ul className="text-sm flex flex-col gap-2" style={{ color: "var(--text)" }}>
+            <li className="flex justify-between"><span style={{ color: "var(--muted)" }}>Paliwo + inne (rezerwacje)</span> <b>{zl(resCosts)}</b></li>
+            <li className="flex justify-between"><span style={{ color: "var(--muted)" }}>Wydatki firmowe</span> <b>{zl(expensesTotal)}</b></li>
+            <li className="flex justify-between" style={{ borderTop: "1px solid var(--border)", paddingTop: 8 }}><span style={{ color: "var(--muted)" }}>Razem koszty</span> <b style={{ color: "#fca5a5" }}>{zl(costs)}</b></li>
+          </ul>
+          <Link href="/admin/wydatki" className="inline-block mt-4 text-xs" style={{ color: "var(--gold)" }}>🧾 Zarządzaj wydatkami →</Link>
+        </div>
         <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
           <h2 className="font-serif text-sm tracking-[2px] uppercase mb-4" style={{ color: "var(--gold)" }}>Statystyki gier</h2>
           <ul className="text-sm flex flex-col gap-2" style={{ color: "var(--text)" }}>

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getSession, isManager, canFinance } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { computePayroll, monthRange } from "@/lib/payroll";
 import { WORK_CATEGORIES } from "@/lib/categories";
@@ -12,7 +12,7 @@ const z = (n: number) => n.toFixed(2);
 export default async function WyplatyPage({ searchParams }: { searchParams: { y?: string; m?: string } }) {
   const session = await getSession();
   if (!session) redirect("/admin/login");
-  if (!isManager(session.role)) redirect("/admin");
+  if (!canFinance(session.role)) redirect("/admin");
 
   const now = new Date();
   const year = Number(searchParams.y) || now.getUTCFullYear();

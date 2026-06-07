@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { getSession, isManager } from "@/lib/auth";
+import { getSession, isManager, isOffice, canFinance, canReservations, canExpenses, roleLabel } from "@/lib/auth";
 import { monthRange } from "@/lib/earnings";
 import { computePayroll } from "@/lib/payroll";
 import CopyField from "@/components/admin/CopyField";
@@ -24,7 +24,35 @@ export default async function Dashboard() {
   const { start, end } = monthRange(now.getUTCFullYear(), now.getUTCMonth());
 
   if (isManager(session.role)) return <ManagerDashboard start={start} end={end} />;
+  if (isOffice(session.role)) return <OfficeDashboard role={session.role} name={session.name} />;
   return <EmployeeDashboard userId={session.sub} start={start} end={end} />;
+}
+
+function OfficeDashboard({ role, name }: { role: string; name?: string }) {
+  const cards: { label: string; icon: string; href: string }[] = [];
+  if (canReservations(role as any)) cards.push({ label: "Rezerwacje", icon: "📅", href: "/admin/rezerwacje" });
+  if (canFinance(role as any)) {
+    cards.push({ label: "Finanse", icon: "💰", href: "/admin/finanse" });
+    cards.push({ label: "Faktury", icon: "🧾", href: "/admin/faktury" });
+    cards.push({ label: "Wypłaty", icon: "💵", href: "/admin/wyplaty" });
+  }
+  if (canExpenses(role as any)) cards.push({ label: "Wydatki", icon: "🧾", href: "/admin/wydatki" });
+  cards.push({ label: "Mój urlop", icon: "🏖️", href: "/admin/urlopy" });
+
+  return (
+    <div>
+      <h1 className="font-display text-gold-grad text-3xl mb-2">Witaj, {name || "Zespole"}!</h1>
+      <p className="text-sm mb-8" style={{ color: "var(--muted)" }}>Panel — {roleLabel(role)}. Wybierz sekcję.</p>
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {cards.map((c) => (
+          <Link key={c.href} href={c.href} className="p-6 rounded transition-all hover:-translate-y-1 no-underline" style={{ background: "rgba(13,27,42,.7)", border: "1px solid var(--border)" }}>
+            <div className="text-2xl mb-3">{c.icon}</div>
+            <div className="font-display text-xl" style={{ color: "var(--gold)" }}>{c.label}</div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {

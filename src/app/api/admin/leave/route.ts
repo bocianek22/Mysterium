@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     orderBy: [{ status: "asc" }, { startDate: "desc" }],
     include: { user: { select: { id: true, name: true, email: true } } },
   });
-  const employees = await prisma.user.findMany({ where: { role: "EMPLOYEE" }, select: { id: true, name: true, email: true, leaveAllowance: true }, orderBy: { name: "asc" } });
+  const employees = await prisma.user.findMany({ where: { role: { in: ["EMPLOYEE", "RECEPCJA", "KSIEGOWA", "TECHNIK"] } }, select: { id: true, name: true, email: true, leaveAllowance: true }, orderBy: { name: "asc" } });
   const balances = employees.map((u) => {
     const own = items.filter((i) => i.userId === u.id);
     const used = own.filter((i) => i.status === "APPROVED" && leaveCounts(i.type)).reduce((a, i) => a + i.days, 0);

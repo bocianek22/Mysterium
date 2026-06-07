@@ -8,7 +8,7 @@ const createSchema = z.object({
   password: z.string().min(6, "Hasło min. 6 znaków"),
   name: z.string().optional(),
   phone: z.string().optional(),
-  role: z.enum(["OWNER", "ADMIN", "EMPLOYEE", "CODE"]).default("EMPLOYEE"),
+  role: z.enum(["OWNER", "ADMIN", "EMPLOYEE", "CODE", "RECEPCJA", "KSIEGOWA", "TECHNIK"]).default("EMPLOYEE"),
   active: z.coerce.boolean().default(true),
   rateDay: z.coerce.number().min(0).default(0),
   rateNight: z.coerce.number().min(0).default(0),
