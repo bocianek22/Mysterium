@@ -50,6 +50,8 @@ const schema = z.object({
   notifyOnMessage: z.coerce.boolean().optional(),
   notifyOnSchedule: z.coerce.boolean().optional(),
   clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
+  autoThankYouEnabled: z.coerce.boolean().optional(),
+  thankYouMessagePl: z.string().optional().nullable(),
 });
 
 export async function GET() {

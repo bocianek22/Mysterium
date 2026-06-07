@@ -36,6 +36,7 @@ export default function Sidebar({
     { href: "/admin", label: "Pulpit", icon: "📊" },
     ...(canReservations ? [{ href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" }] : []),
     ...(canReservations ? [{ href: "/admin/klienci", label: "Klienci", icon: "📇" }] : []),
+    ...(isManager ? [{ href: "/admin/kampanie", label: "Kampanie", icon: "📣" }] : []),
     ...(isManager ? [
       { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
       { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },

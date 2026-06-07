@@ -154,6 +154,7 @@ model Reservation {
   fuelInvoiceUrl String? // faktura za paliwo
   otherCost     Float    @default(0)  // inne koszty
   otherInvoiceUrl String? // faktura za inne koszty
+  thankedAt     DateTime? // kiedy wysłano auto-podziękowanie po grze
   createdAt     DateTime @default(now())
 
   @@index([start])
@@ -196,9 +197,21 @@ model Customer {
   @@index([phone])
 }
 
+// Kampanie marketingowe (newsletter) — log wysyłek do bazy klientów
+model Campaign {
+  id         String   @id @default(cuid())
+  subject    String
+  body       String
+  channel    String   @default("EMAIL") // EMAIL | TELEGRAM | BOTH
+  audience   String   @default("ALL")   // ALL | nazwa tagu
+  recipients Int      @default(0)
+  result     String?  // krótkie podsumowanie wysyłki
+  sentByName String?
+  createdAt  DateTime @default(now())
+}
+
 // Kody rabatowe
-model DiscountCode {
-  id            String   @id @default(cuid())
+model DiscountCode {  id            String   @id @default(cuid())
   code          String   @unique
   kind          String   @default("PERCENT") // PERCENT | AMOUNT
   value         Float    @default(0)
@@ -400,6 +413,9 @@ model SiteSettings {
   notifyOnReservation Boolean @default(true)
   notifyOnMessage     Boolean @default(true)
   notifyOnSchedule    Boolean @default(true)
+  // Auto-podziękowanie po grze + prośba o opinię Google
+  autoThankYouEnabled Boolean @default(false)
+  thankYouMessagePl   String?
   hoursPl       String  @default("Pon–Nd: 9:00–22:00")
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")

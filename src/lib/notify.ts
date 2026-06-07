@@ -53,6 +53,37 @@ export async function sendEmail(subject: string, text: string): Promise<boolean>
   }
 }
 
+// Wysyłka maila do dowolnych odbiorców (kampanie, podziękowania).
+// Wymaga RESEND_API_KEY na serwerze. Adresy w BCC, by się nie ujawniały.
+export async function sendMail(opts: {
+  to?: string;
+  bcc?: string[];
+  subject: string;
+  text: string;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    if (!process.env.RESEND_API_KEY) return { ok: false, error: "Brak RESEND_API_KEY na serwerze" };
+    const s = await settings();
+    const from = process.env.EMAIL_FROM || "Mysterium <onboarding@resend.dev>";
+    const to = opts.to || s?.email;
+    if (!to) return { ok: false, error: "Brak adresu odbiorcy" };
+    const bcc = (opts.bcc || []).filter(Boolean);
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, ...(bcc.length ? { bcc } : {}), subject: opts.subject, text: opts.text }),
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      return { ok: false, error: `Resend ${res.status}: ${t.slice(0, 180)}` };
+    }
+    return { ok: true };
+  } catch (e) {
+    console.error("[notify] sendMail", e);
+    return { ok: false, error: "Błąd połączenia z Resend" };
+  }
+}
+
 const ICON: Record<NotifyType, string> = {
   reservation: "📅",
   message: "✉️",

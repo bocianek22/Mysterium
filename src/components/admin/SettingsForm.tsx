@@ -85,6 +85,12 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Klienci — auto-podziękowanie",
+    fields: [
+      { name: "thankYouMessagePl", label: "Treść podziękowania (mail po grze)", type: "textarea", help: "Wysyłane automatycznie do klienta po zakończonej rezerwacji (jeśli ma e-mail). Link do opinii Google z sekcji „Opinie Google” dołączamy automatycznie. Zostaw puste, by użyć domyślnej treści." },
+    ],
+  },
+  {
     title: "Opinie Google",
     fields: [
       { name: "googleReviewsUrl", label: "Link do opinii Google", help: "Adres Twojej wizytówki Google (przycisk „Zobacz nas w Google” w sekcji opinii)." },
@@ -155,6 +161,12 @@ export default function SettingsForm() {
               </div>
               <NotifyTestButton />
             </div>
+          )}
+          {g.title === "Klienci — auto-podziękowanie" && (
+            <label className="flex items-center gap-3 mb-4">
+              <input type="checkbox" checked={!!data.autoThankYouEnabled} onChange={(e) => set("autoThankYouEnabled", e.target.checked)} />
+              <span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne podziękowanie e-mail po grze (wymaga klucza Resend)</span>
+            </label>
           )}
           {g.title === "Opinie Google" && (
             <label className="flex items-center gap-3 mb-4">
