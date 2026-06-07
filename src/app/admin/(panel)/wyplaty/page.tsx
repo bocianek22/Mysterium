@@ -36,7 +36,12 @@ export default async function WyplatyPage({ searchParams }: { searchParams: { y?
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-display text-gold-grad text-3xl mb-2 flex items-center gap-3"><span>💵</span> Wypłaty</h1>
-        {canFinance(session.role) && <a href={`/api/admin/export/payroll?y=${year}&m=${month}`} className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ Eksport CSV</a>}
+        {canFinance(session.role) && (
+          <div className="flex gap-2">
+            <a href={`/api/admin/export/payroll?y=${year}&m=${month}`} className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ CSV</a>
+            <a href={`/api/admin/report/payroll?y=${year}&m=${month}`} target="_blank" rel="noreferrer" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ PDF</a>
+          </div>
+        )}
       </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Wynagrodzenie liczone z kart godzin pracowników wg kategorii × ich stawki (netto / brutto).</p>
 

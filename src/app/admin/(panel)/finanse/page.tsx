@@ -67,6 +67,15 @@ export default async function FinancePage({ searchParams }: { searchParams: { y?
         <Link href={`/admin/finanse?y=${prev.y}&m=${prev.m}`} className="px-3 py-1 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>‹</Link>
         <span className="font-display text-xl" style={{ color: "var(--gold)" }}>{MONTHS[month]} {year}</span>
         <Link href={`/admin/finanse?y=${next.y}&m=${next.m}`} className="px-3 py-1 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>›</Link>
+        <div className="ml-auto flex gap-2 flex-wrap">
+          {[
+            { t: "finance", l: "Podsumowanie" },
+            { t: "expenses", l: "Wydatki" },
+            { t: "vouchers", l: "Bony" },
+          ].map((r) => (
+            <a key={r.t} href={`/api/admin/report/${r.t}?y=${year}&m=${month}`} target="_blank" rel="noreferrer" className="text-xs px-3 py-1.5 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ PDF {r.l}</a>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
