@@ -14,7 +14,7 @@ const STATUS: Record<string, { label: string; color: string }> = {
   CANCELLED: { label: "Anulowana", color: "#fca5a5" },
 };
 
-export default function ReservationsManager({ rooms, users }: { rooms: Room[]; users: SimpleUser[] }) {
+export default function ReservationsManager({ rooms, users, showFinance = true }: { rooms: Room[]; users: SimpleUser[]; showFinance?: boolean }) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -140,6 +140,7 @@ export default function ReservationsManager({ rooms, users }: { rooms: Room[]; u
                 <label className="flex items-center gap-3 pb-2"><input type="checkbox" checked={editing.paid} onChange={(e) => set("paid", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Opłacone</span></label>
               </div>
 
+              {showFinance && (
               <div className="pt-3 mt-1" style={{ borderTop: "1px solid var(--border)" }}>
                 <div className="field-label mb-2">💰 Finanse zlecenia</div>
                 <div className="grid grid-cols-2 gap-3 items-start">
@@ -155,6 +156,7 @@ export default function ReservationsManager({ rooms, users }: { rooms: Room[]; u
                   <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Faktura — inne koszty</label><FileUpload value={editing.otherInvoiceUrl || ""} onChange={(u) => set("otherInvoiceUrl", u)} accept="image/*,application/pdf" kind="doc" /></div>
                 </div>
               </div>
+              )}
               <div><label className="field-label">Notatki</label><textarea className="field-input h-20 resize-none" value={editing.notes} onChange={(e) => set("notes", e.target.value)} /></div>
             </div>
             <div className="flex gap-3 mt-8 justify-between">

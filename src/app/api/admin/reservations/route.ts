@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession, isManager } from "@/lib/auth";
+import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { pushEventToGoogle } from "@/lib/google";
 import { notify } from "@/lib/notify";
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   const to = searchParams.get("to");
   const where: any = {};
   // pracownik widzi tylko zlecenia, do których jest przypisany
-  if (!isManager(s.role)) where.assignedUserId = s.sub;
+  if (!canReservations(s.role)) where.assignedUserId = s.sub;
   if (from || to) {
     where.start = {};
     if (from) where.start.gte = new Date(from);
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isManager(s.role))
+  if (!s || !canReservations(s.role))
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success)

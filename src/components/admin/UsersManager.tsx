@@ -17,12 +17,16 @@ type User = {
 };
 
 const ROLES = [
-  { value: "EMPLOYEE", label: "Pracownik" },
+  { value: "EMPLOYEE", label: "Pracownik (obsługa gier)" },
+  { value: "RECEPCJA", label: "Recepcja (rezerwacje)" },
+  { value: "KSIEGOWA", label: "Księgowa (finanse + wydatki)" },
+  { value: "TECHNIK", label: "Technik (wydatki)" },
   { value: "ADMIN", label: "Admin" },
   { value: "OWNER", label: "Właściciel" },
+  { value: "CODE", label: "Kod (kiosk — tylko ekran QR)" },
 ];
 
-const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, canStationary: true, canMobile: true, targetHours: 0, ratesJson: "{}", contractType: "", telegramHandle: "", telegramChatId: "", calendarEmbed: "" };
+const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, canStationary: true, canMobile: true, targetHours: 0, leaveAllowance: 26, ratesJson: "{}", contractType: "", telegramHandle: "", telegramChatId: "", calendarEmbed: "" };
 
 export default function UsersManager({ currentUserId }: { currentUserId: string }) {
   const [items, setItems] = useState<User[]>([]);
@@ -133,6 +137,7 @@ export default function UsersManager({ currentUserId }: { currentUserId: string 
                 <label className="flex items-center gap-2 text-sm" style={{ color: "var(--text)" }}><input type="checkbox" checked={form.canStationary} onChange={(e) => set("canStationary", e.target.checked)} /> Stacjonarne</label>
                 <label className="flex items-center gap-2 text-sm" style={{ color: "var(--text)" }}><input type="checkbox" checked={form.canMobile} onChange={(e) => set("canMobile", e.target.checked)} /> Wyjazdy</label>
                 <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Cel godzin / mies.</label><input type="number" className="field-input" value={form.targetHours} onChange={(e) => set("targetHours", e.target.value)} /></div>
+                <div><label className="text-[10px]" style={{ color: "var(--muted)" }}>Limit urlopu (dni/rok)</label><input type="number" className="field-input" value={form.leaveAllowance} onChange={(e) => set("leaveAllowance", e.target.value)} /></div>
               </div>
             </div>
 

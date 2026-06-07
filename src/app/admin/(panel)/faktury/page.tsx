@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession, isOwner } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ const zl = (n: number) => (n || 0).toLocaleString("pl-PL", { minimumFractionDigi
 export default async function InvoicesPage() {
   const s = await getSession();
   if (!s) redirect("/admin/login");
-  if (!isOwner(s.role)) redirect("/admin");
+  if (!canFinance(s.role)) redirect("/admin");
 
   const all = await prisma.reservation.findMany({ orderBy: { start: "desc" }, include: { assignedUser: { select: { name: true, email: true } } } });
   const items = all.filter((r) => r.invoiceUrl || r.fuelInvoiceUrl || r.otherInvoiceUrl || r.price || r.fuelCost || r.otherCost);

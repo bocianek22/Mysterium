@@ -18,7 +18,13 @@ export default function Sidebar({
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  // Uprawnienia liczone inline (Sidebar to komponent kliencki — bez importu auth).
   const isManager = role === "OWNER" || role === "ADMIN";
+  const isEmployee = role === "EMPLOYEE";
+  const canFinance = isManager || role === "KSIEGOWA";
+  const canReservations = isManager || role === "RECEPCJA";
+  const canExpenses = isManager || role === "KSIEGOWA" || role === "TECHNIK";
+  const ROLE_LABELS: Record<string, string> = { OWNER: "Właściciel", ADMIN: "Admin", EMPLOYEE: "Pracownik", RECEPCJA: "Recepcja", KSIEGOWA: "Księgowa", TECHNIK: "Technik" };
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -26,24 +32,28 @@ export default function Sidebar({
     router.refresh();
   }
 
-  const operations: Item[] = isManager
-    ? [
-        { href: "/admin", label: "Pulpit", icon: "📊" },
-        { href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" },
-        { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
-        { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
-        { href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" },
-        ...(role === "OWNER" ? [
-          { href: "/admin/finanse", label: "Finanse", icon: "💰" },
-          { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
-        ] : []),
-        { href: "/admin/users", label: "Pracownicy", icon: "👥" },
-      ]
-    : [
-        { href: "/admin", label: "Pulpit", icon: "📊" },
-        { href: "/admin/grafik", label: "Mój grafik", icon: "🗓️" },
-        { href: "/admin/dyspozycyjnosc", label: "Dyspozycyjność", icon: "✋" },
-      ];
+  const operations: Item[] = [
+    { href: "/admin", label: "Pulpit", icon: "📊" },
+    ...(canReservations ? [{ href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" }] : []),
+    ...(isManager ? [
+      { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
+      { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
+      { href: "/admin/zegar", label: "Zegar (RCP)", icon: "⏱️" },
+    ] : []),
+    ...(isEmployee ? [
+      { href: "/admin/grafik", label: "Mój grafik", icon: "🗓️" },
+      { href: "/admin/clock", label: "Zegar pracy", icon: "⏱️" },
+      { href: "/admin/dyspozycyjnosc", label: "Dyspozycyjność", icon: "✋" },
+    ] : []),
+    ...(canFinance ? [{ href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" }] : []),
+    ...(canFinance ? [
+      { href: "/admin/finanse", label: "Finanse", icon: "💰" },
+      { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
+    ] : []),
+    ...(canExpenses ? [{ href: "/admin/wydatki", label: "Wydatki", icon: "🧾" }] : []),
+    { href: "/admin/urlopy", label: isManager ? "Urlopy" : "Mój urlop", icon: "🏖️" },
+    ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),
+  ];
 
   const content: Item[] = isManager
     ? [
@@ -87,7 +97,7 @@ export default function Sidebar({
         <div className="hidden md:block p-6 border-b" style={{ borderColor: "var(--border)" }}>
           <div className="font-display text-gold-grad text-xl">MYSTERIUM</div>
           <div className="font-serif text-[9px] tracking-[3px] uppercase mt-1" style={{ color: "var(--muted)" }}>
-            {isManager ? "Panel zarządzania" : "Panel pracownika"}
+            {isManager ? "Panel zarządzania" : isEmployee ? "Panel pracownika" : (ROLE_LABELS[role] || "Panel")}
           </div>
         </div>
 
@@ -112,7 +122,7 @@ export default function Sidebar({
           <div className="px-4 py-2 text-[11px] truncate" style={{ color: "var(--dim)" }}>
             {name || email}
             <span className="ml-1" style={{ color: "var(--gold)" }}>
-              · {role === "OWNER" ? "Właściciel" : role === "ADMIN" ? "Admin" : "Pracownik"}
+              · {ROLE_LABELS[role] || "Pracownik"}
             </span>
           </div>
         </div>
