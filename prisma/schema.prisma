@@ -28,6 +28,7 @@ model User {
   canStationary Boolean        @default(true)  // może obsługiwać stacjonarne
   canMobile     Boolean        @default(true)  // może jeździć na wyjazdy
   targetHours   Float          @default(0)      // cel godzin / miesiąc
+  leaveAllowance Int           @default(26)     // roczny limit dni urlopu
   // Wynagrodzenie: stawki netto/brutto per kategoria (JSON) + typ umowy
   ratesJson     String?        @default("{}")   // {stationary:{net,brutto},mobile:{...},travel:{...},cleaning:{...}}
   contractType  String?        // UoP | Zlecenie | UoD | B2B (informacyjnie)
@@ -41,7 +42,27 @@ model User {
   availability  Availability[]
   timesheets    DailyTimesheet[] @relation("Timesheets")
   clockEntries  ClockEntry[]     @relation("ClockEntries")
+  leaveRequests LeaveRequest[]   @relation("LeaveRequests")
   assignedReservations Reservation[] @relation("AssignedReservations")
+}
+
+// Wnioski urlopowe / niedostępność (z saldem dni wolnych)
+model LeaveRequest {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("LeaveRequests", fields: [userId], references: [id], onDelete: Cascade)
+  startDate DateTime  // pierwszy dzień (00:00)
+  endDate   DateTime  // ostatni dzień (włącznie)
+  days      Float     @default(0) // dni robocze wniosku (liczone przy zapisie)
+  type      String    @default("URLOP") // URLOP | NA_ZADANIE | BEZPLATNY | CHOROBA | INNE
+  reason    String?
+  status    String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  decidedBy String?   // imię/e-mail osoby rozpatrującej
+  decidedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([startDate])
 }
 
 // Rejestracja czasu pracy (RCP) — wejście/wyjście przez kod QR

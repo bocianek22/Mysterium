@@ -35,6 +35,7 @@ export default function Sidebar({
         { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
         { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
         { href: "/admin/zegar", label: "Zegar (RCP)", icon: "⏱️" },
+        { href: "/admin/urlopy", label: "Urlopy", icon: "🏖️" },
         { href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" },
         ...(canFinance ? [
           { href: "/admin/finanse", label: "Finanse", icon: "💰" },
@@ -47,6 +48,7 @@ export default function Sidebar({
         { href: "/admin/grafik", label: "Mój grafik", icon: "🗓️" },
         { href: "/admin/clock", label: "Zegar pracy", icon: "⏱️" },
         { href: "/admin/dyspozycyjnosc", label: "Dyspozycyjność", icon: "✋" },
+        { href: "/admin/urlopy", label: "Mój urlop", icon: "🏖️" },
       ];
 
   const content: Item[] = isManager
