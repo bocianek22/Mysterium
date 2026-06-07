@@ -40,7 +40,23 @@ model User {
   shifts        Shift[]
   availability  Availability[]
   timesheets    DailyTimesheet[] @relation("Timesheets")
+  clockEntries  ClockEntry[]     @relation("ClockEntries")
   assignedReservations Reservation[] @relation("AssignedReservations")
+}
+
+// Rejestracja czasu pracy (RCP) — wejście/wyjście przez kod QR
+model ClockEntry {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("ClockEntries", fields: [userId], references: [id], onDelete: Cascade)
+  clockIn   DateTime  @default(now())
+  clockOut  DateTime? // null = pracownik wciąż w pracy
+  source    String    @default("QR") // QR | MANUAL
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([clockIn])
 }
 
 // Dzienna tabelka godzin wg kategorii (wypełnia pracownik) — podstawa wypłat
@@ -349,6 +365,8 @@ model SiteSettings {
   lockmeApiUrl  String?
   lockmeApiKey  String?
   lockmeRoomId  String?
+  // RCP: sekret do podpisywania rotujących kodów QR (zegar wejście/wyjście)
+  clockSecret   String?
   // Integracja Google Calendar (pełna synchronizacja — opcjonalna)
   googleSyncEnabled  Boolean @default(false)
   googleClientEmail  String?

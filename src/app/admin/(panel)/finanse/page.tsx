@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getSession, isOwner } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { computePayroll, monthRange } from "@/lib/payroll";
 
@@ -11,7 +11,7 @@ const zl = (n: number) => n.toLocaleString("pl-PL", { minimumFractionDigits: 2, 
 export default async function FinancePage({ searchParams }: { searchParams: { y?: string; m?: string } }) {
   const s = await getSession();
   if (!s) redirect("/admin/login");
-  if (!isOwner(s.role)) redirect("/admin");
+  if (!canFinance(s.role)) redirect("/admin");
 
   const now = new Date();
   const year = Number(searchParams.y) || now.getUTCFullYear();

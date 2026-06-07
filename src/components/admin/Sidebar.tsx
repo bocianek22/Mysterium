@@ -26,14 +26,17 @@ export default function Sidebar({
     router.refresh();
   }
 
+  const canFinance = role === "OWNER" || role === "ADMIN";
+
   const operations: Item[] = isManager
     ? [
         { href: "/admin", label: "Pulpit", icon: "📊" },
         { href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" },
         { href: "/admin/grafik", label: "Grafik", icon: "🗓️" },
         { href: "/admin/auto-grafik", label: "Auto-grafik", icon: "🤖" },
+        { href: "/admin/zegar", label: "Zegar (RCP)", icon: "⏱️" },
         { href: "/admin/wyplaty", label: "Wypłaty", icon: "💵" },
-        ...(role === "OWNER" ? [
+        ...(canFinance ? [
           { href: "/admin/finanse", label: "Finanse", icon: "💰" },
           { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
         ] : []),
@@ -42,6 +45,7 @@ export default function Sidebar({
     : [
         { href: "/admin", label: "Pulpit", icon: "📊" },
         { href: "/admin/grafik", label: "Mój grafik", icon: "🗓️" },
+        { href: "/admin/clock", label: "Zegar pracy", icon: "⏱️" },
         { href: "/admin/dyspozycyjnosc", label: "Dyspozycyjność", icon: "✋" },
       ];
 

@@ -96,6 +96,7 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
   });
   const timesheets = await prisma.dailyTimesheet.findMany({ where: { userId, date: { gte: start, lt: end } } });
   const pay = computePayroll(timesheets, user.ratesJson);
+  const openClock = await prisma.clockEntry.findFirst({ where: { userId, clockOut: null }, orderBy: { clockIn: "desc" } });
   const icalUrl = `${baseUrl()}/api/calendar/${user.calendarToken}`;
 
   return (
@@ -115,6 +116,16 @@ async function EmployeeDashboard({ userId, start, end }: { userId: string; start
             <div className="font-serif text-[10px] tracking-[1px] uppercase mt-1" style={{ color: "var(--muted)" }}>{s.label}</div>
           </div>
         ))}
+      </div>
+
+      <div className="mb-6 p-4 rounded flex items-center justify-between flex-wrap gap-3" style={{ background: openClock ? "rgba(126,235,176,.08)" : "rgba(13,27,42,.6)", border: `1px solid ${openClock ? "rgba(126,235,176,.3)" : "var(--border)"}` }}>
+        <span className="text-sm flex items-center gap-2" style={{ color: "var(--text)" }}>
+          <span className="w-2 h-2 rounded-full" style={{ background: openClock ? "#7eebb0" : "var(--dim)", boxShadow: openClock ? "0 0 8px #7eebb0" : "none" }} />
+          {openClock
+            ? <>W pracy od <b style={{ color: "var(--gold)" }}>{new Date(openClock.clockIn).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" })}</b></>
+            : <span style={{ color: "var(--muted)" }}>Aktualnie poza pracą</span>}
+        </span>
+        <Link href="/admin/clock" className="text-xs px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⏱️ Zegar pracy →</Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

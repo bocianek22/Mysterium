@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { getSession, isOwner } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toCsv, csvResponse } from "@/lib/csv";
 import { computePayroll, monthRange } from "@/lib/payroll";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isOwner(s.role)) return new Response("Forbidden", { status: 403 });
+  if (!s || !canFinance(s.role)) return new Response("Forbidden", { status: 403 });
   const now = new Date();
   const year = Number(req.nextUrl.searchParams.get("y")) || now.getUTCFullYear();
   const month = req.nextUrl.searchParams.get("m") !== null ? Number(req.nextUrl.searchParams.get("m")) : now.getUTCMonth();

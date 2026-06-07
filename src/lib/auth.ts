@@ -73,6 +73,12 @@ export function isOwner(role?: Role) {
   return role === "OWNER";
 }
 
+// Kto widzi finanse (Finanse, Faktury, eksporty finansowe).
+// Dziś: Właściciel + Admin. Pod 2D dojdzie tu rola Księgowa.
+export function canFinance(role?: Role) {
+  return role === "OWNER" || role === "ADMIN";
+}
+
 export async function requireSession(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) throw new Error("UNAUTHORIZED");
