@@ -21,7 +21,7 @@ function NotifyTestButton() {
   );
 }
 
-type Field = { name: string; label: string; type?: string; help?: string; options?: { value: string; label: string }[] };
+type Field = { name: string; label: string; type?: string; help?: string; placeholder?: string; default?: string | number; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
   {
@@ -82,6 +82,25 @@ const groups: { title: string; fields: Field[] }[] = [
         { value: "STATIC", label: "Statyczny — zmienia się tylko po kliknięciu „Wygeneruj nowy kod”" },
         { value: "DYNAMIC", label: "Dynamiczny — odświeża się automatycznie co kilka sekund" },
       ], help: "Statyczny jest wygodniejszy (możesz wydrukować kod). Dynamiczny jest bezpieczniejszy — sfotografowany kod szybko wygasa." },
+    ],
+  },
+  {
+    title: "Pop-up (promocja / newsletter)",
+    fields: [
+      { name: "popupMode", label: "Tryb pop-upu", type: "select", options: [
+        { value: "OFF", label: "Wyłączony" },
+        { value: "PROMO", label: "Promocja (z przyciskiem)" },
+        { value: "NEWSLETTER", label: "Newsletter (zapis e-mail)" },
+      ], help: "Wyskakujące okno na stronie. Newsletter zapisuje e-mail do bazy klientów ze zgodą marketingową." },
+      { name: "popupTitlePl", label: "Tytuł (PL)", type: "text" },
+      { name: "popupTitleEn", label: "Tytuł (EN)", type: "text" },
+      { name: "popupTextPl", label: "Tekst (PL)", type: "textarea" },
+      { name: "popupTextEn", label: "Tekst (EN)", type: "textarea" },
+      { name: "popupImage", label: "Obrazek (opcjonalnie)", type: "image" },
+      { name: "popupCtaLabelPl", label: "Przycisk — tekst (PL)", type: "text", help: "Dla promocji: napis na przycisku. Dla newslettera: napis przy zapisie." },
+      { name: "popupCtaLabelEn", label: "Przycisk — tekst (EN)", type: "text" },
+      { name: "popupCtaUrl", label: "Przycisk — link (tylko promocja)", type: "text", placeholder: "https://..." },
+      { name: "popupDelaySec", label: "Opóźnienie pokazania (sekundy)", type: "number", default: 6 },
     ],
   },
   {

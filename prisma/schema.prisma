@@ -542,6 +542,17 @@ model SiteSettings {
   // Auto-podziękowanie po grze + prośba o opinię Google
   autoThankYouEnabled Boolean @default(false)
   thankYouMessagePl   String?
+  // Pop-up (promocja lub zapis do newslettera)
+  popupMode       String  @default("OFF") // OFF | PROMO | NEWSLETTER
+  popupTitlePl    String  @default("")
+  popupTitleEn    String  @default("")
+  popupTextPl     String  @default("")
+  popupTextEn     String  @default("")
+  popupImage      String?
+  popupCtaLabelPl String  @default("")
+  popupCtaLabelEn String  @default("")
+  popupCtaUrl     String?
+  popupDelaySec   Int     @default(6)
   hoursPl       String  @default("Pon–Nd: 9:00–22:00")
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")

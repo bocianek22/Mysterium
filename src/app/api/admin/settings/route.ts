@@ -52,6 +52,16 @@ const schema = z.object({
   clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
   autoThankYouEnabled: z.coerce.boolean().optional(),
   thankYouMessagePl: z.string().optional().nullable(),
+  popupMode: z.enum(["OFF", "PROMO", "NEWSLETTER"]).optional(),
+  popupTitlePl: z.string().optional(),
+  popupTitleEn: z.string().optional(),
+  popupTextPl: z.string().optional(),
+  popupTextEn: z.string().optional(),
+  popupImage: z.string().optional().nullable(),
+  popupCtaLabelPl: z.string().optional(),
+  popupCtaLabelEn: z.string().optional(),
+  popupCtaUrl: z.string().optional().nullable(),
+  popupDelaySec: z.coerce.number().min(0).optional(),
 });
 
 export async function GET() {

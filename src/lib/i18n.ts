@@ -146,6 +146,14 @@ const dict = {
       back: "← Wróć do bloga",
       all: "Wszystkie wpisy",
     },
+    popup: {
+      emailPlaceholder: "Twój adres e-mail",
+      subscribe: "Zapisz się",
+      sending: "Zapisywanie...",
+      success: "✓ Dziękujemy! Zapisaliśmy Cię.",
+      consent: "Zapisując się, wyrażasz zgodę na otrzymywanie informacji marketingowych.",
+      learnMore: "Sprawdź →",
+    },
     realizations: {
       label: "Realizacje",
       title: "Galeria realizacji",
@@ -302,6 +310,14 @@ const dict = {
       readMore: "Read more →",
       back: "← Back to blog",
       all: "All posts",
+    },
+    popup: {
+      emailPlaceholder: "Your e-mail address",
+      subscribe: "Subscribe",
+      sending: "Saving...",
+      success: "✓ Thank you! You're subscribed.",
+      consent: "By subscribing you agree to receive marketing information.",
+      learnMore: "Check it out →",
     },
     realizations: {
       label: "Showcase",

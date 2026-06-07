@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { entryHours } from "@/lib/clock";
 import ClockAction from "@/components/admin/ClockAction";
+import ClockScanner from "@/components/admin/ClockScanner";
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +45,12 @@ export default async function ClockPage({ searchParams }: { searchParams: { t?: 
             <span className="text-sm" style={{ color: "var(--muted)" }}>Poza pracą</span>
           </div>
         )}
-        <ClockAction token={searchParams.t} open={!!open} />
+        <ClockScanner open={!!open} />
+        {searchParams.t && (
+          <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
+            <ClockAction token={searchParams.t} open={!!open} />
+          </div>
+        )}
       </div>
 
       {recent.length > 0 && (

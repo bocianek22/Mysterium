@@ -6,12 +6,16 @@ export default function Footer({
   phone,
   email,
   address,
+  instagram,
+  facebook,
 }: {
   locale: Locale;
   t: Dict;
   phone: string;
   email: string;
   address?: string;
+  instagram?: string | null;
+  facebook?: string | null;
 }) {
   return (
     <footer
@@ -30,6 +34,20 @@ export default function Footer({
             <br />
             {email}
           </p>
+          {(instagram || facebook) && (
+            <div className="flex gap-3 mt-4">
+              {instagram && (
+                <a href={instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="flex items-center justify-center rounded-full no-underline" style={{ width: 38, height: 38, border: "1px solid var(--border)", color: "var(--gold)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+                </a>
+              )}
+              {facebook && (
+                <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex items-center justify-center rounded-full no-underline" style={{ width: 38, height: 38, border: "1px solid var(--border)", color: "var(--gold)" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h2.5l.5-3H14V9z" /></svg>
+                </a>
+              )}
+            </div>
+          )}
         </div>
         <div>
           <h4 className="font-serif text-[10px] tracking-[3px] uppercase mb-[18px]" style={{ color: "var(--gold)" }}>
