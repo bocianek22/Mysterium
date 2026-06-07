@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { getSession, isManager, isOffice, canFinance, canReservations, canExpenses, roleLabel } from "@/lib/auth";
+import { getSession, isManager, isOffice, canFinance, canReservations, canExpenses, canOps, roleLabel } from "@/lib/auth";
 import { monthRange } from "@/lib/earnings";
 import { computePayroll } from "@/lib/payroll";
 import CopyField from "@/components/admin/CopyField";
@@ -38,6 +38,10 @@ function OfficeDashboard({ role, name }: { role: string; name?: string }) {
     cards.push({ label: "Wypłaty", icon: "💵", href: "/admin/wyplaty" });
   }
   if (canExpenses(role as any)) cards.push({ label: "Wydatki", icon: "🧾", href: "/admin/wydatki" });
+  if (canOps(role as any)) {
+    cards.push({ label: "Konserwacja", icon: "🛠️", href: "/admin/konserwacja" });
+    cards.push({ label: "Checklisty", icon: "✅", href: "/admin/checklisty" });
+  }
   cards.push({ label: "Mój urlop", icon: "🏖️", href: "/admin/urlopy" });
 
   return (
@@ -73,6 +77,8 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
     prisma.user.findMany({ where: { role: "EMPLOYEE" }, include: { timesheets: { where: { date: { gte: start, lt: end } } } } }),
   ]);
 
+  const openMaintenance = await prisma.maintenanceLog.count({ where: { status: "OPEN" } });
+
   let payHours = 0;
   let payBrutto = 0;
   for (const u of monthShifts) {
@@ -87,6 +93,7 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
     { label: "Godziny w tym miesiącu", value: payHours.toFixed(1), icon: "⏱️", href: "/admin/wyplaty" },
     { label: "Wypłaty brutto (ten mies.)", value: payBrutto.toFixed(2) + " zł", icon: "💵", href: "/admin/wyplaty" },
     { label: "Nieprzeczytane wiadomości", value: unread, icon: "✉️", href: "/admin/messages", badge: unread > 0 },
+    { label: "Otwarte usterki", value: openMaintenance, icon: "🛠️", href: "/admin/konserwacja", badge: openMaintenance > 0 },
     { label: "Pracownicy", value: employees, icon: "👥", href: "/admin/users" },
     { label: "Pokoje", value: rooms, icon: "🚪", href: "/admin/rooms" },
   ];

@@ -197,6 +197,50 @@ model Customer {
   @@index([phone])
 }
 
+// Log konserwacji pokoju (resety rekwizytów, baterie, usterki, naprawy)
+model MaintenanceLog {
+  id            String    @id @default(cuid())
+  roomId        String?
+  room          Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  type          String    @default("USTERKA") // RESET | BATERIE | USTERKA | NAPRAWA | PRZEGLAD | INNE
+  description   String
+  status        String    @default("OPEN") // OPEN | DONE
+  priority      String    @default("NORMAL") // LOW | NORMAL | HIGH
+  dueDate       DateTime? // termin / przypomnienie
+  createdById   String?
+  createdByName String?
+  resolvedAt    DateTime?
+  resolvedByName String?
+  createdAt     DateTime  @default(now())
+
+  @@index([roomId])
+  @@index([status])
+}
+
+// Szablon checklisty otwarcia/zamknięcia lokalu
+model ChecklistItem {
+  id        String   @id @default(cuid())
+  kind      String   @default("OPEN") // OPEN | CLOSE
+  label     String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([kind])
+}
+
+// Odhaczenie pozycji checklisty danego dnia
+model ChecklistCheck {
+  id         String   @id @default(cuid())
+  itemId     String
+  date       DateTime // dzień (00:00 UTC)
+  doneByName String?
+  createdAt  DateTime @default(now())
+
+  @@unique([itemId, date])
+  @@index([date])
+}
+
 // Kampanie marketingowe (newsletter) — log wysyłek do bazy klientów
 model Campaign {
   id         String   @id @default(cuid())
@@ -270,6 +314,7 @@ model Room {
   imagesJson    String?  @default("[]") // galeria pokoju (JSON: tablica URLi)
   pricingJson   String?  @default("[]") // cennik wg liczby osób (JSON: [{labelPl,labelEn,price}])
   reservations  Reservation[]
+  maintenanceLogs MaintenanceLog[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
   bookingUrl    String?
   order         Int      @default(0)

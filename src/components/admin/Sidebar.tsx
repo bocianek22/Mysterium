@@ -24,6 +24,7 @@ export default function Sidebar({
   const canFinance = isManager || role === "KSIEGOWA";
   const canReservations = isManager || role === "RECEPCJA";
   const canExpenses = isManager || role === "KSIEGOWA" || role === "TECHNIK";
+  const canOps = isManager || isEmployee || role === "TECHNIK" || role === "RECEPCJA";
   const ROLE_LABELS: Record<string, string> = { OWNER: "Właściciel", ADMIN: "Admin", EMPLOYEE: "Pracownik", RECEPCJA: "Recepcja", KSIEGOWA: "Księgowa", TECHNIK: "Technik" };
 
   async function logout() {
@@ -53,6 +54,10 @@ export default function Sidebar({
       { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
     ] : []),
     ...(canExpenses ? [{ href: "/admin/wydatki", label: "Wydatki", icon: "🧾" }] : []),
+    ...(canOps ? [
+      { href: "/admin/konserwacja", label: "Konserwacja", icon: "🛠️" },
+      { href: "/admin/checklisty", label: "Checklisty", icon: "✅" },
+    ] : []),
     { href: "/admin/urlopy", label: isManager ? "Urlopy" : "Mój urlop", icon: "🏖️" },
     ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),
   ];

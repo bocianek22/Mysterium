@@ -107,6 +107,16 @@ export function canExpenses(role?: Role) {
   return isManager(role) || role === "KSIEGOWA" || role === "TECHNIK";
 }
 
+// Operacje (konserwacja, checklisty) — cały zespół oprócz kiosku/księgowej.
+export function canOps(role?: Role) {
+  return isManager(role) || role === "EMPLOYEE" || role === "TECHNIK" || role === "RECEPCJA";
+}
+
+// Zarządzanie operacjami (szablony checklist, usuwanie/zamykanie zgłoszeń).
+export function canOpsManage(role?: Role) {
+  return isManager(role) || role === "TECHNIK";
+}
+
 // Role „biurowe" o ograniczonym dostępie (nie pełni zarządzający, nie obsługa gier).
 export function isOffice(role?: Role) {
   return role === "RECEPCJA" || role === "KSIEGOWA" || role === "TECHNIK";
