@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { findOrCreateCustomer } from "@/lib/customers";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -36,10 +37,15 @@ export async function PATCH(
   if (!parsed.success)
     return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
   const d = parsed.data;
+  // Przepnij/utwórz klienta, jeśli podano dane kontaktowe.
+  const customerId = (d.customerName || d.customerEmail || d.customerPhone)
+    ? await findOrCreateCustomer({ name: d.customerName, email: d.customerEmail, phone: d.customerPhone })
+    : undefined;
   const item = await prisma.reservation.update({
     where: { id: params.id },
     data: {
       title: d.title,
+      customerId: customerId === undefined ? undefined : customerId,
       roomId: d.roomId === undefined ? undefined : d.roomId || null,
       start: d.start ? new Date(d.start) : undefined,
       end: d.end ? new Date(d.end) : undefined,

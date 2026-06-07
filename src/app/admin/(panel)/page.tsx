@@ -31,6 +31,7 @@ export default async function Dashboard() {
 function OfficeDashboard({ role, name }: { role: string; name?: string }) {
   const cards: { label: string; icon: string; href: string }[] = [];
   if (canReservations(role as any)) cards.push({ label: "Rezerwacje", icon: "📅", href: "/admin/rezerwacje" });
+  if (canReservations(role as any)) cards.push({ label: "Klienci", icon: "📇", href: "/admin/klienci" });
   if (canFinance(role as any)) {
     cards.push({ label: "Finanse", icon: "💰", href: "/admin/finanse" });
     cards.push({ label: "Faktury", icon: "🧾", href: "/admin/faktury" });

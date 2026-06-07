@@ -97,6 +97,11 @@ export function canReservations(role?: Role) {
   return isManager(role) || role === "RECEPCJA";
 }
 
+// Kto ma dostęp do bazy klientów (mini-CRM): zarządzający + Recepcja.
+export function canCustomers(role?: Role) {
+  return isManager(role) || role === "RECEPCJA";
+}
+
 // Kto może dodawać wydatki: zarządzający + Księgowa + Technik.
 export function canExpenses(role?: Role) {
   return isManager(role) || role === "KSIEGOWA" || role === "TECHNIK";

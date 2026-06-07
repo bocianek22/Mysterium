@@ -4,6 +4,7 @@ import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { pushEventToGoogle } from "@/lib/google";
 import { notify } from "@/lib/notify";
+import { findOrCreateCustomer } from "@/lib/customers";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -70,9 +71,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
   const d = parsed.data;
   const refNo = await nextRefNo();
+  const customerId = await findOrCreateCustomer({ name: d.customerName, email: d.customerEmail, phone: d.customerPhone });
   const item = await prisma.reservation.create({
     data: {
       title: d.title,
+      customerId,
       roomId: d.roomId || null,
       start: new Date(d.start),
       end: new Date(d.end),

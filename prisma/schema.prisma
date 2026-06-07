@@ -143,6 +143,8 @@ model Reservation {
   status        String   @default("NEW") // NEW | CONFIRMED | DONE | CANCELLED
   assignedUserId String?
   assignedUser  User?    @relation("AssignedReservations", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  customerId    String?
+  customer      Customer? @relation("CustomerReservations", fields: [customerId], references: [id], onDelete: SetNull)
   deposit       Float    @default(0)
   paid          Boolean  @default(false)
   refNo         String?  @unique // automatyczny numer zlecenia, np. MYS-2026-0001
@@ -174,6 +176,24 @@ model Expense {
 
   @@index([date])
   @@index([category])
+}
+
+// Klienci (mini-CRM) — baza z historią gier, zgodą marketingową i tagami
+model Customer {
+  id               String   @id @default(cuid())
+  name             String?
+  email            String?  @unique // klucz łączenia z rezerwacjami (gdy podany)
+  phone            String?
+  company          String?
+  marketingConsent Boolean  @default(false)
+  tagsJson         String?  @default("[]") // np. ["VIP","stały","firma"]
+  notes            String?
+  source           String   @default("MANUAL") // MANUAL | RESERVATION | CONTACT
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  reservations     Reservation[] @relation("CustomerReservations")
+
+  @@index([phone])
 }
 
 // Kody rabatowe
