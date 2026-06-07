@@ -42,6 +42,7 @@ export default function Footer({
               ["/eventy", t.nav.events],
               ["/bony", t.nav.vouchers],
               ["/cennik", t.nav.pricing],
+              ["/blog", t.nav.blog],
               ["/o-nas", t.nav.about],
               ["/kontakt", t.nav.contact],
             ].map(([href, label]) => (
@@ -66,6 +67,11 @@ export default function Footer({
             <li>
               <a href={`/${locale}/rezerwacja`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
                 LockMe
+              </a>
+            </li>
+            <li>
+              <a href="/sitemap.xml" className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+                {t.footer.sitemap}
               </a>
             </li>
             <li>

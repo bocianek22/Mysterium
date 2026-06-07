@@ -35,6 +35,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
     { href: `/${locale}/bony`, label: t.nav.vouchers },
     { href: `/${locale}/galeria`, label: t.nav.gallery },
     { href: `/${locale}/cennik`, label: t.nav.pricing },
+    { href: `/${locale}/blog`, label: t.nav.blog },
     { href: `/${locale}/o-nas`, label: t.nav.about },
     { href: `/${locale}/kontakt`, label: t.nav.contact },
   ];

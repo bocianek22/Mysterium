@@ -108,6 +108,25 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  posts: {
+    label: "Blog / Aktualności",
+    singular: "wpis",
+    icon: "📝",
+    listColumns: ["titlePl", "published"],
+    fields: [
+      { name: "titlePl", label: "Tytuł (PL)", type: "text", required: true },
+      { name: "titleEn", label: "Tytuł (EN)", type: "text", required: true },
+      { name: "slug", label: "Slug (adres URL)", type: "text", required: true, placeholder: "np. otwarcie-nowego-pokoju" },
+      { name: "excerptPl", label: "Zajawka (PL)", type: "textarea", help: "Krótki opis na liście wpisów i w SEO." },
+      { name: "excerptEn", label: "Zajawka (EN)", type: "textarea" },
+      { name: "contentPl", label: "Treść (PL)", type: "textarea", help: "Akapity oddzielaj pustą linią." },
+      { name: "contentEn", label: "Treść (EN)", type: "textarea" },
+      { name: "coverImage", label: "Zdjęcie główne", type: "image" },
+      { name: "order", label: "Przypięcie (większe = wyżej, 0 = wg daty)", type: "number", default: 0 },
+      { name: "published", label: "Opublikowany", type: "boolean", default: true },
+    ],
+  },
+
   gallery: {
     label: "Galeria zdjęć",
     singular: "zdjęcie",
