@@ -52,6 +52,7 @@ export default function Sidebar({
     ...(canFinance ? [
       { href: "/admin/finanse", label: "Finanse", icon: "💰" },
       { href: "/admin/faktury", label: "Faktury", icon: "🧾" },
+      { href: "/admin/platnosci", label: "Płatności", icon: "💳" },
     ] : []),
     ...(canExpenses ? [{ href: "/admin/wydatki", label: "Wydatki", icon: "🧾" }] : []),
     ...(canOps ? [

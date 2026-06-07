@@ -85,6 +85,15 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Płatności online",
+    fields: [
+      { name: "paymentProvider", label: "Operator płatności", type: "select", options: [
+        { value: "STRIPE", label: "Stripe (karty + BLIK)" },
+        { value: "P24", label: "Przelewy24 (BLIK + przelewy)" },
+      ], help: "Klucze API ustaw w zmiennych środowiskowych na Vercel: Stripe (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET) lub Przelewy24 (P24_MERCHANT_ID, P24_POS_ID, P24_CRC, P24_API_KEY, P24_SANDBOX)." },
+    ],
+  },
+  {
     title: "Pop-up (promocja / newsletter)",
     fields: [
       { name: "popupMode", label: "Tryb pop-upu", type: "select", options: [
@@ -179,6 +188,12 @@ export default function SettingsForm() {
                 <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnSchedule ?? true} onChange={(e) => set("notifyOnSchedule", e.target.checked)} /> Zmiany grafiku</label>
               </div>
               <NotifyTestButton />
+            </div>
+          )}
+          {g.title === "Płatności online" && (
+            <div className="mb-4 flex flex-col gap-2">
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.paymentsEnabled} onChange={(e) => set("paymentsEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz płatności online</span></label>
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.voucherSaleEnabled} onChange={(e) => set("voucherSaleEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Sprzedaż bonów online na stronie /bony</span></label>
             </div>
           )}
           {g.title === "Klienci — auto-podziękowanie" && (

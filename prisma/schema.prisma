@@ -387,6 +387,28 @@ model MobileOffer {
   updatedAt       DateTime @updatedAt
 }
 
+// Płatności online (Stripe / Przelewy24) — bony, eventy, zadatki
+model Payment {
+  id          String    @id @default(cuid())
+  provider    String    @default("STRIPE") // STRIPE | P24
+  purpose     String    @default("EVENT")  // VOUCHER | EVENT
+  amount      Int       @default(0)         // w groszach
+  currency    String    @default("PLN")
+  description String?
+  status      String    @default("PENDING") // PENDING | PAID | FAILED | CANCELLED
+  buyerName   String?
+  buyerEmail  String?
+  metaJson    String?   // dane do realizacji (np. wartość bonu)
+  providerRef String?   // id sesji Stripe / orderId P24
+  voucherId   String?   // utworzony bon po opłaceniu
+  paidAt      DateTime?
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+}
+
 // Blog / Aktualności (SEO)
 model Post {
   id         String   @id @default(cuid())
@@ -553,6 +575,10 @@ model SiteSettings {
   popupCtaLabelEn String  @default("")
   popupCtaUrl     String?
   popupDelaySec   Int     @default(6)
+  // Płatności online
+  paymentsEnabled Boolean @default(false)
+  paymentProvider String  @default("STRIPE") // STRIPE | P24
+  voucherSaleEnabled Boolean @default(false)  // zakup bonów online na /bony
   hoursPl       String  @default("Pon–Nd: 9:00–22:00")
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")

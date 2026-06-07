@@ -62,6 +62,9 @@ const schema = z.object({
   popupCtaLabelEn: z.string().optional(),
   popupCtaUrl: z.string().optional().nullable(),
   popupDelaySec: z.coerce.number().min(0).optional(),
+  paymentsEnabled: z.coerce.boolean().optional(),
+  paymentProvider: z.enum(["STRIPE", "P24"]).optional(),
+  voucherSaleEnabled: z.coerce.boolean().optional(),
 });
 
 export async function GET() {

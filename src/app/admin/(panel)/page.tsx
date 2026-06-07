@@ -35,6 +35,7 @@ function OfficeDashboard({ role, name }: { role: string; name?: string }) {
   if (canFinance(role as any)) {
     cards.push({ label: "Finanse", icon: "💰", href: "/admin/finanse" });
     cards.push({ label: "Faktury", icon: "🧾", href: "/admin/faktury" });
+    cards.push({ label: "Płatności", icon: "💳", href: "/admin/platnosci" });
     cards.push({ label: "Wypłaty", icon: "💵", href: "/admin/wyplaty" });
   }
   if (canExpenses(role as any)) cards.push({ label: "Wydatki", icon: "🧾", href: "/admin/wydatki" });

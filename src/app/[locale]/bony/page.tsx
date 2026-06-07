@@ -6,6 +6,7 @@ import { pageMeta } from "@/lib/seo";
 import PageHero from "@/components/site/PageHero";
 import QuoteForm from "@/components/site/QuoteForm";
 import VoucherCheck from "@/components/site/VoucherCheck";
+import VoucherBuy from "@/components/site/VoucherBuy";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +57,10 @@ export default async function VouchersPage({ params }: { params: { locale: strin
             </div>
           </div>
           <div className="reveal reveal-right">
-            <div className="sec-label" style={{ marginBottom: 6 }}>{pl ? "Zamów bon" : "Order a voucher"}</div>
+            {settings?.paymentsEnabled && settings?.voucherSaleEnabled && (
+              <div className="mb-8"><VoucherBuy locale={locale} /></div>
+            )}
+            <div className="sec-label" style={{ marginBottom: 6 }}>{pl ? "Zamów bon (kontakt)" : "Order a voucher (contact)"}</div>
             <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>{pl ? "Napisz na jaką kwotę lub grę — przygotujemy bon i podeślemy szczegóły." : "Tell us the amount or game — we'll prepare the voucher and send the details."}</p>
             <QuoteForm t={t} offerName={pl ? "Bon podarunkowy" : "Gift voucher"} whatsapp={whatsapp} />
           </div>
