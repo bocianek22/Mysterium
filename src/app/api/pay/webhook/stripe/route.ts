@@ -11,8 +11,10 @@ export async function POST(req: NextRequest) {
   try {
     const event = JSON.parse(raw);
     if (event.type === "checkout.session.completed") {
-      const paymentId = event.data?.object?.metadata?.paymentId || event.data?.object?.client_reference_id;
-      if (paymentId) await markPaidAndFulfill(paymentId);
+      const session = event.data?.object || {};
+      const paymentId = session.metadata?.paymentId || session.client_reference_id;
+      // Akceptuj tylko realnie opłacone sesje (pomijamy unpaid/async-pending).
+      if (paymentId && session.payment_status === "paid") await markPaidAndFulfill(paymentId);
     }
   } catch {
     return NextResponse.json({ error: "bad payload" }, { status: 400 });

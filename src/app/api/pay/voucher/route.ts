@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { paymentSettings, startCheckout } from "@/lib/payments";
+import { paymentSettings, startCheckout, resolveOrigin } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
 
@@ -10,13 +10,6 @@ const schema = z.object({
   buyerName: z.string().optional().nullable(),
   buyerEmail: z.string().email("Podaj poprawny e-mail"),
 });
-
-function origin(req: NextRequest) {
-  const h = req.headers;
-  const host = h.get("x-forwarded-host") || h.get("host") || "localhost:3000";
-  const proto = h.get("x-forwarded-proto") || (process.env.NODE_ENV === "production" ? "https" : "http");
-  return `${proto}://${host}`;
-}
 
 // Publiczny zakup bonu online.
 export async function POST(req: NextRequest) {
@@ -38,7 +31,7 @@ export async function POST(req: NextRequest) {
   });
 
   try {
-    const url = await startCheckout(payment.id, origin(req));
+    const url = await startCheckout(payment.id, resolveOrigin(req.headers));
     return NextResponse.json({ url });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || "Nie udało się rozpocząć płatności" }, { status: 500 });

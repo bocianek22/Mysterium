@@ -15,6 +15,16 @@ export async function paymentSettings() {
   };
 }
 
+// Bazowy adres dla URL-i zwrotnych/webhooków — preferujemy skonfigurowany adres,
+// nagłówek Host traktujemy jako fallback (ochrona przed spoofingiem przy webhookach).
+export function resolveOrigin(headers: Headers): string {
+  const env = process.env.NEXT_PUBLIC_SITE_URL;
+  if (env) return env.replace(/\/$/, "");
+  const host = headers.get("x-forwarded-host") || headers.get("host") || "localhost:3000";
+  const proto = headers.get("x-forwarded-proto") || (process.env.NODE_ENV === "production" ? "https" : "http");
+  return `${proto}://${host}`;
+}
+
 export function zl(grosze: number) {
   return (grosze / 100).toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " zł";
 }
@@ -139,12 +149,13 @@ export async function startCheckout(paymentId: string, origin: string): Promise<
   return url;
 }
 
-// Oznacza płatność jako opłaconą i realizuje (bon / event). Idempotentne.
+// Oznacza płatność jako opłaconą i realizuje (bon / event). Idempotentne (odporne na wyścig webhooków).
 export async function markPaidAndFulfill(paymentId: string) {
+  // Atomowe przejęcie: tylko jeden webhook przejdzie z PENDING/FAILED → PAID.
+  const claimed = await prisma.payment.updateMany({ where: { id: paymentId, status: { not: "PAID" } }, data: { status: "PAID", paidAt: new Date() } });
+  if (claimed.count === 0) return;
   const p = await prisma.payment.findUnique({ where: { id: paymentId } });
-  if (!p || p.status === "PAID") return;
-  await prisma.payment.update({ where: { id: p.id }, data: { status: "PAID", paidAt: new Date() } });
-
+  if (!p) return;
   if (p.purpose === "VOUCHER") {
     const code = "MYS-" + crypto.randomBytes(4).toString("hex").toUpperCase();
     const voucher = await prisma.voucher.create({
