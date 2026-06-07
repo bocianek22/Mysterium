@@ -49,6 +49,7 @@ const schema = z.object({
   notifyOnReservation: z.coerce.boolean().optional(),
   notifyOnMessage: z.coerce.boolean().optional(),
   notifyOnSchedule: z.coerce.boolean().optional(),
+  clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
 });
 
 export async function GET() {

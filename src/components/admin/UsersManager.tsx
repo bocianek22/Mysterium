@@ -20,6 +20,7 @@ const ROLES = [
   { value: "EMPLOYEE", label: "Pracownik" },
   { value: "ADMIN", label: "Admin" },
   { value: "OWNER", label: "Właściciel" },
+  { value: "CODE", label: "Kod (kiosk — tylko ekran QR)" },
 ];
 
 const empty = { email: "", password: "", name: "", phone: "", role: "EMPLOYEE", active: true, canStationary: true, canMobile: true, targetHours: 0, ratesJson: "{}", contractType: "", telegramHandle: "", telegramChatId: "", calendarEmbed: "" };

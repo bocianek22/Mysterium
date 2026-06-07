@@ -55,8 +55,16 @@ export default async function ZegarPage() {
         Rejestracja czasu pracy przez kod QR. Rzeczywiste godziny wejścia/wyjścia — do porównania z grafikiem i dokładniejszych wypłat.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6 items-start">
-        <ClockQR />
+      <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 items-start">
+        <div className="flex flex-col gap-3">
+          <ClockQR />
+          <a href="/admin/kod" target="_blank" className="text-xs text-center px-4 py-2 rounded no-underline" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>
+            🖥️ Otwórz tryb kiosk (osobny ekran / tablet)
+          </a>
+          <p className="text-[11px]" style={{ color: "var(--dim)" }}>
+            Tryb kodu (statyczny/dynamiczny) ustawisz w <a href="/admin/settings" style={{ color: "var(--gold)" }}>Ustawieniach → Zegar (RCP)</a>. Dla tabletu przy wejściu utwórz konto z rolą „Kod" w <a href="/admin/users" style={{ color: "var(--gold)" }}>Pracownikach</a>.
+          </p>
+        </div>
 
         <div className="flex flex-col gap-6">
           {/* Obecni w pracy teraz */}

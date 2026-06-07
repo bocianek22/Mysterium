@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, isManager } from "@/lib/auth";
-import { getClockSecret, resetClockSecret, makeToken, windowTtl, CLOCK_WINDOW } from "@/lib/clock";
+import { getClockConfig, resetClockSecret, makeToken, windowTtl, CLOCK_WINDOW } from "@/lib/clock";
 
 export const dynamic = "force-dynamic";
 
@@ -11,20 +11,21 @@ function origin(req: NextRequest) {
   return `${proto}://${host}`;
 }
 
-// Zwraca bieżący rotujący token + pełny URL do zaszycia w kodzie QR.
+// Zwraca bieżący token + pełny URL do zaszycia w kodzie QR oraz tryb kodu.
 export async function GET(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
-  const secret = await getClockSecret();
-  const token = makeToken(secret);
+  // Dostęp: zarządzający oraz rola „Kod" (kiosk).
+  if (!s || (!isManager(s.role) && s.role !== "CODE")) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  const { secret, mode } = await getClockConfig();
+  const token = makeToken(secret, mode);
   const url = `${origin(req)}/admin/clock?t=${token}`;
-  return NextResponse.json({ token, url, ttl: windowTtl(), window: CLOCK_WINDOW });
+  return NextResponse.json({ token, url, mode, ttl: mode === "DYNAMIC" ? windowTtl() : null, window: CLOCK_WINDOW });
 }
 
 // Regeneruje sekret — unieważnia wcześniej udostępnione/sfotografowane kody.
 export async function POST(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  if (!s || (!isManager(s.role) && s.role !== "CODE")) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   await resetClockSecret();
   return NextResponse.json({ ok: true });
 }

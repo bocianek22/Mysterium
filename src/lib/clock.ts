@@ -4,19 +4,28 @@
 import crypto from "crypto";
 import { prisma } from "./prisma";
 
-// Okno rotacji tokenu QR (sekundy) — co tyle zmienia się kod.
+export type ClockMode = "STATIC" | "DYNAMIC";
+
+// Okno rotacji tokenu QR w trybie dynamicznym (sekundy).
 export const CLOCK_WINDOW = 30;
 // Ile okien wstecz akceptujemy przy walidacji (tolerancja na opóźnienie skanu).
 const TOLERANCE_WINDOWS = 4; // 4 × 30 s ≈ do 2 minut
 
 // Pobiera (lub tworzy) sekret do podpisywania tokenów QR.
 export async function getClockSecret(): Promise<string> {
+  const { secret } = await getClockConfig();
+  return secret;
+}
+
+// Pobiera sekret + tryb kodu (STATIC = ręczna zmiana, DYNAMIC = auto-rotacja).
+export async function getClockConfig(): Promise<{ secret: string; mode: ClockMode }> {
   const s = await prisma.siteSettings.findUnique({
     where: { id: "main" },
-    select: { clockSecret: true },
+    select: { clockSecret: true, clockCodeMode: true },
   });
-  if (s?.clockSecret) return s.clockSecret;
-  return resetClockSecret();
+  const secret = s?.clockSecret || (await resetClockSecret());
+  const mode: ClockMode = s?.clockCodeMode === "DYNAMIC" ? "DYNAMIC" : "STATIC";
+  return { secret, mode };
 }
 
 // Generuje nowy sekret (unieważnia wcześniej udostępnione kody QR).
@@ -34,22 +43,29 @@ function tokenForWindow(secret: string, win: number): string {
   return crypto.createHmac("sha256", secret).update(`clock:${win}`).digest("hex").slice(0, 16);
 }
 
+// Token statyczny — stały dopóki nie wygenerujemy nowego sekretu (ręcznie).
+function staticToken(secret: string): string {
+  return crypto.createHmac("sha256", secret).update("clock:static").digest("hex").slice(0, 16);
+}
+
 export function currentWindow(now = Date.now()): number {
   return Math.floor(now / 1000 / CLOCK_WINDOW);
 }
 
-// Sekundy do końca bieżącego okna (do odliczania w panelu).
+// Sekundy do końca bieżącego okna (do odliczania w panelu, tryb dynamiczny).
 export function windowTtl(now = Date.now()): number {
   return CLOCK_WINDOW - Math.floor((now / 1000) % CLOCK_WINDOW);
 }
 
-export function makeToken(secret: string, now = Date.now()): string {
-  return tokenForWindow(secret, currentWindow(now));
+export function makeToken(secret: string, mode: ClockMode, now = Date.now()): string {
+  return mode === "DYNAMIC" ? tokenForWindow(secret, currentWindow(now)) : staticToken(secret);
 }
 
-// Weryfikuje token wobec bieżącego, kilku poprzednich i jednego przyszłego okna.
-export function verifyToken(secret: string, token: string, now = Date.now()): boolean {
+// Weryfikuje token. STATIC: porównanie ze stałym tokenem. DYNAMIC: bieżące,
+// kilka poprzednich i jedno przyszłe okno (tolerancja na opóźnienie skanu).
+export function verifyToken(secret: string, token: string, mode: ClockMode, now = Date.now()): boolean {
   if (!token) return false;
+  if (mode === "STATIC") return timingSafeEq(staticToken(secret), token);
   const win = currentWindow(now);
   for (let i = -1; i <= TOLERANCE_WINDOWS; i++) {
     if (timingSafeEq(tokenForWindow(secret, win - i), token)) return true;

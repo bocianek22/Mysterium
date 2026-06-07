@@ -8,7 +8,7 @@ const secret = new TextEncoder().encode(
   process.env.AUTH_SECRET || "dev-secret-change-me"
 );
 
-export type Role = "OWNER" | "ADMIN" | "EMPLOYEE";
+export type Role = "OWNER" | "ADMIN" | "EMPLOYEE" | "CODE";
 
 export type SessionPayload = {
   sub: string; // user id
@@ -77,6 +77,11 @@ export function isOwner(role?: Role) {
 // Dziś: Właściciel + Admin. Pod 2D dojdzie tu rola Księgowa.
 export function canFinance(role?: Role) {
   return role === "OWNER" || role === "ADMIN";
+}
+
+// Kto może wyświetlać ekran kodu QR (RCP): zarządzający + rola „Kod" (kiosk).
+export function canShowCode(role?: Role) {
+  return role === "OWNER" || role === "ADMIN" || role === "CODE";
 }
 
 export async function requireSession(): Promise<SessionPayload> {

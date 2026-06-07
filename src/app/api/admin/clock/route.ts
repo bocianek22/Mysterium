@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getClockSecret, verifyToken, entryHours, paidBreakMinutes, fmtHours } from "@/lib/clock";
+import { getClockConfig, verifyToken, entryHours, paidBreakMinutes, fmtHours } from "@/lib/clock";
 import { sendTelegram } from "@/lib/notify";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +18,9 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: "BAD_REQUEST", message: "Brak kodu — zeskanuj kod QR." }, { status: 400 });
   }
-  const secret = await getClockSecret();
-  if (!verifyToken(secret, parsed.data.t)) {
-    return NextResponse.json({ error: "EXPIRED", message: "Kod wygasł — zeskanuj świeży kod QR przy wejściu." }, { status: 400 });
+  const { secret, mode } = await getClockConfig();
+  if (!verifyToken(secret, parsed.data.t, mode)) {
+    return NextResponse.json({ error: "EXPIRED", message: "Kod nieaktualny — zeskanuj kod QR przy wejściu." }, { status: 400 });
   }
 
   const open = await prisma.clockEntry.findFirst({

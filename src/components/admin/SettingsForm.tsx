@@ -76,6 +76,15 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Zegar (RCP) — kod QR",
+    fields: [
+      { name: "clockCodeMode", label: "Tryb kodu QR", type: "select", options: [
+        { value: "STATIC", label: "Statyczny — zmienia się tylko po kliknięciu „Wygeneruj nowy kod”" },
+        { value: "DYNAMIC", label: "Dynamiczny — odświeża się automatycznie co kilka sekund" },
+      ], help: "Statyczny jest wygodniejszy (możesz wydrukować kod). Dynamiczny jest bezpieczniejszy — sfotografowany kod szybko wygasa." },
+    ],
+  },
+  {
     title: "Opinie Google",
     fields: [
       { name: "googleReviewsUrl", label: "Link do opinii Google", help: "Adres Twojej wizytówki Google (przycisk „Zobacz nas w Google” w sekcji opinii)." },

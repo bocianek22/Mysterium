@@ -365,8 +365,9 @@ model SiteSettings {
   lockmeApiUrl  String?
   lockmeApiKey  String?
   lockmeRoomId  String?
-  // RCP: sekret do podpisywania rotujących kodów QR (zegar wejście/wyjście)
+  // RCP: sekret do podpisywania kodów QR (zegar wejście/wyjście)
   clockSecret   String?
+  clockCodeMode String  @default("STATIC") // STATIC = ręczna zmiana | DYNAMIC = auto-rotacja
   // Integracja Google Calendar (pełna synchronizacja — opcjonalna)
   googleSyncEnabled  Boolean @default(false)
   googleClientEmail  String?
