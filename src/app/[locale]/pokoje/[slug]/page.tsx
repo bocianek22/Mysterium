@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 import PriceTable from "@/components/site/PriceTable";
+import RoomDecor from "@/components/site/RoomDecor";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,7 @@ export default async function RoomDetail({
         {!room.image && !themed && <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />}
         {themed && <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />}
         {themed && <div className="room-fx" aria-hidden="true" />}
+        {themed && <RoomDecor theme={theme} />}
         <div className="relative z-[1] max-w-[1000px] mx-auto">
           <Link href={`/${locale}/pokoje`} className="font-serif text-[11px] tracking-[2px] uppercase no-underline" style={{ color: "var(--gold)" }}>
             {t.common.backToRooms}
