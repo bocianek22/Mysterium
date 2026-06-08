@@ -28,7 +28,11 @@
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
+    overflow-x: clip;               /* twarda blokada przewijania w bok */
+    overscroll-behavior-x: none;    /* brak „gumowego" ślizgu na boki */
     /* ukrycie natywnych pasków przewijania (zostaje tylko złoty .scroll-progress) */
     scrollbar-width: none;          /* Firefox */
     -ms-overflow-style: none;       /* starsze Edge/IE */
@@ -38,8 +42,11 @@
     color: var(--text);
     font-family: "Raleway", sans-serif;
     font-weight: 300;
+    width: 100%;
+    max-width: 100%;
     overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
     touch-action: pan-x pan-y;
     scrollbar-width: none;
     -ms-overflow-style: none;
