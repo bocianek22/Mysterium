@@ -28,6 +28,10 @@
     touch-action: pan-x pan-y;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    overflow-x: hidden;
+    /* ukrycie natywnych pasków przewijania (zostaje tylko złoty .scroll-progress) */
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* starsze Edge/IE */
   }
   body {
     background: var(--navy-dd);
@@ -35,7 +39,10 @@
     font-family: "Raleway", sans-serif;
     font-weight: 300;
     overflow-x: hidden;
+    max-width: 100vw;
     touch-action: pan-x pan-y;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 }
 
@@ -163,6 +170,16 @@
     right: -1px;
     border-width: 0 2px 2px 0;
   }
+}
+
+/* Ukrycie natywnych pasków przewijania (Chrome / Safari / WebKit) —
+   przewijanie działa normalnie, widoczny zostaje tylko złoty pasek postępu. */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+  background: transparent !important;
 }
 
 /* Tło — szum */
@@ -646,6 +663,7 @@
 .room-decor .decor { position: absolute; }
 @keyframes decorspin { to { transform: rotate(360deg); } }
 .decor-wheel { animation: decorspin 55s linear infinite; transform-origin: 50% 50%; }
+.decor-wheel-rev { animation: decorspin 34s linear infinite reverse; transform-origin: 50% 50%; }
 @keyframes decorflame {
   0%,100% { transform: scaleY(1) scaleX(1) translateY(0); opacity: .92; }
   25% { transform: scaleY(1.16) scaleX(.94) translateY(-1px); opacity: 1; }
@@ -665,5 +683,5 @@
 .decor-needle { transform-origin: 50px 50px; animation: decorneedle 4s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .decor-wheel, .decor-flame, .decor-treasure-glow, .decor-drip, .decor-splat, .decor-needle { animation: none !important; }
+  .decor-wheel, .decor-wheel-rev, .decor-flame, .decor-treasure-glow, .decor-drip, .decor-splat, .decor-needle { animation: none !important; }
 }

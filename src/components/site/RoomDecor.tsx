@@ -16,23 +16,40 @@ function Pirate() {
   });
   return (
     <div className="room-decor" aria-hidden="true">
-      {/* koło sterowe statku */}
-      <svg className="decor decor-wheel" viewBox="0 0 120 120" style={{ right: "-34px", bottom: "-34px", width: "clamp(190px,28vw,340px)", opacity: 0.5 }}>
+      {/* koło sterowe statku — odsunięte od krawędzi */}
+      <svg className="decor decor-wheel" viewBox="0 0 120 120" style={{ right: "5%", bottom: "7%", width: "clamp(150px,22vw,290px)", opacity: 0.5 }}>
         {spokes}
         <g fill="none"><circle cx="60" cy="60" r="34" stroke="#7a5430" strokeWidth="6" /><circle cx="60" cy="60" r="34" stroke="#a9794a" strokeWidth="2" /><circle cx="60" cy="60" r="22" stroke="#6b4a2a" strokeWidth="4" /></g>
         <circle cx="60" cy="60" r="9" fill="#7a5430" />
       </svg>
-      {/* skrzynia ze skarbem */}
-      <svg className="decor" viewBox="0 0 120 92" style={{ left: "2%", bottom: "-8px", width: "clamp(130px,19vw,230px)", opacity: 0.62 }}>
-        <ellipse className="decor-treasure-glow" cx="60" cy="46" rx="42" ry="9" fill="#ffd86b" />
-        <path d="M10 46 Q60 8 110 46 Z" fill="#6b4626" stroke="#33220f" strokeWidth="2" />
-        <rect x="10" y="44" width="100" height="42" rx="4" fill="#553a1f" stroke="#33220f" strokeWidth="2" />
-        <g fill="#c9a84c" stroke="#8a6314" strokeWidth="1">
-          <rect x="28" y="12" width="7" height="74" /><rect x="85" y="12" width="7" height="74" />
-          <rect x="8" y="44" width="104" height="6" />
+      {/* OTWARTA skrzynia ze skarbem — odsunięta od krawędzi */}
+      <svg className="decor" viewBox="0 0 140 116" style={{ left: "5%", bottom: "7%", width: "clamp(150px,21vw,260px)", opacity: 0.74 }}>
+        <defs><radialGradient id="tg" cx="50%" cy="40%" r="62%"><stop offset="0" stopColor="#fff0b0" /><stop offset="60%" stopColor="#e6c067" /><stop offset="100%" stopColor="#9a6f1e" /></radialGradient></defs>
+        <ellipse className="decor-treasure-glow" cx="70" cy="50" rx="62" ry="30" fill="#ffd86b" opacity="0.5" />
+        {/* otwarte wieko odchylone do tyłu */}
+        <path d="M22 54 L30 14 L110 14 L118 54 Z" fill="#5a3a1e" stroke="#2f1e0d" strokeWidth="2" />
+        <path d="M30 18 L106 18 L112 50 L26 50 Z" fill="#6b4626" />
+        <rect x="44" y="14" width="8" height="40" fill="#c9a84c" stroke="#8a6314" /><rect x="88" y="14" width="8" height="40" fill="#c9a84c" stroke="#8a6314" />
+        <ellipse cx="70" cy="32" rx="10" ry="7" fill="#3a2512" />
+        {/* korpus */}
+        <rect x="20" y="52" width="100" height="56" rx="5" fill="#553a1f" stroke="#2f1e0d" strokeWidth="2" />
+        <rect x="40" y="52" width="9" height="56" fill="#c9a84c" stroke="#8a6314" /><rect x="91" y="52" width="9" height="56" fill="#c9a84c" stroke="#8a6314" />
+        <rect x="14" y="66" width="112" height="9" rx="2" fill="#8a6314" />
+        {/* kopiec złota */}
+        <path d="M24 60 Q70 32 116 60 Q116 66 70 62 Q24 66 24 60 Z" fill="url(#tg)" />
+        {/* monety */}
+        <g fill="#f1cd7e" stroke="#b5852f" strokeWidth="0.8">
+          <circle cx="40" cy="58" r="5" /><circle cx="54" cy="54" r="5" /><circle cx="70" cy="52" r="5.5" /><circle cx="86" cy="54" r="5" /><circle cx="100" cy="59" r="5" />
+          <circle cx="34" cy="72" r="5" /><circle cx="112" cy="72" r="5" /><circle cx="48" cy="104" r="5" /><circle cx="94" cy="104" r="5" />
         </g>
-        <rect x="53" y="40" width="14" height="16" rx="2" fill="#e0b257" stroke="#8a6314" /><circle cx="60" cy="48" r="2.5" fill="#33220f" />
-        <g fill="#ffe08a" className="decor-treasure-glow"><circle cx="40" cy="40" r="3" /><circle cx="74" cy="42" r="2.5" /><circle cx="60" cy="36" r="2" /></g>
+        {/* klejnoty */}
+        <g stroke="#ffffff" strokeOpacity="0.45" strokeWidth="0.5">
+          <polygon points="60,46 65,52 60,58 55,52" fill="#e0414f" /><polygon points="80,46 85,52 80,58 75,52" fill="#3a7de0" /><polygon points="70,42 74,47 70,52 66,47" fill="#3fb56a" />
+        </g>
+        {/* kielich */}
+        <g fill="#f1cd7e" stroke="#b5852f" strokeWidth="0.8"><path d="M96 38 L108 38 L106 46 Q102 50 98 46 Z" /><rect x="101" y="48" width="2" height="8" /><rect x="97" y="56" width="10" height="2.5" /></g>
+        {/* iskry */}
+        <g className="decor-treasure-glow" fill="#fff3c4"><circle cx="50" cy="46" r="1.6" /><circle cx="78" cy="40" r="1.4" /><circle cx="64" cy="54" r="1.2" /></g>
       </svg>
     </div>
   );
@@ -150,17 +167,47 @@ function Tomb() {
   );
 }
 
+// Realistyczna zębatka (trapezowe zęby + piasta + otwory).
+function Gear({ teeth = 12, color = "#b5852f", dark = "#5a3f17", hi = "#e0a85a" }: { teeth?: number; color?: string; dark?: string; hi?: string }) {
+  const c = 50, rb = 39, rt = 48;
+  const p = (ang: number, r: number) => `${(c + Math.cos(ang) * r).toFixed(1)},${(c + Math.sin(ang) * r).toFixed(1)}`;
+  const teethEls = Array.from({ length: teeth }).map((_, i) => {
+    const a = (i * 2 * Math.PI) / teeth;
+    const wt = (Math.PI / teeth) * 0.42, wb = (Math.PI / teeth) * 0.66;
+    return <polygon key={i} points={`${p(a - wb, rb)} ${p(a - wt, rt)} ${p(a + wt, rt)} ${p(a + wb, rb)}`} fill={color} />;
+  });
+  const holes = Array.from({ length: 6 }).map((_, i) => {
+    const a = (i * 2 * Math.PI) / 6;
+    return <circle key={i} cx={c + Math.cos(a) * 26} cy={c + Math.sin(a) * 26} r="4.5" fill={dark} />;
+  });
+  return (
+    <g>
+      {teethEls}
+      <circle cx={c} cy={c} r={rb} fill={color} stroke={dark} strokeWidth="2" />
+      <circle cx={c} cy={c} r={rb - 1} fill="none" stroke={hi} strokeWidth="1" />
+      <circle cx={c} cy={c} r="31" fill="none" stroke={dark} strokeWidth="2" />
+      {holes}
+      <circle cx={c} cy={c} r="15" fill={color} stroke={dark} strokeWidth="2" />
+      <circle cx={c} cy={c} r="6.5" fill={dark} />
+    </g>
+  );
+}
+
 function Steampunk() {
   return (
     <div className="room-decor" aria-hidden="true">
-      {/* rury */}
-      <svg className="decor" viewBox="0 0 60 200" style={{ left: "5%", top: 0, width: "clamp(40px,6vw,72px)", height: "100%", opacity: 0.5 }} preserveAspectRatio="none">
-        <rect x="14" y="0" width="20" height="200" fill="#5a4326" stroke="#2a1f12" strokeWidth="2" />
-        <rect x="10" y="40" width="28" height="10" rx="2" fill="#7a5a30" /><rect x="10" y="150" width="28" height="10" rx="2" fill="#7a5a30" />
-        <rect x="16" y="0" width="5" height="200" fill="#ffffff" opacity="0.06" />
+      {/* rura przy lewej krawędzi */}
+      <svg className="decor" viewBox="0 0 60 200" style={{ left: "3%", top: 0, width: "clamp(32px,5vw,58px)", height: "100%", opacity: 0.5 }} preserveAspectRatio="none">
+        <rect x="16" y="0" width="22" height="200" fill="#5a4326" stroke="#2a1f12" strokeWidth="2" />
+        <rect x="12" y="40" width="30" height="10" rx="2" fill="#7a5a30" /><rect x="12" y="152" width="30" height="10" rx="2" fill="#7a5a30" />
+        <rect x="20" y="0" width="5" height="200" fill="#ffffff" opacity="0.07" />
       </svg>
-      {/* manometr */}
-      <svg className="decor" viewBox="0 0 100 100" style={{ right: "7%", top: "12%", width: "clamp(90px,14vw,170px)", opacity: 0.62 }}>
+      {/* duża zębatka (góra-prawo) */}
+      <svg className="decor decor-wheel" viewBox="0 0 100 100" style={{ right: "8%", top: "8%", width: "clamp(140px,20vw,250px)", opacity: 0.5 }}><Gear teeth={14} /></svg>
+      {/* mała zębatka zazębiona (obrót w drugą stronę) */}
+      <svg className="decor decor-wheel-rev" viewBox="0 0 100 100" style={{ right: "5%", top: "29%", width: "clamp(82px,12vw,150px)", opacity: 0.46 }}><Gear teeth={10} color="#a9772a" /></svg>
+      {/* manometr (środek-lewo) */}
+      <svg className="decor" viewBox="0 0 100 100" style={{ left: "6%", top: "38%", width: "clamp(94px,14vw,170px)", opacity: 0.64 }}>
         <circle cx="50" cy="50" r="42" fill="#1c150d" stroke="#c98a3c" strokeWidth="5" />
         <circle cx="50" cy="50" r="42" fill="none" stroke="#e0a85a" strokeWidth="1.5" />
         {Array.from({ length: 11 }).map((_, i) => {
@@ -170,16 +217,8 @@ function Steampunk() {
         <g className="decor-needle"><line x1="50" y1="50" x2="74" y2="34" stroke="#ff7a3c" strokeWidth="3" strokeLinecap="round" /></g>
         <circle cx="50" cy="50" r="6" fill="#c98a3c" />
       </svg>
-      {/* dodatkowa zębatka */}
-      <svg className="decor decor-wheel" viewBox="0 0 100 100" style={{ left: "10%", bottom: "-26px", width: "clamp(120px,18vw,210px)", opacity: 0.4 }}>
-        <g fill="#c98a3c">
-          {Array.from({ length: 12 }).map((_, i) => {
-            const a = (i * 30) * (Math.PI / 180);
-            return <rect key={i} x="46" y="2" width="8" height="14" transform={`rotate(${i * 30} 50 50)`} />;
-          })}
-        </g>
-        <circle cx="50" cy="50" r="34" fill="#1c150d" stroke="#c98a3c" strokeWidth="6" /><circle cx="50" cy="50" r="10" fill="#c98a3c" />
-      </svg>
+      {/* średnia zębatka (dół-lewo) */}
+      <svg className="decor decor-wheel" viewBox="0 0 100 100" style={{ left: "9%", bottom: "8%", width: "clamp(104px,15vw,180px)", opacity: 0.42 }}><Gear teeth={12} color="#9a6f1e" /></svg>
     </div>
   );
 }
