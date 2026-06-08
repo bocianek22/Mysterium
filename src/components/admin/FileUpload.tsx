@@ -19,12 +19,27 @@ export default function FileUpload({
     setUploading(true);
     setError("");
     try {
+      // 1) Bezpośredni upload do Vercel Blob (bez limitu 4.5 MB, działa na produkcji).
+      try {
+        const { upload: blobUpload } = await import("@vercel/blob/client");
+        const blob = await blobUpload(`uploads/${file.name}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/admin/upload",
+          contentType: file.type || undefined,
+        });
+        onChange(blob.url);
+        return;
+      } catch {
+        // Brak Vercel Blob (dev/VPS) → próbujemy klasycznie (multipart na dysk).
+      }
+
+      // 2) Fallback: multipart (dev / VPS).
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (res.ok) onChange(data.url);
-      else setError(data.error || "Błąd wysyłania");
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) onChange(data.url);
+      else setError(data.error || "Błąd wysyłania pliku");
     } catch {
       setError("Błąd połączenia");
     } finally {
