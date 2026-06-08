@@ -346,6 +346,7 @@ model Room {
   reservations  Reservation[]
   maintenanceLogs MaintenanceLog[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
+  theme         String   @default("default") // motyw podstrony: default|loch|pirate|horror|occult|noir|tomb|steampunk|bunker
   bookingUrl    String?
   order         Int      @default(0)
   published     Boolean  @default(true)

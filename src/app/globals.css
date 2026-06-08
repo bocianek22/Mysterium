@@ -482,3 +482,200 @@
   .hero-key { animation: none; transform: translate(-50%, -6px) rotate(90deg); opacity: 1; }
   .hero-kh-glow, .lock-box { animation: none; }
 }
+
+/* ============================================================
+   MOTYWY PODSTRON POKOI — re-skin przez nadpisanie zmiennych
+   + animowana warstwa efektów w hero (.room-fx). Wyważone.
+   ============================================================ */
+.room-theme { position: relative; }
+.room-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.room-fx::before, .room-fx::after { content: ""; position: absolute; pointer-events: none; }
+
+/* ---------- LOCH / PIWNICA ---------- */
+.theme-loch {
+  --navy-dd: #0a0805; --navy-d: #0f0b07; --navy: #16100a; --teal-m: #1b1208; --teal: #241808;
+  --gold: #d8a24a; --gold-l: #ecc06a; --gold-ll: #f6dca0; --gold-d: #7a560f;
+  --text: #ece0cc; --muted: #9a876b; --dim: #5f5238;
+  --border: rgba(216,162,74,.16); --border-h: rgba(216,162,74,.4);
+}
+.theme-loch .room-fx {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 46px, rgba(0,0,0,.5) 46px 50px),
+    repeating-linear-gradient(90deg, transparent 0 96px, rgba(0,0,0,.45) 96px 100px),
+    linear-gradient(180deg, #1a120a, #0a0805);
+  background-blend-mode: multiply, multiply, normal;
+  opacity: .55;
+}
+.theme-loch .room-fx::before { /* kinkiet — ciepły blask migający */
+  top: 8%; right: 12%; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,176,80,.5), rgba(255,140,40,.18) 35%, transparent 68%);
+  filter: blur(6px); animation: fx-flicker 4.5s infinite;
+}
+.theme-loch .room-fx::after { /* korpus lampy */
+  top: 6%; right: calc(12% + 150px); width: 22px; height: 60px; border-radius: 4px;
+  background: linear-gradient(180deg, #d8a24a, #6b4a12); box-shadow: 0 0 18px rgba(255,160,60,.5);
+}
+@keyframes fx-flicker {
+  0%,100% { opacity: .92; } 8% { opacity: .55; } 10% { opacity: .9; }
+  20% { opacity: .7; } 22% { opacity: 1; } 40% { opacity: .85; }
+  55% { opacity: .45; } 57% { opacity: .9; } 75% { opacity: .8; } 90% { opacity: 1; }
+}
+
+/* ---------- PIRACKI ---------- */
+.theme-pirate {
+  --navy-dd: #0b1a1a; --navy-d: #0a1614; --navy: #102321; --teal-m: #0a2e2c; --teal: #0d3d3a;
+  --gold: #e0b257; --gold-l: #f1cd7e; --gold-ll: #f9e4b0; --gold-d: #8a6314;
+  --text: #efe6d2; --muted: #9fb0aa; --dim: #5a6b64;
+  --border: rgba(224,178,87,.18); --border-h: rgba(224,178,87,.42);
+}
+.theme-pirate .room-fx {
+  background:
+    repeating-linear-gradient(90deg, rgba(60,38,18,.5) 0 38px, rgba(40,24,10,.5) 38px 76px),
+    radial-gradient(ellipse at 50% 120%, rgba(13,61,58,.5), transparent 60%);
+  background-blend-mode: multiply, normal; opacity: .35;
+}
+.theme-pirate .room-fx::before { /* kołysząca się latarnia */
+  top: -10px; left: 14%; width: 120px; height: 300px; transform-origin: 50% 0;
+  background: radial-gradient(circle at 50% 78%, rgba(255,190,90,.42), transparent 60%);
+  animation: fx-sway 6s ease-in-out infinite;
+}
+.theme-pirate .room-fx::after {
+  top: 60px; left: calc(14% + 48px); width: 24px; height: 34px; border-radius: 3px;
+  background: linear-gradient(180deg,#f1cd7e,#8a6314); box-shadow: 0 0 22px rgba(255,180,80,.6);
+  transform-origin: 50% -60px; animation: fx-sway 6s ease-in-out infinite;
+}
+@keyframes fx-sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+
+/* ---------- HORROR / MROCZNY ---------- */
+.theme-horror {
+  --navy-dd: #080404; --navy-d: #0c0606; --navy: #150808; --teal-m: #160606; --teal: #1e0808;
+  --gold: #cf4636; --gold-l: #e2705f; --gold-ll: #f0a99e; --gold-d: #7a1f16;
+  --text: #e6d8d4; --muted: #8f7d7b; --dim: #5a4543;
+  --border: rgba(207,70,54,.18); --border-h: rgba(207,70,54,.45);
+}
+.theme-horror .room-fx { animation: fx-nervous 7s infinite; }
+.theme-horror .room-fx::before { /* pełzająca mgła */
+  inset: -20%; background:
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(120,30,24,.28), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 80% 70%, rgba(90,20,16,.22), transparent 60%);
+  animation: fx-drift 18s ease-in-out infinite alternate;
+}
+.theme-horror .room-fx::after { /* pulsująca winieta */
+  inset: 0; box-shadow: inset 0 0 220px 60px rgba(0,0,0,.85), inset 0 0 80px 10px rgba(120,0,0,.35);
+  animation: fx-pulse 5s ease-in-out infinite;
+}
+@keyframes fx-nervous { 0%,96%,100% { opacity: 1; } 97% { opacity: .6; } 98% { opacity: 1; } 99% { opacity: .7; } }
+@keyframes fx-drift { 0% { transform: translate(-3%, 0); } 100% { transform: translate(3%, -2%); } }
+@keyframes fx-pulse { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
+
+/* ---------- TAJEMNICZY / OKULTYZM ---------- */
+.theme-occult {
+  --navy-dd: #0a0814; --navy-d: #0d0a1a; --navy: #141029; --teal-m: #15103a; --teal: #1d1550;
+  --gold: #c9a84c; --gold-l: #e8c97a; --gold-ll: #f5e4b0; --gold-d: #6f5bb0;
+  --text: #e8e0f4; --muted: #9a8fbf; --dim: #5b5380;
+  --border: rgba(160,120,230,.18); --border-h: rgba(160,120,230,.45);
+}
+.theme-occult .room-fx::before { /* obracający się sigil */
+  top: 50%; left: 50%; width: min(560px,80vw); aspect-ratio: 1; transform: translate(-50%,-50%);
+  border-radius: 50%; border: 1px solid rgba(160,120,230,.25);
+  background:
+    repeating-conic-gradient(from 0deg, rgba(201,168,76,.12) 0 4deg, transparent 4deg 30deg),
+    radial-gradient(circle, transparent 60%, rgba(160,120,230,.10) 62%, transparent 66%);
+  -webkit-mask: radial-gradient(circle, transparent 38%, #000 40%);
+          mask: radial-gradient(circle, transparent 38%, #000 40%);
+  animation: fx-spin 60s linear infinite; opacity: .55;
+}
+.theme-occult .room-fx::after { /* migotliwy blask świec */
+  inset: 0; background: radial-gradient(ellipse 50% 40% at 50% 20%, rgba(201,168,76,.18), transparent 60%);
+  animation: fx-flicker 6s infinite;
+}
+@keyframes fx-spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+/* ---------- DETEKTYW / NOIR ---------- */
+.theme-noir {
+  --navy-dd: #0d0d0d; --navy-d: #121110; --navy: #1a1816; --teal-m: #171511; --teal: #211d16;
+  --gold: #caa15a; --gold-l: #d8bd84; --gold-ll: #efe0c0; --gold-d: #6f5a2e;
+  --text: #e9e4d8; --muted: #9a9488; --dim: #5a564c;
+  --border: rgba(202,161,90,.16); --border-h: rgba(202,161,90,.4);
+}
+.theme-noir .room-fx::before { /* cień żaluzji */
+  inset: 0; background: repeating-linear-gradient(8deg, rgba(0,0,0,.55) 0 22px, transparent 22px 52px);
+  animation: fx-blinds 14s ease-in-out infinite alternate; opacity: .5;
+}
+.theme-noir .room-fx::after { /* dryfujący dym */
+  inset: -10%; background: radial-gradient(ellipse 40% 30% at 30% 60%, rgba(220,220,210,.07), transparent 60%);
+  animation: fx-drift 22s ease-in-out infinite alternate;
+}
+@keyframes fx-blinds { 0% { transform: translateY(-12px); } 100% { transform: translateY(12px); } }
+
+/* ---------- GROBOWIEC / EGIPT ---------- */
+.theme-tomb {
+  --navy-dd: #120d06; --navy-d: #1a1209; --navy: #241a0d; --teal-m: #241a0d; --teal: #2e2210;
+  --gold: #e6c067; --gold-l: #f3d98b; --gold-ll: #faecc2; --gold-d: #93701f;
+  --text: #f1e6cc; --muted: #b09a72; --dim: #6a5a38;
+  --border: rgba(230,192,103,.2); --border-h: rgba(230,192,103,.45);
+}
+.theme-tomb .room-fx::before { /* skośna smuga światła */
+  top: -30%; left: 20%; width: 40%; height: 160%; transform: rotate(18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,220,140,.14), transparent);
+  animation: fx-pulse 9s ease-in-out infinite;
+}
+.theme-tomb .room-fx::after { /* drobinki kurzu (powtarzalne kropki unoszące się) */
+  inset: 0; background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,235,180,.5), transparent),
+    radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,235,180,.4), transparent),
+    radial-gradient(2px 2px at 40% 80%, rgba(255,235,180,.35), transparent),
+    radial-gradient(1px 1px at 85% 25%, rgba(255,235,180,.5), transparent);
+  background-size: 100% 100%; animation: fx-rise 16s linear infinite; opacity: .7;
+}
+@keyframes fx-rise { from { background-position: 0 100%, 0 100%, 0 100%, 0 100%; } to { background-position: 0 -100%, 0 -120%, 0 -90%, 0 -140%; } }
+
+/* ---------- STEAMPUNK / LABORATORIUM ---------- */
+.theme-steampunk {
+  --navy-dd: #0d0a08; --navy-d: #141009; --navy: #1c160d; --teal-m: #15110b; --teal: #20180e;
+  --gold: #c98a3c; --gold-l: #e0a85a; --gold-ll: #f2cf92; --gold-d: #7a4f1c;
+  --text: #ecdcc4; --muted: #a89576; --dim: #63543a;
+  --border: rgba(201,138,60,.2); --border-h: rgba(201,138,60,.45);
+}
+.theme-steampunk .room-fx::before { /* obracająca się zębatka */
+  top: 8%; right: 8%; width: 240px; height: 240px; border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(201,138,60,.25) 0 10deg, transparent 10deg 30deg),
+    radial-gradient(circle, transparent 52%, rgba(201,138,60,.22) 54%, transparent 60%);
+  -webkit-mask: radial-gradient(circle, transparent 22%, #000 24%);
+          mask: radial-gradient(circle, transparent 22%, #000 24%);
+  animation: fx-spin 28s linear infinite; opacity: .5;
+}
+.theme-steampunk .room-fx::after { /* świecąca rurka/filament */
+  bottom: 12%; left: 10%; width: 180px; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255,170,70,.8), transparent);
+  filter: blur(1px); animation: fx-pulse 3.5s ease-in-out infinite;
+}
+
+/* ---------- ZIMOWY BUNKIER / SYBERIA ---------- */
+.theme-bunker {
+  --navy-dd: #05080d; --navy-d: #070d15; --navy: #0b1622; --teal-m: #0a1a26; --teal: #0e2536;
+  --gold: #6fb0d8; --gold-l: #9fd0ee; --gold-ll: #cbe8f7; --gold-d: #2f6e92;
+  --text: #dceaf4; --muted: #8aa0b2; --dim: #4f6273;
+  --border: rgba(111,176,216,.2); --border-h: rgba(111,176,216,.45);
+}
+.theme-bunker .room-fx::before { /* szron na krawędziach */
+  inset: 0; box-shadow:
+    inset 0 0 120px 30px rgba(180,220,245,.10), inset 0 0 40px 4px rgba(200,230,250,.12);
+  background:
+    radial-gradient(circle at 0 0, rgba(200,230,250,.12), transparent 22%),
+    radial-gradient(circle at 100% 0, rgba(200,230,250,.12), transparent 22%),
+    radial-gradient(circle at 0 100%, rgba(200,230,250,.10), transparent 22%),
+    radial-gradient(circle at 100% 100%, rgba(200,230,250,.10), transparent 22%);
+}
+.theme-bunker .room-fx::after { /* obracające się światło alarmowe */
+  top: 6%; left: 50%; width: 480px; height: 300px; transform: translateX(-50%);
+  background: conic-gradient(from 0deg, transparent 0 30deg, rgba(255,60,40,.22) 40deg 70deg, transparent 80deg);
+  -webkit-mask: radial-gradient(ellipse at 50% 0, #000, transparent 70%);
+          mask: radial-gradient(ellipse at 50% 0, #000, transparent 70%);
+  animation: fx-spin 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-fx, .room-fx::before, .room-fx::after { animation: none !important; }
+}

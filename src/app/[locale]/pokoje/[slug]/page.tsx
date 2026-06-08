@@ -45,9 +45,10 @@ export default async function RoomDetail({
     images = [];
   }
   const bookHref = room.bookingUrl || settings?.lockmeUrl || `/${locale}/rezerwacja`;
+  const theme = (room as { theme?: string }).theme || "default";
 
   return (
-    <article>
+    <article className={`room-theme theme-${theme}`}>
       {/* HERO pokoju */}
       <section className="relative overflow-hidden pt-[140px] pb-16 px-6 md:px-[60px]">
         {room.image && (
@@ -57,6 +58,7 @@ export default async function RoomDetail({
           </>
         )}
         {!room.image && <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />}
+        {theme !== "default" && <div className="room-fx" aria-hidden="true" />}
         <div className="relative z-[1] max-w-[1000px] mx-auto">
           <Link href={`/${locale}/pokoje`} className="font-serif text-[11px] tracking-[2px] uppercase no-underline" style={{ color: "var(--gold)" }}>
             {t.common.backToRooms}
