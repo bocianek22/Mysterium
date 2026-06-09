@@ -59,6 +59,7 @@ const schema = z.object({
   notifyOnSchedule: z.coerce.boolean().optional(),
   clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
   autoThankYouEnabled: z.coerce.boolean().optional(),
+  surveyEnabled: z.coerce.boolean().optional(),
   thankYouMessagePl: z.string().optional().nullable(),
   voucherEmailSubject: z.string().optional().nullable(),
   voucherEmailBody: z.string().optional().nullable(),

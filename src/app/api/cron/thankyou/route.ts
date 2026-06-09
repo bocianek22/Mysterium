@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { sendMail } from "@/lib/notify";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
@@ -34,12 +35,27 @@ export async function GET(req: NextRequest) {
     "Dziękujemy za wizytę w Mysterium! Mamy nadzieję, że gra dostarczyła Wam emocji i dobrej zabawy.";
   const subject = "Dziękujemy za wizytę w Mysterium 🗝️";
 
+  const origin = (() => {
+    const h = req.headers;
+    if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+    const host = h.get("x-forwarded-host") || h.get("host") || "localhost:3000";
+    const proto = h.get("x-forwarded-proto") || "https";
+    return `${proto}://${host}`;
+  })();
+
   let sent = 0;
   const errors: string[] = [];
   for (const r of reservations) {
     const hello = r.customerName ? `Cześć ${r.customerName.split(" ")[0]}!\n\n` : "";
-    const review = reviewLink ? `\n\nBędzie nam bardzo miło, jeśli zostawisz opinię — to dla nas ogromne wsparcie:\n${reviewLink}` : "";
-    const text = `${hello}${base}${review}\n\nDo zobaczenia w Mysterium!`;
+    let surveyLine = "";
+    if (s.surveyEnabled) {
+      const token = crypto.randomBytes(12).toString("hex");
+      await prisma.survey.create({ data: { token, reservationId: r.id, customerName: r.customerName, customerEmail: r.customerEmail } });
+      surveyLine = `\n\nPoświęć chwilę na krótką ankietę — Twoja opinia bardzo nam pomaga:\n${origin}/pl/ankieta/${token}`;
+    }
+    // Gdy ankieta włączona, kierujemy do opinii Google z poziomu ankiety (po wysokiej ocenie).
+    const review = !s.surveyEnabled && reviewLink ? `\n\nBędzie nam bardzo miło, jeśli zostawisz opinię — to dla nas ogromne wsparcie:\n${reviewLink}` : "";
+    const text = `${hello}${base}${surveyLine}${review}\n\nDo zobaczenia w Mysterium!`;
     const res = await sendMail({ to: r.customerEmail as string, subject, text });
     if (res.ok) {
       await prisma.reservation.update({ where: { id: r.id }, data: { thankedAt: new Date() } });

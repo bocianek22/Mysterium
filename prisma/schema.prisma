@@ -414,6 +414,23 @@ model Payment {
   @@index([status])
 }
 
+// Ankiety po grze (NPS / ocena + komentarz)
+model Survey {
+  id            String    @id @default(cuid())
+  token         String    @unique
+  reservationId String?
+  customerName  String?
+  customerEmail String?
+  rating        Int?      // 1-5
+  nps           Int?      // 0-10
+  comment       String?
+  status        String    @default("PENDING") // PENDING | DONE
+  createdAt     DateTime  @default(now())
+  submittedAt   DateTime?
+
+  @@index([status])
+}
+
 // Dziennik audytu — kto co zmienił w panelu
 model AuditLog {
   id        String   @id @default(cuid())
@@ -603,6 +620,7 @@ model SiteSettings {
   notifyOnSchedule    Boolean @default(true)
   // Auto-podziękowanie po grze + prośba o opinię Google
   autoThankYouEnabled Boolean @default(false)
+  surveyEnabled       Boolean @default(false) // dołączaj ankietę po grze
   thankYouMessagePl   String?
   voucherEmailSubject String?
   voucherEmailBody    String?  // placeholdery: {code} {amount}

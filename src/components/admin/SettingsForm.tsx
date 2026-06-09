@@ -223,10 +223,16 @@ export default function SettingsForm() {
             </div>
           )}
           {g.title === "Klienci — auto-podziękowanie" && (
-            <label className="flex items-center gap-3 mb-4">
-              <input type="checkbox" checked={!!data.autoThankYouEnabled} onChange={(e) => set("autoThankYouEnabled", e.target.checked)} />
-              <span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne podziękowanie e-mail po grze (wymaga klucza Resend)</span>
-            </label>
+            <div className="mb-4 flex flex-col gap-2">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={!!data.autoThankYouEnabled} onChange={(e) => set("autoThankYouEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne podziękowanie e-mail po grze (wymaga klucza Resend)</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={!!data.surveyEnabled} onChange={(e) => set("surveyEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Dołącz krótką ankietę po grze (ocena + opinia; wyniki w „Ankiety")</span>
+              </label>
+            </div>
           )}
           {g.title === "Opinie Google" && (
             <label className="flex items-center gap-3 mb-4">
