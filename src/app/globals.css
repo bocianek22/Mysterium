@@ -508,141 +508,91 @@ body::-webkit-scrollbar {
 }
 
 /* ============================================================
-   MOTYWY PODSTRON POKOI v2 — realistyczne tekstury + atmosfera
-   Tło na cały ekran (fixed) prześwituje przez półprzezroczyste
-   sekcje (--scrim). Animowane światło: .theme-*::before (cała
-   strona) + .room-fx (oprawa w hero). Respektuje reduce-motion.
+   MOTYWY PODSTRON POKOI v4 — tło nagłówka to MEDIA właściciela
+   (zdjęcie / GIF / wideo). Motyw zmienia paletę CAŁEJ strony
+   + nakłada mgiełkę i rekwizyty/światło nad nagłówkiem.
+   Bez własnych tekstur tła. Respektuje reduce-motion.
    ============================================================ */
 .room-theme { position: relative; }
-.room-theme:not(.theme-default) {
-  --brick: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='168' height='60'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ffffff' stop-opacity='0.14'/><stop offset='0.2' stop-color='%23000000' stop-opacity='0'/><stop offset='1' stop-color='%23000000' stop-opacity='0.5'/></linearGradient><g id='b'><rect width='80' height='28' rx='2'/><rect width='80' height='28' rx='2' fill='url(%23g)'/></g></defs><rect width='168' height='60' fill='%23140d07'/><use href='%23b' x='2' y='2' fill='%235b4133'/><use href='%23b' x='86' y='2' fill='%23523a2d'/><use href='%23b' x='-40' y='31' fill='%23553e31'/><use href='%23b' x='44' y='31' fill='%235e4536'/><use href='%23b' x='128' y='31' fill='%234d372a'/><g opacity='0.55' stroke='%23120b06' stroke-width='1' fill='none'><path d='M42 3 L48 29'/><path d='M150 32 L156 58'/><path d='M96 32 L92 58'/></g><ellipse cx='120' cy='18' rx='34' ry='15' fill='%23000000' opacity='0.18'/><ellipse cx='28' cy='46' rx='26' ry='12' fill='%23000000' opacity='0.16'/></svg>");
-  --grain: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.5'/></svg>");
-  background-attachment: fixed;
-  background-repeat: repeat;
-}
-.room-theme:not(.theme-default)::before {
-  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-}
 .room-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .room-fx::before, .room-fx::after { content: ""; position: absolute; pointer-events: none; }
 
-/* ---------- LOCH / PIWNICA (cegła + kinkiet) ---------- */
+/* ---------- LOCH / PIWNICA ---------- */
 .theme-loch {
-  --scrim: rgba(6,4,2,.62); --hero-veil: radial-gradient(ellipse at 22% 18%, rgba(60,34,14,.15), transparent 45%), linear-gradient(0deg, rgba(5,3,2,.92), rgba(16,9,4,.5) 55%, rgba(24,13,6,.28));
-  --navy-dd:#070504;--navy-d:#0c0805;--navy:#130c07;--teal-m:#160f08;--teal:#201507;
+  --hero-veil: radial-gradient(ellipse at 22% 16%, rgba(255,150,60,.12), transparent 42%), linear-gradient(0deg, rgba(20,11,5,.62), rgba(34,18,8,.12) 55%, transparent 80%);
+  --navy-dd:#0a0705;--navy-d:#100b07;--navy:#18110a;--teal-m:#1a1208;--teal:#241808;
   --gold:#d49a40;--gold-l:#ecc06a;--gold-ll:#f6dca0;--gold-d:#6e4d0d;
   --text:#e7d8bf;--muted:#9a8364;--dim:#5a4d33;--border:rgba(212,154,64,.15);--border-h:rgba(212,154,64,.38);
-  background-color:#070504;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 30%, transparent 14%, rgba(0,0,0,.94) 92%), linear-gradient(rgba(96,50,24,.5), rgba(20,11,6,.9)), var(--brick);
-  background-size: 130px 130px, cover, cover, 250px 89px;
-  background-blend-mode: overlay, normal, multiply, normal;
 }
-.theme-loch::before { background: radial-gradient(circle at 21% 15%, rgba(255,176,86,.62), rgba(255,128,42,.16) 22%, transparent 48%); mix-blend-mode: screen; animation: lampflick 4.2s infinite; }
 .theme-loch .room-fx::before { top:9%; left:11%; width:360px; height:380px; border-radius:50%; background: radial-gradient(circle, rgba(255,182,92,.7), rgba(255,140,50,.18) 34%, transparent 68%); filter: blur(3px); animation: lampflick 4.2s infinite; }
 
-/* ---------- PIRACKI (drewno + latarnia) ---------- */
+/* ---------- PIRACKI ---------- */
 .theme-pirate {
-  --scrim: rgba(10,9,6,.5); --hero-veil: linear-gradient(0deg, rgba(8,12,12,.86), rgba(12,30,28,.3) 60%, transparent);
-  --navy-dd:#0b1a1a;--navy-d:#0a1614;--navy:#102321;--teal-m:#0a2e2c;--teal:#0d3d3a;
+  --hero-veil: linear-gradient(0deg, rgba(8,26,24,.6), rgba(12,40,38,.12) 55%, transparent 80%);
+  --navy-dd:#0b1a1a;--navy-d:#0c2120;--navy:#102321;--teal-m:#0a2e2c;--teal:#0d3d3a;
   --gold:#e0b257;--gold-l:#f1cd7e;--gold-ll:#f9e4b0;--gold-d:#8a6314;
   --text:#efe6d2;--muted:#a7b3ad;--dim:#5a6b64;--border:rgba(224,178,87,.18);--border-h:rgba(224,178,87,.42);
-  background-color:#0c0a07;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 120%, rgba(13,61,58,.5), transparent 55%), radial-gradient(ellipse at 50% 30%, transparent 35%, rgba(0,0,0,.72) 95%), repeating-linear-gradient(90deg, rgba(0,0,0,.5) 0 2px, transparent 2px 4px, transparent 4px 86px, rgba(0,0,0,.45) 86px 88px), repeating-linear-gradient(0deg, rgba(255,235,200,.025) 0 4px, rgba(0,0,0,.05) 4px 9px), linear-gradient(90deg, #4a3018, #5c3c20 50%, #432c16);
-  background-size: 140px 140px, cover, cover, 88px 100%, 100% 14px, cover;
-  background-blend-mode: overlay, screen, normal, normal, overlay, normal;
 }
-.theme-pirate::before { background: radial-gradient(circle at 16% 14%, rgba(255,196,96,.38), transparent 42%); mix-blend-mode: screen; animation: lampflick 6s infinite; }
 .theme-pirate .room-fx::before { top:-20px; left:15%; width:240px; height:340px; transform-origin:50% -20px; background: radial-gradient(circle at 50% 30%, rgba(255,190,90,.5), transparent 55%); animation: sway 6s ease-in-out infinite, lampflick 5s infinite; }
 .theme-pirate .room-fx::after { top:40px; left:calc(15% + 96px); width:26px; height:38px; border-radius:4px; transform-origin:50% -60px; background: linear-gradient(180deg,#f1cd7e,#7a5512); box-shadow: 0 0 26px rgba(255,180,80,.7); animation: sway 6s ease-in-out infinite; }
 
-/* ---------- HORROR / MROCZNY (cegła + mgła + miganie) ---------- */
+/* ---------- HORROR / MROCZNY ---------- */
 .theme-horror {
-  --scrim: rgba(4,1,1,.66); --hero-veil: radial-gradient(ellipse at 50% 120%, rgba(90,6,6,.4), transparent 55%), linear-gradient(0deg, rgba(3,1,1,.95), rgba(26,3,3,.55) 50%, rgba(40,4,4,.25));
-  --navy-dd:#040101;--navy-d:#080303;--navy:#120606;--teal-m:#130404;--teal:#1c0606;
+  --hero-veil: radial-gradient(ellipse at 50% 120%, rgba(120,8,8,.3), transparent 55%), linear-gradient(0deg, rgba(16,2,2,.64), rgba(50,6,6,.14) 50%, transparent 78%);
+  --navy-dd:#0a0303;--navy-d:#0f0505;--navy:#160808;--teal-m:#140505;--teal:#1c0606;
   --gold:#c83426;--gold-l:#e0584a;--gold-ll:#ef9489;--gold-d:#6e120c;
   --text:#ddc9c5;--muted:#8f7775;--dim:#523c3a;--border:rgba(200,52,38,.2);--border-h:rgba(200,52,38,.5);
-  background-color:#040101;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 28%, transparent 10%, rgba(0,0,0,.97) 88%), linear-gradient(rgba(48,10,8,.55), rgba(10,2,2,.92)), var(--brick);
-  background-size: 130px 130px, cover, cover, 230px 82px;
-  background-blend-mode: overlay, normal, multiply, normal;
 }
-.theme-horror::before { background: radial-gradient(ellipse 60% 45% at 22% 80%, rgba(150,30,24,.3), transparent 60%), radial-gradient(ellipse 50% 40% at 80% 70%, rgba(120,20,16,.22), transparent 60%); mix-blend-mode: screen; animation: fogdrift 16s ease-in-out infinite alternate, nervous 7s infinite; }
 .theme-horror .room-fx::before { inset:-20%; background: radial-gradient(ellipse 70% 50% at 30% 90%, rgba(70,12,10,.5), transparent 60%); animation: fogdrift 14s ease-in-out infinite alternate; }
-.theme-horror .room-fx::after { inset:0; box-shadow: inset 0 0 200px 50px rgba(0,0,0,.85), inset 0 0 90px 10px rgba(150,0,0,.3); animation: vpulse 5s ease-in-out infinite, nervous 6.5s infinite; }
+.theme-horror .room-fx::after { inset:0; box-shadow: inset 0 0 200px 50px rgba(0,0,0,.8), inset 0 0 90px 10px rgba(150,0,0,.28); animation: vpulse 5s ease-in-out infinite, nervous 6.5s infinite; }
 
-/* ---------- TAJEMNICZY / OKULTYZM (kamień + sigil) ---------- */
+/* ---------- TAJEMNICZY / OKULTYZM ---------- */
 .theme-occult {
-  --scrim: rgba(9,8,18,.52); --hero-veil: linear-gradient(0deg, rgba(8,7,16,.88), rgba(20,16,48,.35) 60%, transparent);
-  --navy-dd:#0a0814;--navy-d:#0d0a1a;--navy:#141029;--teal-m:#15103a;--teal:#1d1550;
+  --hero-veil: linear-gradient(0deg, rgba(12,8,28,.6), rgba(28,20,60,.14) 55%, transparent 80%);
+  --navy-dd:#0a0814;--navy-d:#0f0c20;--navy:#141029;--teal-m:#15103a;--teal:#1d1550;
   --gold:#c9a84c;--gold-l:#e8c97a;--gold-ll:#f5e4b0;--gold-d:#6f5bb0;
   --text:#e8e0f4;--muted:#9f95bf;--dim:#5b5380;--border:rgba(160,120,230,.18);--border-h:rgba(160,120,230,.45);
-  background-color:#08070f;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 30%, transparent 26%, rgba(0,0,0,.85) 95%), linear-gradient(rgba(46,38,86,.6), rgba(14,10,30,.82)), var(--brick);
-  background-size: 140px 140px, cover, cover, 360px 144px;
-  background-blend-mode: overlay, normal, multiply, normal;
 }
-.theme-occult::before { background: radial-gradient(ellipse 50% 40% at 50% 24%, rgba(201,168,76,.2), transparent 60%); mix-blend-mode: screen; animation: lampflick 6s infinite; }
 .theme-occult .room-fx::before { top:50%; left:50%; width:min(560px,82vw); aspect-ratio:1; transform: translate(-50%,-50%); border-radius:50%; border:1px solid rgba(170,130,240,.3); background: repeating-conic-gradient(from 0deg, rgba(201,168,76,.14) 0 4deg, transparent 4deg 30deg), radial-gradient(circle, transparent 60%, rgba(170,130,240,.12) 62%, transparent 66%); -webkit-mask: radial-gradient(circle, transparent 38%, #000 40%); mask: radial-gradient(circle, transparent 38%, #000 40%); animation: spinc 70s linear infinite; opacity:.6; }
 .theme-occult .room-fx::after { inset:0; background: radial-gradient(ellipse 40% 30% at 50% 20%, rgba(255,180,90,.2), transparent 55%); animation: lampflick 5s infinite; }
 
-/* ---------- DETEKTYW / NOIR (żaluzje + dym) ---------- */
+/* ---------- DETEKTYW / NOIR ---------- */
 .theme-noir {
-  --scrim: rgba(10,9,8,.5); --hero-veil: linear-gradient(0deg, rgba(10,9,8,.88), rgba(20,18,14,.4) 60%, transparent);
-  --navy-dd:#0d0d0d;--navy-d:#121110;--navy:#1a1816;--teal-m:#171511;--teal:#211d16;
+  --hero-veil: linear-gradient(0deg, rgba(10,9,8,.62), rgba(24,22,18,.12) 55%, transparent 80%);
+  --navy-dd:#0d0d0d;--navy-d:#141312;--navy:#1a1816;--teal-m:#171511;--teal:#211d16;
   --gold:#caa15a;--gold-l:#d8bd84;--gold-ll:#efe0c0;--gold-d:#6f5a2e;
   --text:#e9e4d8;--muted:#9a9488;--dim:#5a564c;--border:rgba(202,161,90,.16);--border-h:rgba(202,161,90,.4);
-  background-color:#0c0b09;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.82) 95%), linear-gradient(180deg, #1a1814, #100f0c);
-  background-size: 140px 140px, cover, cover;
-  background-blend-mode: overlay, normal, normal;
 }
-.theme-noir::before { background: repeating-linear-gradient(8deg, rgba(255,240,210,.1) 0 20px, transparent 20px 50px); mix-blend-mode: screen; animation: blinds 14s ease-in-out infinite alternate; }
 .theme-noir .room-fx::before { inset:-10%; background: repeating-linear-gradient(8deg, rgba(255,238,205,.14) 0 22px, transparent 22px 56px); animation: blinds 12s ease-in-out infinite alternate; }
 .theme-noir .room-fx::after { inset:-10%; background: radial-gradient(ellipse 40% 30% at 30% 60%, rgba(220,220,210,.08), transparent 60%); animation: steamdrift 20s ease-in-out infinite alternate; }
 
-/* ---------- GROBOWIEC / EGIPT (piaskowiec + kurz) ---------- */
+/* ---------- GROBOWIEC / EGIPT ---------- */
 .theme-tomb {
-  --scrim: rgba(14,10,5,.5); --hero-veil: linear-gradient(0deg, rgba(14,10,5,.85), rgba(40,28,12,.35) 60%, transparent);
-  --navy-dd:#120d06;--navy-d:#1a1209;--navy:#241a0d;--teal-m:#241a0d;--teal:#2e2210;
+  --hero-veil: linear-gradient(0deg, rgba(20,14,6,.6), rgba(50,36,14,.12) 55%, transparent 80%);
+  --navy-dd:#120d06;--navy-d:#1c1409;--navy:#241a0d;--teal-m:#241a0d;--teal:#2e2210;
   --gold:#e6c067;--gold-l:#f3d98b;--gold-ll:#faecc2;--gold-d:#93701f;
   --text:#f1e6cc;--muted:#b39d75;--dim:#6a5a38;--border:rgba(230,192,103,.2);--border-h:rgba(230,192,103,.45);
-  background-color:#0e0a05;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.78) 95%), linear-gradient(rgba(120,92,40,.5), rgba(50,36,16,.78)), var(--brick);
-  background-size: 140px 140px, cover, cover, 320px 128px;
-  background-blend-mode: overlay, normal, multiply, normal;
 }
-.theme-tomb::before { background: radial-gradient(circle at 82% 18%, rgba(255,190,90,.38), transparent 45%); mix-blend-mode: screen; animation: lampflick 5.5s infinite; }
 .theme-tomb .room-fx::before { top:-30%; left:24%; width:36%; height:160%; transform: rotate(16deg); background: linear-gradient(90deg, transparent, rgba(255,220,140,.16), transparent); animation: vpulse 9s ease-in-out infinite; }
 .theme-tomb .room-fx::after { inset:0; background-image: radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,235,180,.6), transparent), radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,235,180,.5), transparent), radial-gradient(2px 2px at 40% 80%, rgba(255,235,180,.4), transparent), radial-gradient(1px 1px at 85% 25%, rgba(255,235,180,.6), transparent); animation: dustrise 16s linear infinite; opacity:.75; }
 
-/* ---------- STEAMPUNK / LABORATORIUM (metal + zębatki) ---------- */
+/* ---------- STEAMPUNK / LABORATORIUM ---------- */
 .theme-steampunk {
-  --scrim: rgba(12,8,5,.52); --hero-veil: linear-gradient(0deg, rgba(12,8,5,.86), rgba(35,22,10,.35) 60%, transparent);
-  --navy-dd:#0d0a08;--navy-d:#141009;--navy:#1c160d;--teal-m:#15110b;--teal:#20180e;
+  --hero-veil: linear-gradient(0deg, rgba(16,10,5,.6), rgba(40,26,12,.12) 55%, transparent 80%);
+  --navy-dd:#0d0a08;--navy-d:#151009;--navy:#1c160d;--teal-m:#15110b;--teal:#20180e;
   --gold:#c98a3c;--gold-l:#e0a85a;--gold-ll:#f2cf92;--gold-d:#7a4f1c;
   --text:#ecdcc4;--muted:#ab9778;--dim:#63543a;--border:rgba(201,138,60,.2);--border-h:rgba(201,138,60,.45);
-  background-color:#0d0a08;
-  background-image: var(--grain), radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.8) 95%), radial-gradient(circle, rgba(0,0,0,.55) 0 3px, transparent 4px), radial-gradient(circle, rgba(255,210,150,.3) 0 2px, transparent 3px), repeating-linear-gradient(90deg, rgba(255,255,255,.015) 0 2px, rgba(0,0,0,.04) 2px 5px), linear-gradient(180deg,#2a1f14,#1a130b);
-  background-size: 140px 140px, cover, 66px 66px, 66px 66px, 100% 100%, cover;
-  background-position: 0 0, 0 0, 33px 33px, 32px 32px, 0 0, 0 0;
-  background-blend-mode: overlay, normal, normal, screen, overlay, normal;
 }
-.theme-steampunk::before { background: radial-gradient(circle at 50% 88%, rgba(255,160,60,.28), transparent 45%); mix-blend-mode: screen; animation: tubepulse 3.5s ease-in-out infinite; }
 .theme-steampunk .room-fx::before { top:8%; right:8%; width:240px; height:240px; border-radius:50%; background: repeating-conic-gradient(from 0deg, rgba(201,138,60,.3) 0 10deg, transparent 10deg 30deg), radial-gradient(circle, transparent 52%, rgba(201,138,60,.25) 54%, transparent 60%); -webkit-mask: radial-gradient(circle, transparent 22%, #000 24%); mask: radial-gradient(circle, transparent 22%, #000 24%); animation: spin 26s linear infinite; opacity:.55; }
 .theme-steampunk .room-fx::after { bottom:12%; left:10%; width:200px; height:6px; border-radius:3px; background: linear-gradient(90deg, transparent, rgba(255,170,70,.85), transparent); filter: blur(1px); animation: tubepulse 3.2s ease-in-out infinite; }
 
-/* ---------- ZIMOWY BUNKIER / SYBERIA (beton + alarm) ---------- */
+/* ---------- ZIMOWY BUNKIER / SYBERIA ---------- */
 .theme-bunker {
-  --scrim: rgba(6,10,16,.5); --hero-veil: linear-gradient(0deg, rgba(5,9,14,.86), rgba(12,28,40,.35) 60%, transparent);
-  --navy-dd:#05080d;--navy-d:#070d15;--navy:#0b1622;--teal-m:#0a1a26;--teal:#0e2536;
+  --hero-veil: linear-gradient(0deg, rgba(6,12,18,.6), rgba(14,32,46,.12) 55%, transparent 80%);
+  --navy-dd:#05080d;--navy-d:#081019;--navy:#0b1622;--teal-m:#0a1a26;--teal:#0e2536;
   --gold:#6fb0d8;--gold-l:#9fd0ee;--gold-ll:#cbe8f7;--gold-d:#2f6e92;
   --text:#dceaf4;--muted:#92a6b8;--dim:#4f6273;--border:rgba(111,176,216,.2);--border-h:rgba(111,176,216,.45);
-  background-color:#05080d;
-  background-image: var(--grain), radial-gradient(ellipse at 30% 18%, rgba(180,220,245,.06), transparent 45%), radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(0,0,0,.82) 95%), radial-gradient(ellipse at 70% 82%, rgba(0,0,0,.3), transparent 50%), linear-gradient(180deg,#16202c,#0c141d);
-  background-size: 140px 140px, cover, cover, cover, cover;
-  background-blend-mode: overlay, screen, normal, multiply, normal;
 }
-.theme-bunker::before { background: radial-gradient(ellipse 60% 40% at 50% 6%, rgba(120,180,220,.12), transparent 60%); mix-blend-mode: screen; animation: vpulse 6s ease-in-out infinite; }
 .theme-bunker .room-fx::before { inset:0; box-shadow: inset 0 0 120px 24px rgba(180,220,245,.1); background: radial-gradient(circle at 0 0, rgba(200,230,250,.14), transparent 20%), radial-gradient(circle at 100% 0, rgba(200,230,250,.14), transparent 20%), radial-gradient(circle at 0 100%, rgba(200,230,250,.1), transparent 20%), radial-gradient(circle at 100% 100%, rgba(200,230,250,.1), transparent 20%); }
 .theme-bunker .room-fx::after { top:4%; left:50%; width:520px; height:320px; transform: translateX(-50%); background: conic-gradient(from 0deg, transparent 0 28deg, rgba(255,60,40,.28) 40deg 70deg, transparent 82deg); -webkit-mask: radial-gradient(ellipse at 50% 0, #000, transparent 70%); mask: radial-gradient(ellipse at 50% 0, #000, transparent 70%); animation: spinx 4s linear infinite; }
 

@@ -48,27 +48,32 @@ export default async function RoomDetail({
   const bookHref = room.bookingUrl || settings?.lockmeUrl || `/${locale}/rezerwacja`;
   const theme = (room as { theme?: string }).theme || "default";
   const themed = theme !== "default";
-  const sectionBg = themed ? "var(--scrim)" : "var(--navy-dd)";
-  // Tło nagłówka: zdjęcie zamiast tekstury motywu (motyw zmienia tylko resztę strony)
-  const heroBg = (room as { heroBg?: string }).heroBg || "theme";
-  const heroPhoto = (room as { heroImage?: string }).heroImage || room.image || null;
-  const photoHero = themed && heroBg === "photo" && !!heroPhoto;
-  const heroImgUrl = photoHero ? heroPhoto : room.image;
+  const sectionBg = "var(--navy-dd)"; // paleta motywu nadaje kolor sekcjom
+  // Tło nagłówka = media właściciela: wideo (mp4/webm) > zdjęcie/GIF > zdjęcie główne
+  const heroVideo = (room as { heroVideo?: string }).heroVideo || null;
+  const heroImgUrl = (room as { heroImage?: string }).heroImage || room.image || null;
 
   return (
     <article className={`room-theme theme-${theme}`}>
       {/* HERO pokoju */}
       <section className="relative overflow-hidden pt-[140px] pb-16 px-6 md:px-[60px]">
-        {heroImgUrl && (
-          <>
-            <div className="absolute inset-0" style={{ backgroundImage: `url(${heroImgUrl})`, backgroundSize: "cover", backgroundPosition: "center", opacity: themed && !photoHero ? 0.55 : 1 }} />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(0deg,var(--navy-dd) 5%,rgba(4,12,20,.8) 50%,rgba(4,12,20,.7))" }} />
-          </>
+        {heroVideo ? (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay loop muted playsInline
+            poster={heroImgUrl || undefined}
+          >
+            <source src={heroVideo} />
+          </video>
+        ) : heroImgUrl ? (
+          <div className="absolute inset-0" style={{ backgroundImage: `url(${heroImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />
         )}
-        {!heroImgUrl && !themed && <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />}
-        {themed && !photoHero && <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />}
-        {themed && !photoHero && <div className="room-fx" aria-hidden="true" />}
-        {themed && !photoHero && <RoomDecor theme={theme} />}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(0deg,var(--navy-dd) 5%,rgba(4,12,20,.8) 50%,rgba(4,12,20,.7))" }} />
+        {themed && <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />}
+        {themed && <div className="room-fx" aria-hidden="true" />}
+        {themed && <RoomDecor theme={theme} />}
         <div className="relative z-[1] max-w-[1000px] mx-auto">
           <Link href={`/${locale}/pokoje`} className="font-serif text-[11px] tracking-[2px] uppercase no-underline" style={{ color: "var(--gold)" }}>
             {t.common.backToRooms}

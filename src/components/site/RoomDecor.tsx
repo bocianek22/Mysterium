@@ -88,37 +88,66 @@ function Loch() {
 }
 
 function Horror() {
+  // strugi krwi: x (%), szerokość, długość, klasa animacji
   const drips = [
-    { x: 6, h: 22, c: "d1" }, { x: 15, h: 38, c: "d2" }, { x: 27, h: 16, c: "d3" },
-    { x: 41, h: 30, c: "d4" }, { x: 55, h: 46, c: "d1" }, { x: 68, h: 20, c: "d3" },
-    { x: 80, h: 34, c: "d2" }, { x: 92, h: 26, c: "d4" },
+    { x: 5, w: 3.2, h: 26, c: "d1" }, { x: 13, w: 2.2, h: 42, c: "d2" }, { x: 24, w: 4, h: 18, c: "d3" },
+    { x: 34, w: 2.6, h: 34, c: "d4" }, { x: 46, w: 3.4, h: 52, c: "d1" }, { x: 57, w: 2, h: 24, c: "d3" },
+    { x: 67, w: 3.8, h: 38, c: "d2" }, { x: 78, w: 2.4, h: 30, c: "d4" }, { x: 88, w: 3, h: 46, c: "d1" }, { x: 95, w: 2, h: 22, c: "d3" },
   ];
+  // rozbryzgi: drobne krople wokół głównej plamy
+  const splatter = Array.from({ length: 22 }).map((_, i) => ({
+    cx: 12 + ((i * 37) % 100), cy: 10 + ((i * 53) % 80), r: 1 + ((i * 7) % 5),
+  }));
   return (
     <div className="room-decor" aria-hidden="true">
       {/* krew ściekająca z góry */}
-      <svg className="decor" preserveAspectRatio="none" viewBox="0 0 100 60" style={{ top: 0, left: 0, width: "100%", height: "34%", opacity: 0.9 }}>
-        <path d="M0 0 H100 V6 Q92 11 84 6 T68 6 T52 7 T36 5 T20 7 T0 5 Z" fill="#56090a" />
-        <g fill="#6c0d0d">
+      <svg className="decor" preserveAspectRatio="none" viewBox="0 0 100 64" style={{ top: 0, left: 0, width: "100%", height: "40%", opacity: 0.95 }}>
+        <defs>
+          <linearGradient id="bl" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#2a0303" /><stop offset="0.55" stopColor="#6a0c0c" /><stop offset="1" stopColor="#8f1414" />
+          </linearGradient>
+          <filter id="goo"><feGaussianBlur stdDeviation="0.35" /></filter>
+        </defs>
+        {/* nierówna warstwa u góry */}
+        <path d="M0 0 H100 V9 Q93 15 86 9 Q79 4 72 10 Q64 16 56 9 Q48 3 40 10 Q32 16 24 9 Q16 4 8 10 Q4 13 0 8 Z" fill="url(#bl)" filter="url(#goo)" />
+        {/* strugi z kroplą na końcu */}
+        <g fill="url(#bl)" filter="url(#goo)">
           {drips.map((d, i) => (
             <g key={i} className={`decor-drip ${d.c}`}>
-              <rect x={d.x} y="0" width="2.4" height={d.h} />
-              <circle cx={d.x + 1.2} cy={d.h} r="2" />
+              <path d={`M${d.x} 4 h${d.w} v${d.h} a${d.w / 2} ${d.w / 2} 0 0 1 -${d.w} 0 z`} />
+              <circle cx={d.x + d.w / 2} cy={d.h + 4} r={d.w * 0.8} />
             </g>
           ))}
         </g>
       </svg>
+
+      {/* smuga / rozmazana dłoń */}
+      <svg className="decor" viewBox="0 0 100 120" style={{ right: "8%", top: "30%", width: "clamp(90px,14vw,180px)", opacity: 0.42 }}>
+        <g fill="#5c0a0b" filter="url(#goo)">
+          <path d="M30 20 Q50 10 66 24 Q78 36 60 50 Q44 62 50 80 Q40 70 34 54 Q20 40 30 20 Z" />
+          <path d="M48 52 Q56 70 46 96" stroke="#5c0a0b" strokeWidth="3" fill="none" />
+          <path d="M40 54 Q44 74 36 100" stroke="#5c0a0b" strokeWidth="2.5" fill="none" />
+        </g>
+      </svg>
+
       {/* zadrapania pazurami */}
-      <svg className="decor" viewBox="0 0 120 130" style={{ right: "5%", top: "26%", width: "clamp(150px,24vw,320px)", opacity: 0.5 }}>
+      <svg className="decor" viewBox="0 0 120 130" style={{ right: "4%", top: "22%", width: "clamp(150px,24vw,320px)", opacity: 0.5 }}>
         <g stroke="#4a0708" strokeWidth="3" fill="none" strokeLinecap="round">
           <path d="M8 6 C36 40 64 72 96 122" /><path d="M26 2 C52 38 78 70 108 118" /><path d="M44 4 C68 36 92 70 118 112" />
         </g>
       </svg>
-      {/* rozbryzgi krwi */}
-      <svg className="decor decor-splat" viewBox="0 0 120 100" style={{ left: "4%", bottom: "4%", width: "clamp(120px,20vw,240px)", opacity: 0.55 }}>
-        <g fill="#5a0a0b">
-          <ellipse cx="40" cy="60" rx="30" ry="20" /><circle cx="74" cy="44" r="9" /><circle cx="86" cy="64" r="6" />
-          <circle cx="18" cy="40" r="5" /><circle cx="64" cy="80" r="7" /><circle cx="96" cy="40" r="3" /><circle cx="14" cy="70" r="3.5" />
+
+      {/* rozbryzg z kroplami */}
+      <svg className="decor decor-splat" viewBox="0 0 120 100" style={{ left: "4%", bottom: "10%", width: "clamp(130px,22vw,270px)", opacity: 0.6 }}>
+        <g fill="#5a0a0b" filter="url(#goo)">
+          <ellipse cx="42" cy="56" rx="28" ry="19" /><ellipse cx="66" cy="44" rx="12" ry="9" /><circle cx="82" cy="62" r="6" />
+          {splatter.map((s, i) => <circle key={i} cx={s.cx} cy={s.cy} r={s.r} />)}
         </g>
+      </svg>
+
+      {/* kałuża u dołu */}
+      <svg className="decor" preserveAspectRatio="none" viewBox="0 0 100 22" style={{ left: 0, bottom: 0, width: "100%", height: "13%", opacity: 0.55 }}>
+        <path d="M0 22 H100 V11 Q82 4 64 10 Q46 16 28 9 Q14 4 0 11 Z" fill="#3e0505" filter="url(#goo)" />
       </svg>
     </div>
   );
