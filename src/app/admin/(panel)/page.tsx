@@ -7,6 +7,7 @@ import { computePayroll } from "@/lib/payroll";
 import CopyField from "@/components/admin/CopyField";
 import EmployeeCosts from "@/components/admin/EmployeeCosts";
 import TimesheetWidget from "@/components/admin/TimesheetWidget";
+import PanelAlerts from "@/components/admin/PanelAlerts";
 
 export const dynamic = "force-dynamic";
 
@@ -109,6 +110,7 @@ async function ManagerDashboard({ start, end }: { start: Date; end: Date }) {
       <p className="text-sm mb-8" style={{ color: "var(--muted)" }}>
         Przegląd działalności Mysterium.
       </p>
+      <PanelAlerts />
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="relative p-6 rounded transition-all hover:-translate-y-1 no-underline" style={{ background: "rgba(13,27,42,.7)", border: "1px solid var(--border)" }}>
