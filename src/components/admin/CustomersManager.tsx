@@ -5,7 +5,7 @@ const zl = (n: number) => (n || 0).toLocaleString("pl-PL", { minimumFractionDigi
 const date = (d?: string | null) => (d ? new Date(d).toLocaleDateString("pl-PL", { day: "2-digit", month: "2-digit", year: "2-digit" }) : "—");
 const SUGGESTED_TAGS = ["VIP", "stały", "firma"];
 
-type Row = { id: string; name?: string; email?: string; phone?: string; company?: string; marketingConsent: boolean; tags: string[]; visits: number; spend: number; lastVisit?: string | null };
+type Row = { id: string; name?: string; email?: string; phone?: string; company?: string; marketingConsent: boolean; tags: string[]; visits: number; spend: number; points: number; lastVisit?: string | null };
 
 export default function CustomersManager() {
   const [items, setItems] = useState<Row[]>([]);
@@ -19,6 +19,11 @@ export default function CustomersManager() {
     if (res.ok) { const d = await res.json(); setItems(d.items); setMeta({ total: d.total, consented: d.consented }); }
   }, [q]);
   useEffect(() => { const t = setTimeout(load, 250); return () => clearTimeout(t); }, [load]);
+
+  async function adjustPoints(id: string, delta: number) {
+    await fetch(`/api/admin/customers/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pointsDelta: delta }) });
+    load();
+  }
 
   async function backfill() {
     setMsg("Importuję…");
@@ -51,7 +56,7 @@ export default function CustomersManager() {
         <div className="overflow-x-auto rounded" style={{ border: "1px solid var(--border)" }}>
           <table className="w-full text-sm" style={{ color: "var(--text)" }}>
             <thead><tr style={{ background: "rgba(201,168,76,.06)", color: "var(--gold)" }}>
-              {["Klient", "Kontakt", "Tagi", "Gry", "Wydał", "Ostatnia", "Zgoda"].map((h) => <th key={h} className="text-left font-serif text-[10px] tracking-[1px] uppercase px-3 py-3">{h}</th>)}
+              {["Klient", "Kontakt", "Tagi", "Gry", "Wydał", "Punkty", "Ostatnia", "Zgoda"].map((h) => <th key={h} className="text-left font-serif text-[10px] tracking-[1px] uppercase px-3 py-3">{h}</th>)}
             </tr></thead>
             <tbody>
               {items.map((c) => (
@@ -61,6 +66,13 @@ export default function CustomersManager() {
                   <td className="px-3 py-2">{c.tags.map((t) => <span key={t} className="inline-block text-[10px] px-2 py-[1px] rounded mr-1" style={{ background: "rgba(201,168,76,.12)", color: "var(--gold)" }}>{t}</span>)}</td>
                   <td className="px-3 py-2">{c.visits}</td>
                   <td className="px-3 py-2">{zl(c.spend)}</td>
+                  <td className="px-3 py-2">
+                    <span className="inline-flex items-center gap-1">
+                      <button onClick={(e) => { e.stopPropagation(); adjustPoints(c.id, -1); }} className="w-5 h-5 rounded text-xs leading-none" style={{ border: "1px solid var(--border)", color: "var(--muted)" }}>−</button>
+                      <b style={{ color: "var(--gold)", minWidth: 18, textAlign: "center" }}>{c.points ?? 0}</b>
+                      <button onClick={(e) => { e.stopPropagation(); adjustPoints(c.id, 1); }} className="w-5 h-5 rounded text-xs leading-none" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>+</button>
+                    </span>
+                  </td>
                   <td className="px-3 py-2" style={{ color: "var(--muted)" }}>{date(c.lastVisit)}</td>
                   <td className="px-3 py-2">{c.marketingConsent ? "✅" : "—"}</td>
                 </tr>

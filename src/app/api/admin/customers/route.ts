@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const agg = aggregate(c.reservations);
     return {
       id: c.id, name: c.name, email: c.email, phone: c.phone, company: c.company,
-      marketingConsent: c.marketingConsent, tags: parseTags(c.tagsJson), notes: c.notes, source: c.source,
+      marketingConsent: c.marketingConsent, tags: parseTags(c.tagsJson), notes: c.notes, source: c.source, points: c.points,
       ...agg,
     };
   });

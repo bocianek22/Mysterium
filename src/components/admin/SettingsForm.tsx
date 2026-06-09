@@ -131,6 +131,15 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Szablony e-maili (bony / płatności)",
+    fields: [
+      { name: "voucherEmailSubject", label: "Bon — temat", placeholder: "Twój bon podarunkowy Mysterium 🎁" },
+      { name: "voucherEmailBody", label: "Bon — treść", type: "textarea", help: "Placeholdery: {code} (kod bonu), {amount} (wartość). Puste = domyślna treść." },
+      { name: "payEmailSubject", label: "Płatność — temat", placeholder: "Potwierdzenie płatności — Mysterium" },
+      { name: "payEmailBody", label: "Płatność — treść", type: "textarea", help: "Placeholdery: {amount} (kwota), {description} (opis). Puste = domyślna treść." },
+    ],
+  },
+  {
     title: "Godziny otwarcia i wolne terminy",
     fields: [
       { name: "slotStepMin", label: "Długość slotu rezerwacji (min)", type: "number", default: 90, help: "Co ile minut zaczyna się nowa gra (np. 90)." },

@@ -12,6 +12,8 @@ const schema = z.object({
   marketingConsent: z.coerce.boolean().optional(),
   tags: z.array(z.string()).optional(),
   notes: z.string().optional().nullable(),
+  points: z.coerce.number().int().optional(),
+  pointsDelta: z.coerce.number().int().optional(),
 });
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -51,6 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       marketingConsent: d.marketingConsent,
       tagsJson: d.tags !== undefined ? stringifyTags(d.tags) : undefined,
       notes: d.notes ?? undefined,
+      points: d.pointsDelta !== undefined ? { increment: d.pointsDelta } : d.points !== undefined ? Math.max(0, d.points) : undefined,
     },
   });
   return NextResponse.json({ item });

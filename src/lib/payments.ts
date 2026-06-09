@@ -156,6 +156,7 @@ export async function markPaidAndFulfill(paymentId: string) {
   if (claimed.count === 0) return;
   const p = await prisma.payment.findUnique({ where: { id: paymentId } });
   if (!p) return;
+  const settings = await prisma.siteSettings.findUnique({ where: { id: "main" } });
   if (p.purpose === "VOUCHER") {
     const code = "MYS-" + crypto.randomBytes(4).toString("hex").toUpperCase();
     const voucher = await prisma.voucher.create({
@@ -163,9 +164,15 @@ export async function markPaidAndFulfill(paymentId: string) {
     });
     await prisma.payment.update({ where: { id: p.id }, data: { voucherId: voucher.id } });
     if (p.buyerEmail) {
-      await sendMail({ to: p.buyerEmail, subject: "Twój bon podarunkowy Mysterium 🎁", text: `Dziękujemy za zakup!\n\nKod bonu: ${code}\nWartość: ${zl(p.amount)}\n\nBon zrealizujesz przy rezerwacji. Do zobaczenia w Mysterium!` });
+      const subject = settings?.voucherEmailSubject?.trim() || "Twój bon podarunkowy Mysterium 🎁";
+      const tpl = settings?.voucherEmailBody?.trim() || "Dziękujemy za zakup!\n\nKod bonu: {code}\nWartość: {amount}\n\nBon zrealizujesz przy rezerwacji. Do zobaczenia w Mysterium!";
+      const text = tpl.replace(/\{code\}/g, code).replace(/\{amount\}/g, zl(p.amount));
+      await sendMail({ to: p.buyerEmail, subject, text });
     }
   } else if (p.buyerEmail) {
-    await sendMail({ to: p.buyerEmail, subject: "Potwierdzenie płatności — Mysterium", text: `Dziękujemy! Otrzymaliśmy płatność ${zl(p.amount)}${p.description ? ` (${p.description})` : ""}.` });
+    const subject = settings?.payEmailSubject?.trim() || "Potwierdzenie płatności — Mysterium";
+    const tpl = settings?.payEmailBody?.trim() || "Dziękujemy! Otrzymaliśmy płatność {amount}{description}.";
+    const text = tpl.replace(/\{amount\}/g, zl(p.amount)).replace(/\{description\}/g, p.description ? ` (${p.description})` : "");
+    await sendMail({ to: p.buyerEmail, subject, text });
   }
 }
