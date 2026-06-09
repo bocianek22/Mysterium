@@ -35,7 +35,9 @@ export default function Sidebar({
 
   const operations: Item[] = [
     { href: "/admin", label: "Pulpit", icon: "📊" },
+    ...(isManager ? [{ href: "/admin/statystyki", label: "Statystyki", icon: "📈" }] : []),
     ...(canReservations ? [{ href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" }] : []),
+    ...(canReservations ? [{ href: "/admin/kalendarz", label: "Kalendarz", icon: "🗓️" }] : []),
     ...(canReservations ? [{ href: "/admin/klienci", label: "Klienci", icon: "📇" }] : []),
     ...(isManager ? [{ href: "/admin/kampanie", label: "Kampanie", icon: "📣" }] : []),
     ...(isManager ? [
