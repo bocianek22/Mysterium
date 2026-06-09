@@ -87,8 +87,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: `/uploads/${name}` });
   } catch (e) {
     console.error("[upload] disk error", e);
+    const diag = `token=${process.env.BLOB_READ_WRITE_TOKEN ? "TAK" : "NIE"}, store=${process.env.BLOB_STORE_ID ? "TAK" : "NIE"}`;
     return NextResponse.json(
-      { error: "Zapis pliku nieudany. Na Vercel włącz Storage → Blob (ustawi BLOB_READ_WRITE_TOKEN)." },
+      { error: `Zapis nieudany. Serwer widzi: ${diag}. Potrzebny BLOB_READ_WRITE_TOKEN dla Production + redeploy.` },
       { status: 500 }
     );
   }
