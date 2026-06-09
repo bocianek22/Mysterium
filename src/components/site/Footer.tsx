@@ -98,6 +98,21 @@ export default function Footer({
               </a>
             </li>
             <li>
+              <a href={`/${locale}/regulamin`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+                {locale === "pl" ? "Regulamin" : "Terms & rules"}
+              </a>
+            </li>
+            <li>
+              <a href={`/${locale}/dla-firm`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+                {locale === "pl" ? "Dla firm i grup" : "For companies"}
+              </a>
+            </li>
+            <li>
+              <a href={`/${locale}/dostepnosc`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+                {locale === "pl" ? "Deklaracja dostępności" : "Accessibility"}
+              </a>
+            </li>
+            <li>
               <a href={`/${locale}/rezerwacja`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
                 LockMe
               </a>

@@ -412,6 +412,21 @@ model Payment {
   @@index([status])
 }
 
+// Strony informacyjne/prawne (O nas, Regulamin, Polityka prywatności, Dostępność, Dla firm)
+model Page {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  titlePl      String
+  titleEn      String   @default("")
+  contentPl    String   @default("")
+  contentEn    String   @default("")
+  order        Int      @default(0)
+  showInFooter Boolean  @default(true)
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 // Blog / Aktualności (SEO)
 model Post {
   id         String   @id @default(cuid())

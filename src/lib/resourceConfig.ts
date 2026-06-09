@@ -128,6 +128,23 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  pages: {
+    label: "Strony (info / prawne)",
+    singular: "stronę",
+    icon: "📄",
+    listColumns: ["titlePl", "slug", "published"],
+    fields: [
+      { name: "titlePl", label: "Tytuł (PL)", type: "text", required: true },
+      { name: "titleEn", label: "Tytuł (EN)", type: "text" },
+      { name: "slug", label: "Slug (adres URL: /info/...)", type: "text", required: true, placeholder: "regulamin" },
+      { name: "contentPl", label: "Treść (PL)", type: "textarea", help: "Akapity oddzielaj pustą linią. Nagłówek: linia od „## ”. Lista: linie od „- ”." },
+      { name: "contentEn", label: "Treść (EN)", type: "textarea" },
+      { name: "order", label: "Kolejność w stopce", type: "number", default: 0 },
+      { name: "showInFooter", label: "Pokaż w stopce", type: "boolean", default: true },
+      { name: "published", label: "Opublikowana", type: "boolean", default: true },
+    ],
+  },
+
   posts: {
     label: "Blog / Aktualności",
     singular: "wpis",
