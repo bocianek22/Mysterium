@@ -349,6 +349,7 @@ model Room {
   theme         String   @default("default") // motyw podstrony: default|loch|pirate|horror|occult|noir|tomb|steampunk|bunker
   heroImage     String?  // opcjonalne zdjęcie tła nagłówka (puste = zdjęcie główne)
   heroVideo     String?  // opcjonalne wideo w tle nagłówka (mp4/webm, w pętli)
+  reviewsEmbed  String?  // opinie z Lockme: kod widgetu / iframe (HTML)
   bookingUrl    String?
   order         Int      @default(0)
   published     Boolean  @default(true)

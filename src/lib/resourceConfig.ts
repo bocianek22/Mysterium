@@ -48,6 +48,7 @@ export const resources: Record<string, ResourceConfig> = {
       { name: "descriptionEn", label: "Pełny opis (EN)", type: "textarea" },
       { name: "image", label: "Zdjęcie główne", type: "image" },
       { name: "imagesJson", label: "Galeria pokoju (zdjęcia)", type: "gallery", help: "Zdjęcia widoczne na podstronie tego pokoju." },
+      { name: "reviewsEmbed", label: "Opinie z Lockme (kod widgetu / iframe)", type: "textarea", help: "Wklej kod widgetu opinii z panelu Lockme (iframe lub skrypt). Pojawi się na podstronie pokoju." },
       { name: "pricingJson", label: "Cennik (wg liczby osób)", type: "zones", help: "Np. „2 osoby” — 199 zł, „3–4 osoby” — 249 zł. Widoczny na podstronie pokoju." },
       { name: "durationMin", label: "Czas gry (min)", type: "number", default: 60 },
       { name: "minPlayers", label: "Min. osób", type: "number", default: 2 },

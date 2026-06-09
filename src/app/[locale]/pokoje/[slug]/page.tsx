@@ -7,6 +7,7 @@ import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 import PriceTable from "@/components/site/PriceTable";
 import RoomDecor from "@/components/site/RoomDecor";
+import EmbedHtml from "@/components/site/EmbedHtml";
 
 export const dynamic = "force-dynamic";
 
@@ -116,6 +117,17 @@ export default async function RoomDetail({
             <div className="sec-label reveal">{t.gallery.label}</div>
             <div className="sec-divider reveal" />
             <RoomGallery images={images} />
+          </div>
+        </section>
+      )}
+
+      {/* Opinie z Lockme */}
+      {room.reviewsEmbed && room.reviewsEmbed.trim() && (
+        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+          <div className="max-w-[1000px] mx-auto">
+            <div className="sec-label reveal">{locale === "pl" ? "Opinie graczy" : "Player reviews"}</div>
+            <div className="sec-divider reveal" />
+            <div className="reveal"><EmbedHtml html={room.reviewsEmbed} /></div>
           </div>
         </section>
       )}
