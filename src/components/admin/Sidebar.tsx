@@ -64,6 +64,7 @@ export default function Sidebar({
     ] : []),
     { href: "/admin/urlopy", label: isManager ? "Urlopy" : "Mój urlop", icon: "🏖️" },
     ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),
+    ...(isManager ? [{ href: "/admin/kopia", label: "Kopia / audyt", icon: "💾" }] : []),
   ];
 
   const content: Item[] = isManager

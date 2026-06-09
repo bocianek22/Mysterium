@@ -414,6 +414,19 @@ model Payment {
   @@index([status])
 }
 
+// Dziennik audytu — kto co zmienił w panelu
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userName  String?
+  action    String   // CREATE | UPDATE | DELETE | SETTINGS | LOGIN | OTHER
+  entity    String   // np. "rooms", "settings", "payment"
+  detail    String?  // krótki opis (np. nazwa/slug)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
 // Strony informacyjne/prawne (O nas, Regulamin, Polityka prywatności, Dostępność, Dla firm)
 model Page {
   id           String   @id @default(cuid())

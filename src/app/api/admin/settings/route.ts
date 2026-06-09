@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession, isManager } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -106,5 +107,6 @@ export async function PUT(req: NextRequest) {
     update: data,
     create: { id: "main", ...data },
   });
+  logAudit(s, "SETTINGS", "settings", "Zapis ustawień strony");
   return NextResponse.json({ settings });
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, isManager } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import {
   isResource,
   getDelegate,
@@ -45,6 +46,7 @@ export async function POST(
   const data = pickFields(config, parsed.data);
   try {
     const item = await getDelegate(params.resource).create({ data });
+    logAudit(s, "CREATE", params.resource, (data as any).titlePl || (data as any).namePl || (data as any).slug || item.id);
     return NextResponse.json({ item });
   } catch (e: any) {
     const msg = e?.code === "P2002" ? "Taki slug/adres już istnieje" : "Nie udało się utworzyć pozycji";

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession, isManager } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import {
   isResource,
   getDelegate,
@@ -12,10 +13,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { resource: string; id: string } }
 ) {
-  {
-    const s = await getSession();
-    if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
-  }
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const config = getConfig(params.resource);
@@ -46,6 +45,7 @@ export async function PATCH(
       where: { id: params.id },
       data,
     });
+    logAudit(s, "UPDATE", params.resource, (data as any).titlePl || (data as any).namePl || (data as any).slug || params.id);
     return NextResponse.json({ item });
   } catch (e: any) {
     const msg = e?.code === "P2002" ? "Taki slug/adres już istnieje" : "Nie udało się zapisać zmian";
@@ -57,12 +57,11 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: { resource: string; id: string } }
 ) {
-  {
-    const s = await getSession();
-    if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
-  }
+  const s = await getSession();
+  if (!s || !isManager(s.role)) return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   if (!isResource(params.resource)) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   await getDelegate(params.resource).delete({ where: { id: params.id } });
+  logAudit(s, "DELETE", params.resource, params.id);
   return NextResponse.json({ ok: true });
 }
