@@ -84,6 +84,18 @@ export const resources: Record<string, ResourceConfig> = {
           { value: "bunker", label: "Zimowy bunkier (szron + alarm)" },
         ],
       },
+      {
+        name: "heroBg",
+        label: "Tło nagłówka (przy motywie)",
+        type: "select",
+        default: "theme",
+        help: "„Tekstura motywu" = klimatyczne tło motywu. „Zdjęcie" = na górze pokazuje zdjęcie, a motyw zmienia tylko resztę strony.",
+        options: [
+          { value: "theme", label: "Tekstura motywu" },
+          { value: "photo", label: "Zdjęcie (główne lub poniższe)" },
+        ],
+      },
+      { name: "heroImage", label: "Zdjęcie tła nagłówka (opcjonalnie)", type: "image", help: "Używane gdy wybrano „Zdjęcie". Puste = zdjęcie główne pokoju." },
       { name: "bookingUrl", label: "Link rezerwacji (opcjonalnie)", type: "text", placeholder: "https://lock.me/..." },
       { name: "order", label: "Kolejność", type: "number", default: 0 },
       { name: "published", label: "Widoczny na stronie", type: "boolean", default: true },

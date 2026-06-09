@@ -347,6 +347,8 @@ model Room {
   maintenanceLogs MaintenanceLog[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
   theme         String   @default("default") // motyw podstrony: default|loch|pirate|horror|occult|noir|tomb|steampunk|bunker
+  heroBg        String   @default("theme")   // tło nagłówka przy motywie: theme (tekstura) | photo (zdjęcie)
+  heroImage     String?  // opcjonalne zdjęcie tła nagłówka (puste = zdjęcie główne)
   bookingUrl    String?
   order         Int      @default(0)
   published     Boolean  @default(true)
