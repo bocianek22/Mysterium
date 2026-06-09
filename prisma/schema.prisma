@@ -573,6 +573,9 @@ model SiteSettings {
   youtube       String?
   parkingPl     String?
   parkingEn     String?
+  openHoursJson String?  // godziny otwarcia (JSON: 7 dni Pn..Nd)
+  slotStepMin   Int      @default(90) // długość slotu rezerwacji (min)
+  slotsEnabled  Boolean  @default(false) // pokazuj „wolne terminy" na stronie
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
   googleRating         String? // np. "4.9"

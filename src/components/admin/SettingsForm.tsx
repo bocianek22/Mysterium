@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import FileUpload from "./FileUpload";
+import OpeningHoursEditor from "./OpeningHoursEditor";
 
 function NotifyTestButton() {
   const [msg, setMsg] = useState("");
@@ -130,6 +131,12 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Godziny otwarcia i wolne terminy",
+    fields: [
+      { name: "slotStepMin", label: "Długość slotu rezerwacji (min)", type: "number", default: 90, help: "Co ile minut zaczyna się nowa gra (np. 90)." },
+    ],
+  },
+  {
     title: "Rezerwacje — LockMe",
     fields: [
       { name: "lockmeUrl", label: "Link do rezerwacji LockMe (przycisk)" },
@@ -192,6 +199,12 @@ export default function SettingsForm() {
                 <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnSchedule ?? true} onChange={(e) => set("notifyOnSchedule", e.target.checked)} /> Zmiany grafiku</label>
               </div>
               <NotifyTestButton />
+            </div>
+          )}
+          {g.title === "Godziny otwarcia i wolne terminy" && (
+            <div className="mb-4">
+              <label className="flex items-center gap-3 mb-3"><input type="checkbox" checked={!!data.slotsEnabled} onChange={(e) => set("slotsEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Pokazuj „Wolne terminy" na stronie (/terminy)</span></label>
+              <OpeningHoursEditor value={data.openHoursJson} onChange={(v) => set("openHoursJson", v)} />
             </div>
           )}
           {g.title === "Płatności online" && (

@@ -70,6 +70,7 @@ export default function Footer({
           <ul className="list-none flex flex-col gap-[10px]">
             {[
               ["/pokoje", t.nav.rooms],
+              ["/terminy", locale === "pl" ? "Wolne terminy" : "Available times"],
               ["/mobilna", t.nav.mobile],
               ["/eventy", t.nav.events],
               ["/bony", t.nav.vouchers],
