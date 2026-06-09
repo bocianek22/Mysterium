@@ -570,6 +570,8 @@ model SiteSettings {
   facebook      String?
   tiktok        String?
   youtube       String?
+  parkingPl     String?
+  parkingEn     String?
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
   googleRating         String? // np. "4.9"

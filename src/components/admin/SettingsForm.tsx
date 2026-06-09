@@ -35,6 +35,8 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "addressEn", label: "Adres (EN)" },
       { name: "hoursPl", label: "Godziny / dostępność (PL)" },
       { name: "hoursEn", label: "Godziny / dostępność (EN)" },
+      { name: "parkingPl", label: "Parking / dojazd (PL)", type: "textarea", help: "Wyświetla się pod mapą na stronie Kontakt." },
+      { name: "parkingEn", label: "Parking / dojazd (EN)", type: "textarea" },
       { name: "heroDescPl", label: "Opis na stronie głównej (PL)", type: "textarea" },
       { name: "heroDescEn", label: "Opis na stronie głównej (EN)", type: "textarea" },
       { name: "instagram", label: "Instagram (URL)" },

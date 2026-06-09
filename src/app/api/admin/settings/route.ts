@@ -15,6 +15,8 @@ const schema = z.object({
   facebook: z.string().optional().nullable(),
   tiktok: z.string().optional().nullable(),
   youtube: z.string().optional().nullable(),
+  parkingPl: z.string().optional().nullable(),
+  parkingEn: z.string().optional().nullable(),
   hoursPl: z.string().optional(),
   hoursEn: z.string().optional(),
   heroDescPl: z.string().optional(),
