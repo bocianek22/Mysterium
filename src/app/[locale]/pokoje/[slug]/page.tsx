@@ -121,7 +121,7 @@ export default async function RoomDetail({
       )}
 
       {/* CTA */}
-      <section className="px-6 md:px-[60px] py-16 relative z-[1] aurora text-center" style={{ background: themed ? "linear-gradient(135deg,var(--scrim),var(--scrim))" : "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>
+      <section className="px-6 md:px-[60px] py-16 relative z-[1] aurora text-center" style={{ background: "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>
         <div className="relative z-[1]">
           <a href={bookHref} target={room.bookingUrl ? "_blank" : undefined} rel="noopener noreferrer" className="btn-gold">{t.common.bookThisRoom}</a>
         </div>
