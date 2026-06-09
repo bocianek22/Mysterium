@@ -39,6 +39,8 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "heroDescEn", label: "Opis na stronie głównej (EN)", type: "textarea" },
       { name: "instagram", label: "Instagram (URL)" },
       { name: "facebook", label: "Facebook (URL)" },
+      { name: "tiktok", label: "TikTok (URL)" },
+      { name: "youtube", label: "YouTube (URL)" },
     ],
   },
   {

@@ -13,6 +13,8 @@ const schema = z.object({
   lockmeUrl: z.string().optional(),
   instagram: z.string().optional().nullable(),
   facebook: z.string().optional().nullable(),
+  tiktok: z.string().optional().nullable(),
+  youtube: z.string().optional().nullable(),
   hoursPl: z.string().optional(),
   hoursEn: z.string().optional(),
   heroDescPl: z.string().optional(),

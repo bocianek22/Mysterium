@@ -46,7 +46,7 @@ export default async function LocaleLayout({
       <Particles />
       <Nav locale={locale} t={t} logoUrl={settings?.logoUrl} />
       <main>{children}</main>
-      <Footer locale={locale} t={t} phone={phone} email={email} address={address} instagram={settings?.instagram} facebook={settings?.facebook} />
+      <Footer locale={locale} t={t} phone={phone} email={email} address={address} instagram={settings?.instagram} facebook={settings?.facebook} tiktok={settings?.tiktok} youtube={settings?.youtube} />
       {settings && settings.popupMode !== "OFF" && (
         <SitePopup
           locale={locale}

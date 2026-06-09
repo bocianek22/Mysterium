@@ -164,7 +164,20 @@ function Occult() {
   );
   return (
     <div className="room-decor" aria-hidden="true">
-      <svg className="decor" viewBox="0 0 200 110" style={{ left: "50%", bottom: "2%", transform: "translateX(-50%)", width: "clamp(220px,40vw,460px)", opacity: 0.7 }}>
+      {/* pentagram na ścianie */}
+      <svg className="decor decor-glow" viewBox="0 0 100 100" style={{ left: "50%", top: "30%", transform: "translate(-50%,-50%)", width: "clamp(220px,34vw,420px)", opacity: 0.5 }}>
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#b48cff" strokeWidth="1.4" />
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#b48cff" strokeWidth="0.6" />
+        <polygon points="50,10 61,44 96,44 68,65 79,99 50,78 21,99 32,65 4,44 39,44" fill="none" stroke="#c9a8ff" strokeWidth="1.4" transform="scale(0.86) translate(8 8)" />
+      </svg>
+      {/* unoszące się runy */}
+      <svg className="decor decor-glow" viewBox="0 0 120 40" style={{ left: "12%", top: "16%", width: "clamp(120px,18vw,200px)", opacity: 0.4 }}>
+        <g stroke="#c9a8ff" strokeWidth="2" fill="none" strokeLinecap="round">
+          <path d="M8 4 V36 M8 4 L20 16 M8 20 L20 8" /><path d="M36 4 V36 M36 20 L50 4 M36 20 L50 36" /><path d="M66 4 V36 M66 4 H80 M66 20 H78 M66 36 H80" /><path d="M96 6 L110 6 L103 36 Z" />
+        </g>
+      </svg>
+      {/* świece */}
+      <svg className="decor" viewBox="0 0 200 110" style={{ left: "50%", bottom: "2%", transform: "translateX(-50%)", width: "clamp(220px,40vw,460px)", opacity: 0.78 }}>
         {candle(40, 40, 1)}{candle(100, 56, 2)}{candle(160, 36, 3)}
       </svg>
     </div>
@@ -190,6 +203,19 @@ function Tomb() {
           <circle cx="20" cy="100" r="6" fill="none" stroke="#e6c067" strokeWidth="3" /><rect x="18" y="106" width="4" height="16" />
           <path d="M12 134 Q20 126 28 134 Q20 142 12 134 Z" /><rect x="12" y="150" width="16" height="4" /><rect x="12" y="158" width="16" height="4" />
           <path d="M20 174 L26 186 L14 186 Z" />
+        </g>
+      </svg>
+      {/* sarkofag */}
+      <svg className="decor" viewBox="0 0 90 150" style={{ right: "6%", bottom: "4%", width: "clamp(90px,14vw,170px)", opacity: 0.5 }}>
+        <path d="M45 4 C30 4 22 16 22 30 V128 C22 140 30 146 45 146 C60 146 68 140 68 128 V30 C68 16 60 4 45 4 Z" fill="#2a1f0d" stroke="#e6c067" strokeWidth="2" />
+        <circle cx="45" cy="34" r="13" fill="none" stroke="#e6c067" strokeWidth="2" /><path d="M38 30 Q45 22 52 30" fill="none" stroke="#e6c067" strokeWidth="1.6" />
+        <rect x="40" y="50" width="10" height="60" rx="2" fill="#e6c067" opacity="0.5" />
+        <path d="M30 70 H60 M30 86 H60 M30 102 H60" stroke="#e6c067" strokeWidth="1.2" opacity="0.6" />
+      </svg>
+      {/* ankh */}
+      <svg className="decor decor-glow" viewBox="0 0 40 70" style={{ left: "44%", top: "12%", width: "clamp(40px,6vw,72px)", opacity: 0.55 }}>
+        <g fill="none" stroke="#f3d98b" strokeWidth="3.5">
+          <ellipse cx="20" cy="16" rx="9" ry="12" /><line x1="20" y1="28" x2="20" y2="64" /><line x1="8" y1="40" x2="32" y2="40" />
         </g>
       </svg>
     </div>
@@ -252,6 +278,73 @@ function Steampunk() {
   );
 }
 
+function Noir() {
+  const rain = Array.from({ length: 16 }).map((_, i) => ({ x: 3 + i * 6.3, d: 0.7 + (i % 4) * 0.25, delay: (i % 6) * 0.18, len: 14 + (i % 4) * 8 }));
+  return (
+    <div className="room-decor" aria-hidden="true">
+      {/* deszcz */}
+      <svg className="decor" preserveAspectRatio="none" viewBox="0 0 100 100" style={{ inset: 0, width: "100%", height: "100%", opacity: 0.3 }}>
+        <g stroke="#cdd6e0" strokeWidth="0.4" strokeLinecap="round">
+          {rain.map((r, i) => (
+            <line key={i} className="decor-rain" x1={r.x} y1="0" x2={r.x - 5} y2={r.len} style={{ animationDuration: `${r.d}s`, animationDelay: `${r.delay}s` }} />
+          ))}
+        </g>
+      </svg>
+      {/* neon — szyld */}
+      <svg className="decor decor-neon" viewBox="0 0 140 54" style={{ right: "6%", top: "12%", width: "clamp(130px,20vw,230px)", opacity: 0.85 }}>
+        <rect x="3" y="3" width="134" height="48" rx="6" fill="none" stroke="#e0a85a" strokeWidth="1.5" />
+        <text x="70" y="36" textAnchor="middle" fontFamily="Cinzel, serif" fontSize="22" letterSpacing="3" fill="#f0d49a">NOIR</text>
+      </svg>
+      {/* kapelusz fedora */}
+      <svg className="decor" viewBox="0 0 120 70" style={{ left: "5%", bottom: "6%", width: "clamp(110px,17vw,200px)", opacity: 0.42 }}>
+        <path d="M10 54 Q60 38 110 54 Q60 64 10 54 Z" fill="#15110c" />
+        <path d="M34 50 Q36 20 60 18 Q84 20 86 50 Z" fill="#1c1610" />
+        <path d="M34 44 Q60 50 86 44" fill="none" stroke="#000" strokeWidth="4" />
+      </svg>
+      {/* lupa */}
+      <svg className="decor" viewBox="0 0 80 80" style={{ right: "10%", bottom: "10%", width: "clamp(80px,12vw,140px)", opacity: 0.4 }}>
+        <circle cx="32" cy="32" r="20" fill="none" stroke="#caa15a" strokeWidth="4" /><line x1="47" y1="47" x2="70" y2="70" stroke="#caa15a" strokeWidth="6" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
+function Bunker() {
+  return (
+    <div className="room-decor" aria-hidden="true">
+      {/* pasy ostrzegawcze (góra) */}
+      <svg className="decor" preserveAspectRatio="none" viewBox="0 0 100 8" style={{ top: 0, left: 0, width: "100%", height: "5%", opacity: 0.5 }}>
+        <defs><pattern id="hz" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="8" fill="#d8b73a" /><rect x="4" width="4" height="8" fill="#1a1d12" /></pattern></defs>
+        <rect width="100" height="8" fill="url(#hz)" />
+      </svg>
+      {/* zawór */}
+      <svg className="decor decor-wheel" viewBox="0 0 100 100" style={{ left: "7%", top: "16%", width: "clamp(96px,14vw,170px)", opacity: 0.5 }}>
+        <g fill="none" stroke="#8aa6ba" strokeWidth="6">
+          <circle cx="50" cy="50" r="34" />
+          {Array.from({ length: 5 }).map((_, i) => { const a = (i * 72) * Math.PI / 180; return <line key={i} x1="50" y1="50" x2={50 + Math.cos(a) * 34} y2={50 + Math.sin(a) * 34} />; })}
+        </g>
+        <circle cx="50" cy="50" r="9" fill="#8aa6ba" />
+      </svg>
+      {/* żarówka w klatce (kołysze się + miga) */}
+      <svg className="decor" viewBox="0 0 60 150" style={{ right: "14%", top: 0, width: "clamp(50px,7vw,90px)", opacity: 0.85 }}>
+        <g className="decor-swinglamp" style={{ transformOrigin: "30px 0px" }}>
+          <line x1="30" y1="0" x2="30" y2="56" stroke="#3a4650" strokeWidth="2" />
+          <g className="decor-flame"><circle cx="30" cy="72" r="20" fill="rgba(160,210,245,.25)" /></g>
+          <circle cx="30" cy="72" r="11" fill="#cfe6f5" className="decor-flame" />
+          <g fill="none" stroke="#46566280" strokeWidth="2"><circle cx="30" cy="72" r="15" /><path d="M16 66 Q30 86 44 66 M20 60 V84 M40 60 V84 M30 57 V87" /></g>
+        </g>
+      </svg>
+      {/* szron w narożnikach */}
+      <svg className="decor" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ inset: 0, width: "100%", height: "100%", opacity: 0.25 }}>
+        <g stroke="#bfe2f5" strokeWidth="0.5" fill="none">
+          <path d="M0 0 L14 10 M0 0 L10 14 M0 0 L18 4 M0 0 L4 18" /><path d="M100 0 L86 10 M100 0 L90 14 M100 0 L82 4" />
+          <path d="M0 100 L14 90 M0 100 L10 86" /><path d="M100 100 L86 90 M100 100 L90 86 M100 100 L82 96" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
 export default function RoomDecor({ theme }: { theme: string }) {
   switch (theme) {
     case "pirate": return <Pirate />;
@@ -260,6 +353,8 @@ export default function RoomDecor({ theme }: { theme: string }) {
     case "occult": return <Occult />;
     case "tomb": return <Tomb />;
     case "steampunk": return <Steampunk />;
+    case "noir": return <Noir />;
+    case "bunker": return <Bunker />;
     default: return null;
   }
 }

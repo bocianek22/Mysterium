@@ -68,7 +68,8 @@ export default async function RoomDetail({
         ) : heroImgUrl ? (
           <div className="absolute inset-0" style={{ backgroundImage: `url(${heroImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }} />
         ) : (
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />
+          // Brak mediów → wygląd jak domyślny motyw strony (klimatyczny gradient)
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 35%,rgba(13,61,58,.4),transparent 70%),radial-gradient(ellipse 50% 40% at 85% 15%,rgba(201,168,76,.06),transparent 60%),linear-gradient(180deg,var(--navy-dd),var(--navy-d))" }} />
         )}
         <div className="absolute inset-0" style={{ background: "linear-gradient(0deg,var(--navy-dd) 5%,rgba(4,12,20,.8) 50%,rgba(4,12,20,.7))" }} />
         {themed && <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />}

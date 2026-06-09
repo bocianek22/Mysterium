@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import type { GalleryImage } from "@prisma/client";
 import type { Locale, Dict } from "@/lib/i18n";
 import { pick } from "@/lib/i18n";
@@ -15,6 +16,8 @@ export default function Gallery({
   images: GalleryImage[];
 }) {
   const [index, setIndex] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const close = useCallback(() => setIndex(null), []);
   const prev = useCallback(
@@ -33,10 +36,15 @@ export default function Gallery({
       if (e.key === "ArrowLeft") prev();
       if (e.key === "ArrowRight") next();
     };
+    const html = document.documentElement;
+    const ph = html.style.overflow;
+    const pb = document.body.style.overflow;
+    html.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      html.style.overflow = ph;
+      document.body.style.overflow = pb;
       window.removeEventListener("keydown", onKey);
     };
   }, [index, close, prev, next]);
@@ -76,11 +84,11 @@ export default function Gallery({
         ))}
       </div>
 
-      {current && (
+      {mounted && current && createPortal(
         <div
           onClick={close}
-          className="fixed inset-0 z-[9000] flex items-center justify-center p-6"
-          style={{ background: "rgba(0,0,0,.92)", backdropFilter: "blur(6px)", animation: "lbIn .25s ease" }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-6"
+          style={{ background: "rgba(0,0,0,.92)", backdropFilter: "blur(6px)", animation: "lbIn .25s ease", overscrollBehavior: "contain", touchAction: "none" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -121,7 +129,8 @@ export default function Gallery({
               </div>
             </>
           )}
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

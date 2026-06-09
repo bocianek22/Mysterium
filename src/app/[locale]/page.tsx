@@ -13,6 +13,7 @@ import VideoSection from "@/components/site/VideoSection";
 import HowItWorks from "@/components/site/HowItWorks";
 import Reviews from "@/components/site/Reviews";
 import Faq from "@/components/site/Faq";
+import SocialSection from "@/components/site/SocialSection";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,8 @@ export default async function HomePage({ params }: { params: { locale: string } 
       <HowItWorks t={t} />
       <Reviews locale={locale} t={t} reviews={reviews} googleUrl={settings?.googleReviewsEnabled ? settings?.googleReviewsUrl : null} googleRating={settings?.googleReviewsEnabled ? settings?.googleRating : null} />
       <Faq locale={locale} t={t} items={faq} />
+
+      <SocialSection locale={locale} social={{ instagram: settings?.instagram, facebook: settings?.facebook, tiktok: settings?.tiktok, youtube: settings?.youtube }} />
 
       {/* CTA końcowe */}
       <section className="px-6 md:px-[60px] py-20 relative z-[1] aurora text-center" style={{ background: "linear-gradient(135deg,var(--teal-m),var(--navy-dd))" }}>

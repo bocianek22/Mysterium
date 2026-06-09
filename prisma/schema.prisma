@@ -553,6 +553,8 @@ model SiteSettings {
   lockmeUrl     String  @default("https://lock.me")
   instagram     String?
   facebook      String?
+  tiktok        String?
+  youtube       String?
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
   googleRating         String? // np. "4.9"

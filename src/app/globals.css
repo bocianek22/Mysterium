@@ -642,3 +642,16 @@ body::-webkit-scrollbar {
 @media (prefers-reduced-motion: reduce) {
   .decor-wheel, .decor-wheel-rev, .decor-flame, .decor-treasure-glow, .decor-drip, .decor-splat, .decor-needle { animation: none !important; }
 }
+
+/* Dodatkowe rekwizyty: noir/okultyzm/grobowiec/bunkier */
+@keyframes decorrain { from { transform: translateY(-30%); } to { transform: translateY(130%); } }
+.decor-rain { animation: decorrain linear infinite; }
+@keyframes decorglow { 0%,100% { opacity: .45; } 50% { opacity: .8; } }
+.decor-glow { animation: decorglow 4s ease-in-out infinite; }
+@keyframes decorneon { 0%,100% { opacity: .9; } 7% { opacity: .35; } 9% { opacity: .85; } 40% { opacity: .7; } 42% { opacity: .95; } 80% { opacity: .5; } 82% { opacity: .9; } }
+.decor-neon { animation: decorneon 5s infinite; }
+@keyframes decorswing { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+.decor-swinglamp { animation: decorswing 5.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .decor-rain, .decor-glow, .decor-neon, .decor-swinglamp { animation: none !important; }
+}
