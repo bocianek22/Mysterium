@@ -7,22 +7,25 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const staticPaths = ["", "/pokoje", "/mobilna", "/galeria", "/cennik", "/blog", "/hall-of-fame", "/o-nas", "/kontakt", "/rezerwacja", "/polityka-prywatnosci"];
+  const staticPaths = ["", "/pokoje", "/mobilna", "/galeria", "/cennik", "/blog", "/hall-of-fame", "/o-nas", "/kontakt", "/rezerwacja", "/terminy", "/jak-grac", "/dla-firm", "/regulamin", "/dostepnosc", "/polityka-prywatnosci"];
 
   let rooms: { slug: string }[] = [];
   let mobile: { slug: string }[] = [];
   let posts: { slug: string }[] = [];
   let albums: { slug: string }[] = [];
+  let pages: { slug: string }[] = [];
   try {
-    [rooms, mobile, posts, albums] = await Promise.all([
+    [rooms, mobile, posts, albums, pages] = await Promise.all([
       prisma.room.findMany({ where: { published: true }, select: { slug: true } }),
       prisma.mobileOffer.findMany({ where: { published: true }, select: { slug: true } }),
       prisma.post.findMany({ where: { published: true }, select: { slug: true } }),
       prisma.eventAlbum.findMany({ where: { published: true }, select: { slug: true } }),
+      prisma.page.findMany({ where: { published: true }, select: { slug: true } }),
     ]);
   } catch {
     // baza może być niedostępna w trakcie buildu — pomijamy dynamiczne wpisy
   }
+  const knownStatic = new Set(staticPaths.map((p) => p.replace(/^\//, "")));
 
   const entries: MetadataRoute.Sitemap = [];
   for (const locale of locales) {
@@ -31,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const m of mobile) entries.push({ url: `${base}/${locale}/mobilna/${m.slug}`, changeFrequency: "monthly", priority: 0.8 });
     for (const p of posts) entries.push({ url: `${base}/${locale}/blog/${p.slug}`, changeFrequency: "monthly", priority: 0.6 });
     for (const a of albums) entries.push({ url: `${base}/${locale}/galeria/${a.slug}`, changeFrequency: "monthly", priority: 0.5 });
+    for (const pg of pages) if (!knownStatic.has(pg.slug)) entries.push({ url: `${base}/${locale}/${pg.slug}`, changeFrequency: "monthly", priority: 0.5 });
   }
   return entries;
 }
