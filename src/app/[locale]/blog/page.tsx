@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { isLocale, getDict, pick, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { pageMeta } from "@/lib/seo";
@@ -38,10 +39,9 @@ export default async function BlogPage({ params }: { params: { locale: string } 
               const excerpt = pick(p, "excerpt", locale);
               return (
                 <Link key={p.id} href={`/${locale}/blog/${p.slug}`} className="group no-underline rounded overflow-hidden flex flex-col transition-all hover:-translate-y-1" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
-                  <div className="aspect-[16/10] overflow-hidden" style={{ background: "var(--navy-d)" }}>
+                  <div className="relative aspect-[16/10] overflow-hidden" style={{ background: "var(--navy-d)" }}>
                     {p.coverImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.coverImage} alt={title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <Image src={p.coverImage} alt={title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-4xl" style={{ color: "var(--dim)" }}>🗝️</div>
                     )}

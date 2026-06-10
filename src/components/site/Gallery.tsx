@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { createPortal } from "react-dom";
 import type { GalleryImage } from "@prisma/client";
 import type { Locale, Dict } from "@/lib/i18n";
@@ -63,13 +64,12 @@ export default function Gallery({
             className={`group relative overflow-hidden cursor-pointer aspect-square reveal reveal-scale reveal-d${(i % 6) + 1}`}
             style={i === 0 ? { gridRow: "span 2", aspectRatio: "auto" } : undefined}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={img.url}
               alt={pick(img, "caption", locale) || "Mysterium escape room"}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              fill
+              sizes="(max-width: 768px) 50vw, 33vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <span className="absolute inset-0 transition-all duration-300 group-hover:bg-[rgba(201,168,76,.08)]" style={{ border: "1px solid rgba(201,168,76,.06)" }} />
             <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-2xl" style={{ color: "var(--gold-ll)", textShadow: "0 2px 12px #000" }}>
