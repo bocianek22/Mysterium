@@ -4,6 +4,9 @@ import Sidebar from "@/components/admin/Sidebar";
 
 export const dynamic = "force-dynamic";
 
+// Panel = osobna aplikacja PWA (instalowalna), niezależna od strony publicznej.
+export const metadata = { manifest: "/panel.webmanifest", title: "Mysterium Panel" };
+
 export default async function PanelLayout({
   children,
 }: {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { resources, resourceKeys } from "@/lib/resourceConfig";
+import InstallAppButton from "@/components/admin/InstallAppButton";
 
 type Item = { href: string; label: string; icon: string };
 
@@ -130,6 +131,7 @@ export default function Sidebar({
         )}
 
         <div className="p-3 mt-2 border-t" style={{ borderColor: "var(--border)" }}>
+          <div className="px-1 pb-2"><InstallAppButton /></div>
           <a href="/" target="_blank" className="flex items-center gap-3 px-4 py-[10px] text-sm no-underline" style={{ color: "var(--muted)" }}>
             🌐 Zobacz stronę
           </a>
