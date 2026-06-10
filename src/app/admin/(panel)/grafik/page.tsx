@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession, isManager } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import ScheduleManager from "@/components/admin/ScheduleManager";
+import ShiftSwapPanel from "@/components/admin/ShiftSwapPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -16,5 +17,10 @@ export default async function GrafikPage() {
         orderBy: { name: "asc" },
       })
     : [];
-  return <ScheduleManager isManager={manager} users={users} currentUserId={session.sub} />;
+  return (
+    <>
+      <ScheduleManager isManager={manager} users={users} currentUserId={session.sub} />
+      <ShiftSwapPanel />
+    </>
+  );
 }

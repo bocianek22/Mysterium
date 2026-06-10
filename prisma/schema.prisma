@@ -130,6 +130,20 @@ model Shift {
   @@index([start])
 }
 
+// Wymiana / oddanie zmiany między pracownikami
+model ShiftSwap {
+  id           String    @id @default(cuid())
+  shiftId      String
+  fromUserId   String
+  status       String    @default("OPEN") // OPEN | ACCEPTED | CANCELLED
+  acceptedById String?
+  note         String?
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+  @@index([status])
+  @@index([fromUserId])
+}
+
 // Dyspozycyjność zgłaszana przez pracownika
 model Availability {
   id        String   @id @default(cuid())
