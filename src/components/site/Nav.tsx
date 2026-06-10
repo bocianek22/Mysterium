@@ -58,8 +58,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
           src={logoUrl || "/logo.png"}
           alt="Mysterium"
           className="h-9 md:h-11"
-          style={{ filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))", display: "none" }}
-          onLoad={(e) => ((e.target as HTMLImageElement).style.display = "block")}
+          style={{ filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))" }}
           onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
         />
         <span className="font-display text-gold-grad text-[15px] md:text-base tracking-wide">MYSTERIUM</span>

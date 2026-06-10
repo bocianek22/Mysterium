@@ -68,6 +68,8 @@ export default async function LocaleLayout({
         email={email}
         hours={locale === "pl" ? settings?.hoursPl : settings?.hoursEn}
         rating={settings?.googleReviewsEnabled ? settings?.googleRating : null}
+        logo={settings?.logoUrl}
+        openHoursJson={settings?.openHoursJson}
       />
     </>
   );
