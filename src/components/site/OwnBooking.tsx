@@ -55,7 +55,7 @@ export default function OwnBooking({
         <p className="text-sm" style={{ color: "var(--muted)" }}>
           {pl ? "Numer rezerwacji:" : "Reference:"} <b style={{ color: "var(--gold-l)" }}>{done.refNo}</b>
         </p>
-        <p className="text-[13px] mt-3" style={{ color: "var(--muted)" }}>{pl ? "Potwierdzenie wyślemy na podany e-mail." : "We'll email you a confirmation."}</p>
+        <p className="text-[13px] mt-3" style={{ color: "var(--muted)" }}>{pl ? "Potwierdzenie z linkiem do kalendarza wysłaliśmy na Twój e-mail." : "We've emailed a confirmation with a calendar link."}</p>
       </div>
     );
   }

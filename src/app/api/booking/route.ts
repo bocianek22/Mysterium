@@ -5,7 +5,8 @@ import { freeSlots, parseHours, warsawDate } from "@/lib/slots";
 import { isBanned, normalizeEmail, normalizePhone } from "@/lib/bans";
 import { clientIp } from "@/lib/rateLimit";
 import { nextRefNo } from "@/lib/reservations";
-import { notify } from "@/lib/notify";
+import { notify, sendMail } from "@/lib/notify";
+import { siteUrl } from "@/lib/seo";
 import { startCheckout, resolveOrigin, paymentSettings } from "@/lib/payments";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +35,12 @@ export async function POST(req: NextRequest) {
   // Ban: e-mail / telefon / IP
   if (await isBanned({ email: d.email, phone: d.phone, ip })) {
     return NextResponse.json({ error: "Rezerwacja online jest dla Ciebie niedostępna. Skontaktuj się z nami telefonicznie." }, { status: 403 });
+  }
+
+  // Anty-spam: maks. 5 rezerwacji z jednego IP w ciągu 10 minut
+  if (ip && ip !== "unknown") {
+    const recent = await prisma.reservation.count({ where: { ip, createdAt: { gte: new Date(Date.now() - 10 * 60000) } } });
+    if (recent >= 5) return NextResponse.json({ error: "Zbyt wiele rezerwacji w krótkim czasie. Spróbuj później." }, { status: 429 });
   }
 
   const room = await prisma.room.findUnique({ where: { id: d.roomId } });
@@ -84,6 +91,19 @@ export async function POST(req: NextRequest) {
   });
 
   notify({ type: "reservation", title: "Nowa rezerwacja online", lines: [`${room.namePl} · ${d.people} os.`, start.toLocaleString("pl-PL"), `${d.name} · ${d.phone}`, refNo] });
+
+  // Potwierdzenie dla klienta + link „dodaj do kalendarza"
+  try {
+    const ymd = (dt: Date) => dt.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const address = settings.addressPl || "Warszawska 40, 05-100 Nowy Dwór Mazowiecki";
+    const gcal = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent("Mysterium — " + room.namePl)}&dates=${ymd(start)}/${ymd(end)}&details=${encodeURIComponent("Rezerwacja " + refNo)}&location=${encodeURIComponent(address)}`;
+    const when = start.toLocaleString("pl-PL", { weekday: "long", day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    await sendMail({
+      to: email,
+      subject: `Potwierdzenie rezerwacji ${refNo} — Mysterium`,
+      text: `Dziękujemy za rezerwację! 🎉\n\nPokój: ${room.namePl}\nTermin: ${when}\nOsób: ${d.people}\nNumer rezerwacji: ${refNo}\nAdres: ${address}\n\nDodaj do kalendarza:\n${gcal}\n\nZarządzaj rezerwacją (anulowanie/podgląd):\n${siteUrl()}/pl/moje-rezerwacje\n\nDo zobaczenia w Mysterium!`,
+    });
+  } catch {}
 
   // Zadatek online (opcjonalny)
   const depositZl = settings.ownBookingDeposit || 0;
