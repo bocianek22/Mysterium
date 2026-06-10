@@ -59,6 +59,10 @@ export async function GET(req: NextRequest) {
     const res = await sendMail({ to: r.customerEmail as string, subject, text });
     if (res.ok) {
       await prisma.reservation.update({ where: { id: r.id }, data: { thankedAt: new Date() } });
+      // Punkty lojalnościowe za grę (jeśli włączone i klient rozpoznany po e-mailu)
+      if ((s.loyaltyPerGame || 0) > 0 && r.customerEmail) {
+        await prisma.customer.updateMany({ where: { email: r.customerEmail }, data: { points: { increment: s.loyaltyPerGame } } }).catch(() => {});
+      }
       sent++;
     } else {
       errors.push(res.error || "błąd");

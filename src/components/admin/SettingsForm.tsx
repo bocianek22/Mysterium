@@ -121,6 +121,7 @@ const groups: { title: string; fields: Field[] }[] = [
     title: "Klienci — auto-podziękowanie",
     fields: [
       { name: "thankYouMessagePl", label: "Treść podziękowania (mail po grze)", type: "textarea", help: "Wysyłane automatycznie do klienta po zakończonej rezerwacji (jeśli ma e-mail). Link do opinii Google z sekcji „Opinie Google” dołączamy automatycznie. Zostaw puste, by użyć domyślnej treści." },
+      { name: "loyaltyPerGame", label: "Punkty lojalnościowe za grę", type: "number", default: 0, help: "Ile punktów dopisać klientowi (po e-mailu) za każdą rozegraną grę. 0 = wyłączone." },
     ],
   },
   {

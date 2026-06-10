@@ -621,6 +621,7 @@ model SiteSettings {
   // Auto-podziękowanie po grze + prośba o opinię Google
   autoThankYouEnabled Boolean @default(false)
   surveyEnabled       Boolean @default(false) // dołączaj ankietę po grze
+  loyaltyPerGame      Int     @default(0)     // pkt lojalnościowe naliczane za każdą rozegraną grę (0 = wył.)
   thankYouMessagePl   String?
   voucherEmailSubject String?
   voucherEmailBody    String?  // placeholdery: {code} {amount}

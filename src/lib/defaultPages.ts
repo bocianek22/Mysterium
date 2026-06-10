@@ -13,6 +13,32 @@ export type DefaultPage = {
 
 export const DEFAULT_PAGES: DefaultPage[] = [
   {
+    slug: "jak-grac",
+    titlePl: "Jak grać — pierwsza wizyta",
+    titleEn: "How to play — first visit",
+    order: 0,
+    contentPl: `Pierwszy raz w escape roomie? Spokojnie — to prostsze niż myślisz i nie trzeba żadnego doświadczenia.
+
+## Na czym to polega
+Zostajecie zamknięci w klimatycznym pomieszczeniu pełnym zagadek. Waszym zadaniem jest współpraca, szukanie wskazówek i rozwiązywanie łamigłówek, aby wydostać się przed upływem czasu (zwykle 60 minut).
+
+## Jak się przygotować
+- Przyjdźcie 10–15 minut wcześniej — przywita Was nasz Mistrz Gry i wprowadzi w fabułę.
+- Ubierzcie się wygodnie. Nie potrzebujecie żadnego sprzętu.
+- Zostawcie kurtki i torby w wyznaczonym miejscu.
+
+## Zasady i bezpieczeństwo
+- Nie trzeba używać siły — zagadki rozwiązuje się głową, nie rękami.
+- W razie potrzeby Mistrz Gry podpowie Wam przez ekran lub krótkofalówkę.
+- W pokoju jest wyjście awaryjne — w każdej chwili możecie wyjść.
+
+## Dla kogo
+- Dla znajomych, par, rodzin i grup firmowych.
+- Świetne na urodziny, integracje i wieczory tematyczne.
+
+Gotowi na wyzwanie? Zarezerwujcie termin i sprawdźcie się w Mysterium!`,
+  },
+  {
     slug: "dla-firm",
     titlePl: "Dla firm i grup",
     titleEn: "For companies & groups",

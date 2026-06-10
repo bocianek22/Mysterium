@@ -60,6 +60,7 @@ const schema = z.object({
   clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
   autoThankYouEnabled: z.coerce.boolean().optional(),
   surveyEnabled: z.coerce.boolean().optional(),
+  loyaltyPerGame: z.coerce.number().min(0).max(1000).optional(),
   thankYouMessagePl: z.string().optional().nullable(),
   voucherEmailSubject: z.string().optional().nullable(),
   voucherEmailBody: z.string().optional().nullable(),
