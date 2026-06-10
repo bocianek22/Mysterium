@@ -195,6 +195,17 @@ model Reservation {
   @@index([start])
 }
 
+// Subskrypcje Web Push (powiadomienia dla zespołu w panelu)
+model PushSub {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
 // Bany rezerwacji online — e-mail, telefon lub adres IP klienta
 model BookingBan {
   id        String   @id @default(cuid())
@@ -745,6 +756,10 @@ model SiteSettings {
   // SEO / Google
   gaMeasurementId        String? // np. G-XXXXXXX (Google Analytics 4)
   googleSiteVerification String? // token weryfikacji Search Console
+  // Web Push (powiadomienia dla zespołu)
+  vapidPublicKey  String?
+  vapidPrivateKey String?
+  pushEnabled     Boolean @default(false)
   // Przypomnienia przed grą
   reminderEnabled    Boolean @default(false)
   reminderLeadHours  Int     @default(24)

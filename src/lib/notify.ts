@@ -2,6 +2,7 @@
 // Wszystkie funkcje są „bezpieczne" — nigdy nie rzucają, logują błędy.
 
 import { prisma } from "./prisma";
+import { sendPush } from "./push";
 
 type NotifyType = "reservation" | "message" | "schedule" | "test";
 
@@ -108,9 +109,12 @@ export async function notify(opts: {
   const tgText = `${ICON[opts.type]} <b>${escapeHtml(opts.title)}</b>${body ? "\n" + escapeHtml(body) : ""}`;
   const mailText = `${opts.title}\n\n${body}`;
 
+  const url = opts.type === "reservation" ? "/admin/rezerwacje" : opts.type === "message" ? "/admin" : opts.type === "schedule" ? "/admin/grafik" : "/admin";
+
   await Promise.allSettled([
     sendTelegram(tgText),
     sendEmail(`Mysterium — ${opts.title}`, mailText),
+    sendPush({ title: opts.title, body, url }),
   ]);
 }
 

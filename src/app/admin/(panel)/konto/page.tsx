@@ -1,6 +1,7 @@
-import { getSession } from "@/lib/auth";
+import { getSession, isManager } from "@/lib/auth";
 import { roleLabel } from "@/lib/auth";
 import ChangePasswordForm from "@/components/admin/ChangePasswordForm";
+import PushSettings from "@/components/admin/PushSettings";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function AccountPage() {
         <h2 className="text-sm font-serif tracking-[2px] uppercase mb-4" style={{ color: "var(--gold)" }}>Zmiana hasła</h2>
         <ChangePasswordForm />
       </div>
+      <PushSettings isManager={isManager(session.role)} />
     </div>
   );
 }
