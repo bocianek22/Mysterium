@@ -101,6 +101,11 @@ export default function Footer({
           </h4>
           <ul className="list-none flex flex-col gap-[10px]">
             <li>
+              <a href={`/${locale}/moje-rezerwacje`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
+                {locale === "pl" ? "Moje rezerwacje" : "My bookings"}
+              </a>
+            </li>
+            <li>
               <a href={`/${locale}/polityka-prywatnosci`} className="text-sm no-underline" style={{ color: "var(--dim)" }}>
                 {t.footer.privacy}
               </a>
