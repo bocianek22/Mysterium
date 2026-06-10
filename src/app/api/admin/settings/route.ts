@@ -63,6 +63,8 @@ const schema = z.object({
   surveyEnabled: z.coerce.boolean().optional(),
   loyaltyPerGame: z.coerce.number().min(0).max(1000).optional(),
   thankYouMessagePl: z.string().optional().nullable(),
+  gaMeasurementId: z.string().optional().nullable(),
+  googleSiteVerification: z.string().optional().nullable(),
   newsletterDiscountEnabled: z.coerce.boolean().optional(),
   newsletterDiscountPct: z.coerce.number().min(0).max(100).optional(),
   newsletterDiscountCode: z.string().optional().nullable(),

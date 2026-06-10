@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { siteUrl, siteLogo } from "@/lib/seo";
+import { prisma } from "@/lib/prisma";
 import NoZoom from "@/components/NoZoom";
 import PWARegister from "@/components/site/PWARegister";
+import Analytics from "@/components/site/Analytics";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -19,9 +21,11 @@ const DESC =
 export async function generateMetadata(): Promise<Metadata> {
   const base = siteUrl();
   const logo = (await siteLogo(base)) || `${base}/logo.png`;
+  const verification = await prisma.siteSettings.findUnique({ where: { id: "main" }, select: { googleSiteVerification: true } }).then((s) => s?.googleSiteVerification?.trim()).catch(() => undefined);
   return {
     metadataBase: new URL(base),
     applicationName: "MYSTERIUM",
+    ...(verification ? { verification: { google: verification } } : {}),
     title: { default: TITLE, template: "%s | MYSTERIUM" },
     description: DESC,
     keywords: [
@@ -42,16 +46,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const gaId = await prisma.siteSettings.findUnique({ where: { id: "main" }, select: { gaMeasurementId: true } }).then((s) => s?.gaMeasurementId?.trim() || null).catch(() => null);
   return (
     <html lang="pl">
       <body className="noise-bg">
         <NoZoom />
         <PWARegister />
+        {gaId && <Analytics gaId={gaId} />}
         <div className="hex-bg" aria-hidden />
         {children}
       </body>

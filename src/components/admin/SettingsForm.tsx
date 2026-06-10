@@ -141,6 +141,13 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "SEO i Google",
+    fields: [
+      { name: "gaMeasurementId", label: "Google Analytics ID", placeholder: "G-XXXXXXXXXX", help: "GA4. Wczytywane tylko po zgodzie analitycznej użytkownika (RODO)." },
+      { name: "googleSiteVerification", label: "Google Search Console — token weryfikacji", placeholder: "np. abc123...", help: "Wartość z meta tagu google-site-verification." },
+    ],
+  },
+  {
     title: "Newsletter — kod powitalny",
     fields: [
       { name: "newsletterDiscountPct", label: "Zniżka za zapis (%)", type: "number", default: 10 },

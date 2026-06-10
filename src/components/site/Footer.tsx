@@ -1,5 +1,6 @@
 import type { Locale, Dict } from "@/lib/i18n";
 import NewsletterForm from "./NewsletterForm";
+import CookieSettingsLink from "./CookieSettingsLink";
 
 export default function Footer({
   locale,
@@ -148,6 +149,7 @@ export default function Footer({
           <a href={`/${locale}/polityka-prywatnosci`} className="text-xs no-underline ml-4" style={{ color: "var(--gold-l)" }}>
             {t.footer.privacy}
           </a>
+          <CookieSettingsLink label={locale === "pl" ? "Ustawienia cookie" : "Cookie settings"} />
         </div>
       </div>
     </footer>

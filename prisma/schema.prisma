@@ -659,6 +659,9 @@ model SiteSettings {
   newsletterDiscountEnabled Boolean @default(false)
   newsletterDiscountPct     Int     @default(10)
   newsletterDiscountCode    String?
+  // SEO / Google
+  gaMeasurementId        String? // np. G-XXXXXXX (Google Analytics 4)
+  googleSiteVerification String? // token weryfikacji Search Console
   // Przypomnienia przed grą
   reminderEnabled    Boolean @default(false)
   reminderLeadHours  Int     @default(24)

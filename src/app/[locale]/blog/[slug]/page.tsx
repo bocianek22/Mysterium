@@ -4,6 +4,7 @@ import Link from "next/link";
 import { isLocale, getDict, pick, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import { pageMeta, siteUrl } from "@/lib/seo";
+import BreadcrumbJsonLd from "@/components/site/BreadcrumbJsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ export default async function PostPage({ params }: { params: { locale: string; s
   return (
     <article>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BreadcrumbJsonLd items={[{ name: "Mysterium", path: `/${locale}` }, { name: "Blog", path: `/${locale}/blog` }, { name: title, path: `/${locale}/blog/${post.slug}` }]} />
       <section className="relative overflow-hidden pt-[140px] pb-12 px-6 md:px-[60px]">
         {post.coverImage ? (
           <>
