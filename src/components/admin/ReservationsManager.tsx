@@ -33,7 +33,7 @@ export default function ReservationsManager({ rooms, users, showFinance = true }
   const events: CalEvent[] = items.map((r) => ({
     id: r.id, start: r.start, end: r.end,
     title: r.title,
-    color: (STATUS[r.status]?.color) || (r.source === "LOCKME" ? "#7dd3d0" : "#C9A84C"),
+    color: (STATUS[r.status]?.color) || (r.source === "LOCKME" ? "#7dd3d0" : r.source === "ONLINE" ? "#a78bfa" : "#C9A84C"),
   }));
 
   function add(date?: string) {
