@@ -3,6 +3,7 @@
 import crypto from "crypto";
 import { prisma } from "./prisma";
 import { sendMail } from "./notify";
+import { siteUrl } from "./seo";
 
 export type Provider = "STRIPE" | "P24";
 
@@ -166,7 +167,8 @@ export async function markPaidAndFulfill(paymentId: string) {
     if (p.buyerEmail) {
       const subject = settings?.voucherEmailSubject?.trim() || "Twój bon podarunkowy Mysterium 🎁";
       const tpl = settings?.voucherEmailBody?.trim() || "Dziękujemy za zakup!\n\nKod bonu: {code}\nWartość: {amount}\n\nBon zrealizujesz przy rezerwacji. Do zobaczenia w Mysterium!";
-      const text = tpl.replace(/\{code\}/g, code).replace(/\{amount\}/g, zl(p.amount));
+      const pdfUrl = `${siteUrl()}/api/voucher-pdf/${code}`;
+      const text = tpl.replace(/\{code\}/g, code).replace(/\{amount\}/g, zl(p.amount)) + `\n\nPobierz bon (PDF do druku): ${pdfUrl}`;
       await sendMail({ to: p.buyerEmail, subject, text });
     }
   } else if (p.buyerEmail) {
