@@ -417,6 +417,18 @@ model Payment {
   @@index([status])
 }
 
+// Blokady terminów (urlop, serwis) — wykluczane z „wolnych terminów"
+model SlotBlock {
+  id        String   @id @default(cuid())
+  start     DateTime
+  end       DateTime
+  roomId    String?  // null = wszystkie pokoje
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([start])
+}
+
 // Ankiety po grze (NPS / ocena + komentarz)
 model Survey {
   id            String    @id @default(cuid())

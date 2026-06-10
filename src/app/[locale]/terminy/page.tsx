@@ -28,16 +28,18 @@ export default async function SlotsPage({ params }: { params: { locale: string }
   const now = new Date();
   const horizon = new Date(now.getTime() + 11 * 86400000);
 
-  const [rooms, reservations] = await Promise.all([
+  const [rooms, reservations, blocks] = await Promise.all([
     prisma.room.findMany({ where: { published: true, status: "ACTIVE" }, orderBy: { order: "asc" } }),
     prisma.reservation.findMany({ where: { start: { gte: now, lt: horizon }, status: { not: "CANCELLED" } }, select: { start: true, roomId: true } }),
+    prisma.slotBlock.findMany({ where: { end: { gte: now }, start: { lt: horizon } }, select: { start: true, end: true, roomId: true } }),
   ]);
 
   const bookHref = settings?.lockmeUrl || `/${locale}/rezerwacja`;
 
   const perRoom = rooms.map((r) => {
     const starts = reservations.filter((x) => x.roomId === r.id).map((x) => x.start);
-    return { room: r, slots: freeSlots(starts, hours, { stepMin: step, daysAhead: 11, limit: 8 }) };
+    const roomBlocks = blocks.filter((b) => !b.roomId || b.roomId === r.id).map((b) => ({ start: b.start, end: b.end }));
+    return { room: r, slots: freeSlots(starts, hours, { stepMin: step, daysAhead: 11, limit: 8, blocks: roomBlocks }) };
   });
 
   return (

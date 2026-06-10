@@ -37,7 +37,7 @@ const MONTH_SHORT = ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wr
 export function freeSlots(
   reservationStarts: Date[],
   hours: DayHours[],
-  opts: { stepMin?: number; daysAhead?: number; limit?: number; leadMin?: number } = {}
+  opts: { stepMin?: number; daysAhead?: number; limit?: number; leadMin?: number; blocks?: { start: Date; end: Date }[] } = {}
 ): FreeSlot[] {
   const step = opts.stepMin || 90;
   const daysAhead = opts.daysAhead || 10;
@@ -49,6 +49,10 @@ export function freeSlots(
   for (const d of reservationStarts) taken.add(`${dateKey(d)}@${minutesOfDay(d)}`);
   const takenAt = (dk: string, min: number) =>
     reservationStarts.some((d) => dateKey(d) === dk && Math.abs(minutesOfDay(d) - min) < step);
+
+  const blocks = (opts.blocks || []).map((b) => ({ dk: dateKey(b.start), s: minutesOfDay(b.start), e: minutesOfDay(b.end) }));
+  const blockedAt = (dk: string, min: number) =>
+    blocks.some((b) => b.dk === dk && min < b.e && min + step > b.s);
 
   const now = new Date();
   const nowKey = dateKey(now);
@@ -66,12 +70,24 @@ export function freeSlots(
     for (let m = open; m + step <= close && out.length < limit; m += step) {
       if (dk === nowKey && m < nowMin + lead) continue; // za późno na dziś
       if (takenAt(dk, m)) continue;
+      if (blockedAt(dk, m)) continue;
       const [y, mo, da] = dk.split("-").map(Number);
       const label = `${DAY_LABEL[wd]} ${da} ${MONTH_SHORT[mo - 1]}`;
       out.push({ dateKey: dk, dateLabel: label, time: fmtMin(m) });
     }
   }
   return out;
+}
+
+// Tworzy instant odpowiadający ścianie zegara w Warszawie dla daty+godziny.
+export function warsawDate(dateStr: string, hhmm: string): Date {
+  const [y, mo, da] = dateStr.split("-").map(Number);
+  const [h, m] = hhmm.split(":").map(Number);
+  const utcGuess = Date.UTC(y, (mo || 1) - 1, da || 1, h || 0, m || 0);
+  const asUtc = new Date(utcGuess);
+  const inv = new Date(asUtc.toLocaleString("en-US", { timeZone: TZ }));
+  const offset = asUtc.getTime() - inv.getTime();
+  return new Date(utcGuess + offset);
 }
 
 export { DAY_LABEL };

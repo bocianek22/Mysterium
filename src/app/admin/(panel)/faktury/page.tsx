@@ -20,6 +20,7 @@ export default async function InvoicesPage() {
         <div className="flex gap-2">
           <a href="/api/admin/export/reservations" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ CSV</a>
           <a href="/api/admin/report/reservations" target="_blank" rel="noreferrer" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ PDF</a>
+          <a href="/api/admin/export/accounting" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ Księgowość (CSV)</a>
         </div>
       </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Wszystkie zlecenia z wartością lub kosztami. Kliknij załącznik, by otworzyć fakturę/paragon.</p>

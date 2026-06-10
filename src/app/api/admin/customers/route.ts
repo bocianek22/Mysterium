@@ -46,9 +46,15 @@ export async function GET(req: NextRequest) {
 
   const items = rows.map((c) => {
     const agg = aggregate(c.reservations);
+    // Auto-segmenty (pochodne, nie nadpisują ręcznych tagów)
+    const auto: string[] = [];
+    if (c.company) auto.push("firma");
+    if (agg.visits >= 3) auto.push("stały");
+    if (agg.spend >= 1500 || agg.visits >= 5) auto.push("VIP");
+    const tags = Array.from(new Set([...parseTags(c.tagsJson), ...auto]));
     return {
       id: c.id, name: c.name, email: c.email, phone: c.phone, company: c.company,
-      marketingConsent: c.marketingConsent, tags: parseTags(c.tagsJson), notes: c.notes, source: c.source, points: c.points,
+      marketingConsent: c.marketingConsent, tags, notes: c.notes, source: c.source, points: c.points,
       ...agg,
     };
   });

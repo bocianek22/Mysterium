@@ -38,6 +38,7 @@ export default function Sidebar({
     ...(isManager ? [{ href: "/admin/statystyki", label: "Statystyki", icon: "📈" }] : []),
     ...(canReservations ? [{ href: "/admin/rezerwacje", label: "Rezerwacje", icon: "📅" }] : []),
     ...(canReservations ? [{ href: "/admin/kalendarz", label: "Kalendarz", icon: "🗓️" }] : []),
+    ...(canReservations ? [{ href: "/admin/blokady", label: "Blokady terminów", icon: "🚫" }] : []),
     ...(canReservations ? [{ href: "/admin/klienci", label: "Klienci", icon: "📇" }] : []),
     ...(canReservations ? [{ href: "/admin/ankiety", label: "Ankiety", icon: "📝" }] : []),
     ...(isManager ? [{ href: "/admin/kampanie", label: "Kampanie", icon: "📣" }] : []),
