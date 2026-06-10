@@ -12,6 +12,15 @@ datasource db {
 }
 
 // Konto użytkownika panelu — właściciel/admin lub pracownik
+model LoginAttempt {
+  id          String    @id @default(cuid())
+  key         String    @unique // adres IP
+  count       Int       @default(0)
+  windowStart DateTime  @default(now())
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
 model PasswordReset {
   id        String   @id @default(cuid())
   token     String   @unique
