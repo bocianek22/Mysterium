@@ -1,4 +1,5 @@
 import type { Locale, Dict } from "@/lib/i18n";
+import NewsletterForm from "./NewsletterForm";
 
 export default function Footer({
   locale,
@@ -38,6 +39,10 @@ export default function Footer({
             <br />
             {email}
           </p>
+          <div className="mt-4 max-w-[320px]">
+            <div className="font-serif text-[10px] tracking-[3px] uppercase mb-2" style={{ color: "var(--gold)" }}>{locale === "pl" ? "Newsletter" : "Newsletter"}</div>
+            <NewsletterForm locale={locale} />
+          </div>
           {(instagram || facebook || tiktok || youtube) && (
             <div className="flex gap-3 mt-4">
               {instagram && (

@@ -82,6 +82,7 @@ export default async function RoomDetail({
           </Link>
           <div className="mt-4 mb-3">
             <span className="font-serif text-[9px] tracking-[3px] uppercase px-3 py-[3px]" style={{ border: "1px solid rgba(201,168,76,.5)", color: "var(--gold)", background: "rgba(201,168,76,.08)" }}>{badge}</span>
+            {room.featured && <span className="font-serif text-[9px] tracking-[3px] uppercase px-3 py-[3px] ml-2" style={{ border: "1px solid rgba(201,168,76,.5)", color: "#1a1206", background: "var(--gold)" }}>★ {locale === "pl" ? "Polecany" : "Featured"}</span>}
           </div>
           <h1 className="font-display text-gold-grad shimmer font-bold mb-3" style={{ fontSize: "clamp(36px,6vw,64px)", lineHeight: 1.05 }}>{name}</h1>
           {tagline && <p className="text-lg max-w-[640px]" style={{ color: "var(--muted)" }}>{tagline}</p>}
@@ -120,6 +121,45 @@ export default async function RoomDetail({
           </div>
         </section>
       )}
+
+      {/* Wirtualny spacer 360° */}
+      {room.tour360 && room.tour360.trim() && (
+        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+          <div className="max-w-[1000px] mx-auto">
+            <div className="sec-label reveal">{locale === "pl" ? "Wirtualny spacer" : "Virtual tour"}</div>
+            <div className="sec-divider reveal" />
+            <div className="reveal rounded overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+              {room.tour360.includes("<") ? (
+                <EmbedHtml html={room.tour360} />
+              ) : (
+                <iframe src={room.tour360.trim()} title="360" loading="lazy" allowFullScreen className="w-full" style={{ height: 420, border: 0 }} />
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ pokoju */}
+      {(() => {
+        const faqs = (room.faqJson || "").split("\n").map((l) => l.split("|")).filter((p) => p.length >= 2 && p[0].trim());
+        if (!faqs.length) return null;
+        return (
+          <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+            <div className="max-w-[760px] mx-auto">
+              <div className="sec-label reveal">{locale === "pl" ? "Najczęstsze pytania" : "FAQ"}</div>
+              <div className="sec-divider reveal" />
+              <div className="flex flex-col gap-2 reveal">
+                {faqs.map((p, i) => (
+                  <details key={i} className="rounded px-4 py-3" style={{ background: "rgba(13,27,42,.5)", border: "1px solid var(--border)" }}>
+                    <summary className="cursor-pointer text-[15px]" style={{ color: "var(--text)" }}>{p[0].trim()}</summary>
+                    <p className="text-sm mt-2 leading-[1.8]" style={{ color: "var(--muted)" }}>{p.slice(1).join("|").trim()}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* Opinie z Lockme */}
       {room.reviewsEmbed && room.reviewsEmbed.trim() && (

@@ -351,6 +351,9 @@ model Room {
   heroImage     String?  // opcjonalne zdjęcie tła nagłówka (puste = zdjęcie główne)
   heroVideo     String?  // opcjonalne wideo w tle nagłówka (mp4/webm, w pętli)
   reviewsEmbed  String?  // opinie z Lockme: kod widgetu / iframe (HTML)
+  featured      Boolean  @default(false) // wyróżniony / polecany
+  tour360       String?  // wirtualny spacer: iframe / link 360 / wideo (HTML lub URL)
+  faqJson       String?  // FAQ pokoju: linie „Pytanie | Odpowiedź"
   bookingUrl    String?
   order         Int      @default(0)
   published     Boolean  @default(true)
