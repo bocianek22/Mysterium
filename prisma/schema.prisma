@@ -155,6 +155,7 @@ model Reservation {
   otherCost     Float    @default(0)  // inne koszty
   otherInvoiceUrl String? // faktura za inne koszty
   thankedAt     DateTime? // kiedy wysłano auto-podziękowanie po grze
+  remindedAt    DateTime? // kiedy wysłano przypomnienie przed grą
   createdAt     DateTime @default(now())
 
   @@index([start])
@@ -191,6 +192,8 @@ model Customer {
   notes            String?
   source           String   @default("MANUAL") // MANUAL | RESERVATION | CONTACT
   points           Int      @default(0) // program lojalnościowy
+  welcomeCodeSentAt DateTime? // kod powitalny z newslettera wysłany
+  welcomeCodeUsedAt DateTime? // i wykorzystany (jednorazowo)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   reservations     Reservation[] @relation("CustomerReservations")
@@ -652,6 +655,15 @@ model SiteSettings {
   surveyEnabled       Boolean @default(false) // dołączaj ankietę po grze
   loyaltyPerGame      Int     @default(0)     // pkt lojalnościowe naliczane za każdą rozegraną grę (0 = wył.)
   thankYouMessagePl   String?
+  // Kod powitalny za zapis do newslettera (jednorazowy, wspólny kod)
+  newsletterDiscountEnabled Boolean @default(false)
+  newsletterDiscountPct     Int     @default(10)
+  newsletterDiscountCode    String?
+  // Przypomnienia przed grą
+  reminderEnabled    Boolean @default(false)
+  reminderLeadHours  Int     @default(24)
+  reminderSubject    String?
+  reminderBody       String?  // placeholdery: {name} {date} {time} {room}
   voucherEmailSubject String?
   voucherEmailBody    String?  // placeholdery: {code} {amount}
   payEmailSubject     String?

@@ -60,6 +60,7 @@ export async function sendMail(opts: {
   bcc?: string[];
   subject: string;
   text: string;
+  html?: string;
 }): Promise<{ ok: boolean; error?: string }> {
   try {
     if (!process.env.RESEND_API_KEY) return { ok: false, error: "Brak RESEND_API_KEY na serwerze" };
@@ -71,7 +72,7 @@ export async function sendMail(opts: {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from, to, ...(bcc.length ? { bcc } : {}), subject: opts.subject, text: opts.text }),
+      body: JSON.stringify({ from, to, ...(bcc.length ? { bcc } : {}), subject: opts.subject, text: opts.text, ...(opts.html ? { html: opts.html } : {}) }),
     });
     if (!res.ok) {
       const t = await res.text().catch(() => "");

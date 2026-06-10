@@ -141,6 +141,21 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Newsletter — kod powitalny",
+    fields: [
+      { name: "newsletterDiscountPct", label: "Zniżka za zapis (%)", type: "number", default: 10 },
+      { name: "newsletterDiscountCode", label: "Wspólny kod rabatowy", placeholder: "WITAJ10", help: "Jeden kod dla wszystkich zapisanych. Wysyłany automatycznie mailem przy zapisie (raz na osobę)." },
+    ],
+  },
+  {
+    title: "Przypomnienia przed grą",
+    fields: [
+      { name: "reminderLeadHours", label: "Ile godzin przed grą wysłać", type: "number", default: 24 },
+      { name: "reminderSubject", label: "Temat (puste = domyślny)", placeholder: "Przypomnienie o grze w Mysterium" },
+      { name: "reminderBody", label: "Treść (placeholdery: {name} {date} {time} {room})", type: "textarea" },
+    ],
+  },
+  {
     title: "Godziny otwarcia i wolne terminy",
     fields: [
       { name: "slotStepMin", label: "Długość slotu rezerwacji (min)", type: "number", default: 90, help: "Co ile minut zaczyna się nowa gra (np. 90)." },
@@ -211,6 +226,12 @@ export default function SettingsForm() {
               </div>
               <NotifyTestButton />
             </div>
+          )}
+          {g.title === "Newsletter — kod powitalny" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.newsletterDiscountEnabled} onChange={(e) => set("newsletterDiscountEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj kod powitalny po zapisie do newslettera (wymaga Resend)</span></label>
+          )}
+          {g.title === "Przypomnienia przed grą" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.reminderEnabled} onChange={(e) => set("reminderEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne przypomnienia e-mail przed grą (wymaga Resend + cron)</span></label>
           )}
           {g.title === "Godziny otwarcia i wolne terminy" && (
             <div className="mb-4">

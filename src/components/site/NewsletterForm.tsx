@@ -19,7 +19,7 @@ export default function NewsletterForm({ locale }: { locale: Locale }) {
     } catch { setState("err"); setMsg(pl ? "Błąd połączenia" : "Connection error"); }
   }
 
-  if (state === "ok") return <p className="text-sm" style={{ color: "#7eebb0" }}>✓ {pl ? "Dziękujemy! Jesteś zapisany/a." : "Thanks! You're subscribed."}</p>;
+  if (state === "ok") return <p className="text-sm" style={{ color: "#7eebb0" }}>✓ {pl ? "Dziękujemy! Sprawdź skrzynkę — jeśli mamy promocję powitalną, kod czeka w mailu." : "Thanks! Check your inbox for a welcome code if available."}</p>;
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-2">

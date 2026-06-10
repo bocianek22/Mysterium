@@ -14,6 +14,7 @@ const schema = z.object({
   notes: z.string().optional().nullable(),
   points: z.coerce.number().int().optional(),
   pointsDelta: z.coerce.number().int().optional(),
+  welcomeCodeUsed: z.coerce.boolean().optional(),
 });
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -54,6 +55,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       tagsJson: d.tags !== undefined ? stringifyTags(d.tags) : undefined,
       notes: d.notes ?? undefined,
       points: d.pointsDelta !== undefined ? { increment: d.pointsDelta } : d.points !== undefined ? Math.max(0, d.points) : undefined,
+      welcomeCodeUsedAt: d.welcomeCodeUsed === undefined ? undefined : d.welcomeCodeUsed ? new Date() : null,
     },
   });
   return NextResponse.json({ item });
