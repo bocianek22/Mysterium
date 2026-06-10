@@ -70,6 +70,7 @@ export default function Sidebar({
     ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),
     ...(isManager ? [{ href: "/admin/qr", label: "Generator QR", icon: "🔳" }] : []),
     ...(canFinance ? [{ href: "/admin/bony-druk", label: "Druk bonów", icon: "🎁" }] : []),
+    ...(isManager ? [{ href: "/admin/bany", label: "Bany rezerwacji", icon: "🚫" }] : []),
     ...(isManager ? [{ href: "/admin/kopia", label: "Kopia / audyt", icon: "💾" }] : []),
   ];
 

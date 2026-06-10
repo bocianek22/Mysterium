@@ -171,6 +171,16 @@ export async function markPaidAndFulfill(paymentId: string) {
       const text = tpl.replace(/\{code\}/g, code).replace(/\{amount\}/g, zl(p.amount)) + `\n\nPobierz bon (PDF do druku): ${pdfUrl}`;
       await sendMail({ to: p.buyerEmail, subject, text });
     }
+  } else if (p.purpose === "BOOKING") {
+    try {
+      const meta = p.metaJson ? JSON.parse(p.metaJson) : {};
+      if (meta.reservationId) {
+        await prisma.reservation.update({ where: { id: meta.reservationId }, data: { paid: true, deposit: p.amount / 100, status: "CONFIRMED" } });
+      }
+    } catch {}
+    if (p.buyerEmail) {
+      await sendMail({ to: p.buyerEmail, subject: "Potwierdzenie zadatku — Mysterium", text: `Dziękujemy! Otrzymaliśmy zadatek ${zl(p.amount)} za rezerwację. Do zobaczenia w Mysterium!` });
+    }
   } else if (p.buyerEmail) {
     const subject = settings?.payEmailSubject?.trim() || "Potwierdzenie płatności — Mysterium";
     const tpl = settings?.payEmailBody?.trim() || "Dziękujemy! Otrzymaliśmy płatność {amount}{description}.";

@@ -170,6 +170,15 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Rezerwacja online (własny system)",
+    fields: [
+      { name: "ownBookingDeposit", label: "Kwota zadatku online (zł)", type: "number", default: 0, help: "0 = bez opcji zadatku (rezerwacja bez płatności). Powyżej 0 — klient może opcjonalnie zapłacić zadatek przez Stripe/P24." },
+      { name: "ownBookingLeadMin", label: "Min. wyprzedzenie rezerwacji (min)", type: "number", default: 120, help: "Ile minut przed grą można jeszcze zarezerwować online." },
+      { name: "ownBookingInfoPl", label: "Informacja przy rezerwacji (PL)", type: "textarea" },
+      { name: "ownBookingInfoEn", label: "Informacja przy rezerwacji (EN)", type: "textarea" },
+    ],
+  },
+  {
     title: "Rezerwacje — LockMe",
     fields: [
       { name: "lockmeUrl", label: "Link do rezerwacji LockMe (przycisk)" },
@@ -245,6 +254,9 @@ export default function SettingsForm() {
               <label className="flex items-center gap-3 mb-3"><input type="checkbox" checked={!!data.slotsEnabled} onChange={(e) => set("slotsEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Pokazuj „Wolne terminy" na stronie (/terminy)</span></label>
               <OpeningHoursEditor value={data.openHoursJson} onChange={(v) => set("openHoursJson", v)} />
             </div>
+          )}
+          {g.title === "Rezerwacja online (własny system)" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.ownBookingEnabled} onChange={(e) => set("ownBookingEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz własny system rezerwacji online na /rezerwacja (obok LockMe). Potwierdzanie automatyczne.</span></label>
           )}
           {g.title === "Płatności online" && (
             <div className="mb-4 flex flex-col gap-2">

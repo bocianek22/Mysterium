@@ -189,9 +189,20 @@ model Reservation {
   otherInvoiceUrl String? // faktura za inne koszty
   thankedAt     DateTime? // kiedy wysłano auto-podziękowanie po grze
   remindedAt    DateTime? // kiedy wysłano przypomnienie przed grą
+  ip            String?   // IP klienta przy rezerwacji online (do banowania)
   createdAt     DateTime @default(now())
 
   @@index([start])
+}
+
+// Bany rezerwacji online — e-mail, telefon lub adres IP klienta
+model BookingBan {
+  id        String   @id @default(cuid())
+  type      String   // EMAIL | PHONE | IP
+  value     String
+  reason    String?
+  createdAt DateTime @default(now())
+  @@unique([type, value])
 }
 
 // Wydatki firmowe (poza kosztami przypisanymi do rezerwacji) —
@@ -704,6 +715,12 @@ model SiteSettings {
   openHoursJson String?  // godziny otwarcia (JSON: 7 dni Pn..Nd)
   slotStepMin   Int      @default(90) // długość slotu rezerwacji (min)
   slotsEnabled  Boolean  @default(false) // pokazuj „wolne terminy" na stronie
+  // Własny system rezerwacji online (obok LockMe)
+  ownBookingEnabled Boolean @default(false)
+  ownBookingDeposit Int     @default(0)   // kwota zadatku zł (0 = bez opcji zadatku)
+  ownBookingLeadMin Int     @default(120) // min. wyprzedzenie rezerwacji (min)
+  ownBookingInfoPl  String? // dodatkowa informacja przy rezerwacji (PL)
+  ownBookingInfoEn  String?
   weekendSurchargePct Int @default(0)    // dopłata weekendowa do cen (%)
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
