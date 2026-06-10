@@ -135,6 +135,9 @@ export default function Sidebar({
           <a href="/" target="_blank" className="flex items-center gap-3 px-4 py-[10px] text-sm no-underline" style={{ color: "var(--muted)" }}>
             🌐 Zobacz stronę
           </a>
+          <Link href="/admin/konto" className="flex items-center gap-3 px-4 py-[10px] text-sm no-underline" style={{ color: "var(--muted)" }}>
+            🔑 Moje konto
+          </Link>
           <button onClick={logout} className="flex items-center gap-3 px-4 py-[10px] text-sm w-full text-left" style={{ color: "var(--muted)" }}>
             🚪 Wyloguj
           </button>
