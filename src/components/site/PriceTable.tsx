@@ -6,11 +6,19 @@ export default function PriceTable({
   locale,
   json,
   title,
+  weekendPct = 0,
 }: {
   locale: Locale;
   json: string | null | undefined;
   title: string;
+  weekendPct?: number;
 }) {
+  const weekendPrice = (price?: string) => {
+    if (!weekendPct || !price) return null;
+    const n = parseFloat(String(price).replace(/[^\d.,]/g, "").replace(",", "."));
+    if (!n) return null;
+    return `${Math.round(n * (1 + weekendPct / 100))} zł`;
+  };
   let tiers: Tier[] = [];
   try {
     tiers = json ? JSON.parse(json) : [];
@@ -36,10 +44,18 @@ export default function PriceTable({
             </span>
             <span className="font-display text-lg" style={{ color: "var(--gold)" }}>
               {t.price}
+              {weekendPrice(t.price) && (
+                <span className="text-xs ml-2" style={{ color: "var(--muted)" }}>/ {weekendPrice(t.price)}</span>
+              )}
             </span>
           </div>
         ))}
       </div>
+      {weekendPct > 0 && (
+        <p className="text-[11px] mt-2" style={{ color: "var(--dim)" }}>
+          {locale === "pl" ? `Pierwsza cena: dni powszednie. Druga: weekendy i święta (+${weekendPct}%).` : `First price: weekdays. Second: weekends & holidays (+${weekendPct}%).`}
+        </p>
+      )}
     </div>
   );
 }

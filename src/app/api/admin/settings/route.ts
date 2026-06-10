@@ -21,6 +21,7 @@ const schema = z.object({
   openHoursJson: z.string().optional().nullable(),
   slotStepMin: z.coerce.number().min(15).max(480).optional(),
   slotsEnabled: z.coerce.boolean().optional(),
+  weekendSurchargePct: z.coerce.number().min(0).max(200).optional(),
   hoursPl: z.string().optional(),
   hoursEn: z.string().optional(),
   heroDescPl: z.string().optional(),

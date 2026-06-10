@@ -417,6 +417,19 @@ model Payment {
   @@index([status])
 }
 
+// Baza wiedzy / ogłoszenia dla zespołu
+model KbArticle {
+  id        String   @id @default(cuid())
+  title     String
+  category  String?  @default("Ogólne")
+  content   String   @default("")
+  pinned    Boolean  @default(false)
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // Blokady terminów (urlop, serwis) — wykluczane z „wolnych terminów"
 model SlotBlock {
   id        String   @id @default(cuid())
@@ -622,6 +635,7 @@ model SiteSettings {
   openHoursJson String?  // godziny otwarcia (JSON: 7 dni Pn..Nd)
   slotStepMin   Int      @default(90) // długość slotu rezerwacji (min)
   slotsEnabled  Boolean  @default(false) // pokazuj „wolne terminy" na stronie
+  weekendSurchargePct Int @default(0)    // dopłata weekendowa do cen (%)
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
   googleRating         String? // np. "4.9"

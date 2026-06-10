@@ -149,6 +149,21 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  kb: {
+    label: "Baza wiedzy (zespół)",
+    singular: "wpis",
+    icon: "📚",
+    listColumns: ["title", "category", "published"],
+    fields: [
+      { name: "title", label: "Tytuł", type: "text", required: true },
+      { name: "category", label: "Kategoria", type: "text", default: "Ogólne", placeholder: "np. Procedury, BHP, Obsługa gry" },
+      { name: "content", label: "Treść", type: "textarea", help: "Akapity oddzielaj pustą linią. Nagłówek: linia od „## ”. Lista: linie od „- ”." },
+      { name: "pinned", label: "Przypięty u góry", type: "boolean", default: false },
+      { name: "order", label: "Kolejność", type: "number", default: 0 },
+      { name: "published", label: "Widoczny dla zespołu", type: "boolean", default: true },
+    ],
+  },
+
   posts: {
     label: "Blog / Aktualności",
     singular: "wpis",

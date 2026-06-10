@@ -28,11 +28,29 @@ export default async function StatsPage() {
 
   const now = new Date();
   const from = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const [reservations, rooms] = await Promise.all([
+  const [reservations, rooms, customers, messages] = await Promise.all([
     prisma.reservation.findMany({ where: { start: { gte: from } } }),
     prisma.room.findMany({ select: { id: true, namePl: true } }),
+    prisma.customer.findMany({ select: { source: true, createdAt: true, marketingConsent: true } }).catch(() => []),
+    prisma.contactMessage.findMany({ where: { createdAt: { gte: from } }, select: { createdAt: true } }).catch(() => []),
   ]);
   const active = reservations.filter((r) => r.status !== "CANCELLED");
+
+  // Marketing: źródła klientów, nowi w czasie, zgody
+  const SRC_LABEL: Record<string, string> = { MANUAL: "Ręcznie", RESERVATION: "Rezerwacja", CONTACT: "Formularz", NEWSLETTER: "Newsletter" };
+  const bySource = Object.entries(
+    customers.reduce((m: Record<string, number>, c) => { const k = c.source || "MANUAL"; m[k] = (m[k] || 0) + 1; return m; }, {})
+  ).map(([k, v]) => ({ label: SRC_LABEL[k] || k, value: v as number }));
+  const consent = customers.filter((c) => c.marketingConsent).length;
+  const mkMonths = Array.from({ length: 6 }).map((_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - 5 + i, 1);
+    const end = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+    return {
+      label: `${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`,
+      newCust: customers.filter((c) => { const t = new Date(c.createdAt); return t >= d && t < end; }).length,
+      msgs: messages.filter((c) => { const t = new Date(c.createdAt); return t >= d && t < end; }).length,
+    };
+  });
 
   // 6 miesięcy: przychód, gracze, liczba gier
   const months = Array.from({ length: 6 }).map((_, i) => {
@@ -96,6 +114,37 @@ export default async function StatsPage() {
           <Bars data={statuses} fmt={(n) => String(n)} color="linear-gradient(180deg,#e0b257,#8a6314)" />
         </div>
       </div>
+
+      <h2 className="font-display text-gold-grad text-2xl mt-10 mb-4 flex items-center gap-2"><span>📣</span> Marketing</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <div className="text-[11px] uppercase tracking-[1px] mb-2" style={{ color: "var(--muted)" }}>Klienci łącznie</div>
+          <div className="font-display" style={{ color: "var(--gold)", fontSize: 26 }}>{customers.length}</div>
+        </div>
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <div className="text-[11px] uppercase tracking-[1px] mb-2" style={{ color: "var(--muted)" }}>Zgody marketingowe</div>
+          <div className="font-display" style={{ color: "#7eebb0", fontSize: 26 }}>{consent}</div>
+        </div>
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <div className="text-[11px] uppercase tracking-[1px] mb-2" style={{ color: "var(--muted)" }}>Wiadomości (6 mies.)</div>
+          <div className="font-display" style={{ color: "var(--gold)", fontSize: 26 }}>{messages.length}</div>
+        </div>
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <div className="text-[11px] uppercase tracking-[1px] mb-2" style={{ color: "var(--muted)" }}>Nowi (6 mies.)</div>
+          <div className="font-display" style={{ color: "var(--gold)", fontSize: 26 }}>{mkMonths.reduce((a, m) => a + m.newCust, 0)}</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <h2 className="font-serif text-sm tracking-[2px] uppercase mb-5" style={{ color: "var(--gold)" }}>Źródła klientów</h2>
+          {bySource.length ? <Bars data={bySource} fmt={(n) => String(n)} color="linear-gradient(180deg,#7eebb0,#2f8f63)" /> : <p style={{ color: "var(--muted)" }}>Brak danych.</p>}
+        </div>
+        <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+          <h2 className="font-serif text-sm tracking-[2px] uppercase mb-5" style={{ color: "var(--gold)" }}>Nowi klienci miesięcznie</h2>
+          <Bars data={mkMonths.map((m) => ({ label: m.label, value: m.newCust }))} fmt={(n) => String(n)} color="linear-gradient(180deg,#e0b257,#8a6314)" />
+        </div>
+      </div>
+
       <p className="text-xs mt-6" style={{ color: "var(--dim)" }}>Dane z ostatnich 6 miesięcy (bez anulowanych w sumach przychodu/graczy).</p>
     </div>
   );

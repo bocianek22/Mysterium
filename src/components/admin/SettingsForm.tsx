@@ -144,6 +144,7 @@ const groups: { title: string; fields: Field[] }[] = [
     title: "Godziny otwarcia i wolne terminy",
     fields: [
       { name: "slotStepMin", label: "Długość slotu rezerwacji (min)", type: "number", default: 90, help: "Co ile minut zaczyna się nowa gra (np. 90)." },
+      { name: "weekendSurchargePct", label: "Dopłata weekendowa do cen (%)", type: "number", default: 0, help: "0 = brak. Np. 15 pokaże w cenniku drugą cenę weekendową +15%." },
     ],
   },
   {

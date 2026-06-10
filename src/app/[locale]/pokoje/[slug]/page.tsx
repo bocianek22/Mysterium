@@ -106,7 +106,7 @@ export default async function RoomDetail({
                 <p key={i} className="text-[15px] md:text-base leading-[1.95] mb-4" style={{ color: "var(--muted)" }}>{p}</p>
               ))}
             </div>
-            <PriceTable locale={locale} json={room.pricingJson} title={t.pricing.label} />
+            <PriceTable locale={locale} json={room.pricingJson} title={t.pricing.label} weekendPct={settings?.weekendSurchargePct || 0} />
           </div>
         </section>
       )}

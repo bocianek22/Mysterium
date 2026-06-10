@@ -21,10 +21,11 @@ export default async function PricingPage({ params }: { params: { locale: string
   if (!isLocale(params.locale)) notFound();
   const locale = params.locale as Locale;
   const t = getDict(locale);
-  const [rooms, mobile, faq] = await Promise.all([
+  const [rooms, mobile, faq, settings] = await Promise.all([
     prisma.room.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
     prisma.mobileOffer.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
     prisma.faqItem.findMany({ where: { published: true }, orderBy: { order: "asc" } }),
+    prisma.siteSettings.findUnique({ where: { id: "main" } }),
   ]);
 
   const items = [
@@ -47,7 +48,7 @@ export default async function PricingPage({ params }: { params: { locale: string
                   <h2 className="font-display text-2xl" style={{ color: "var(--gold)" }}>{i.name}</h2>
                   <span className="font-serif text-[9px] tracking-[2px] uppercase px-3 py-[3px]" style={{ border: "1px solid var(--border)", color: "var(--muted)" }}>{i.badge}</span>
                 </div>
-                <PriceTable locale={locale} json={i.pricingJson} title={t.pricing.label} />
+                <PriceTable locale={locale} json={i.pricingJson} title={t.pricing.label} weekendPct={settings?.weekendSurchargePct || 0} />
                 <Link href={`/${locale}/${i.kind}/${i.slug}`} className="inline-block mt-4 font-serif text-[11px] tracking-[2px]" style={{ color: "var(--gold-l)" }}>
                   {t.common.details} →
                 </Link>

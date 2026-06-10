@@ -64,6 +64,7 @@ export default function Sidebar({
       { href: "/admin/checklisty", label: "Checklisty", icon: "✅" },
       { href: "/admin/magazyn", label: "Magazyn", icon: "📦" },
     ] : []),
+    { href: "/admin/wiedza", label: "Baza wiedzy", icon: "📚" },
     { href: "/admin/urlopy", label: isManager ? "Urlopy" : "Mój urlop", icon: "🏖️" },
     ...(isManager ? [{ href: "/admin/users", label: "Pracownicy", icon: "👥" }] : []),
     ...(isManager ? [{ href: "/admin/qr", label: "Generator QR", icon: "🔳" }] : []),
