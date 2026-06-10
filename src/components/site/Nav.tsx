@@ -32,6 +32,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
     { href: `/${locale}/pokoje`, label: t.nav.rooms },
     { href: `/${locale}/mobilna`, label: t.nav.mobile },
     { href: `/${locale}/eventy`, label: t.nav.events },
+    { href: `/${locale}/pakiety`, label: t.nav.packages },
     { href: `/${locale}/bony`, label: t.nav.vouchers },
     { href: `/${locale}/galeria`, label: t.nav.gallery },
     { href: `/${locale}/cennik`, label: t.nav.pricing },

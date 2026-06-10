@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
-  const staticPaths = ["", "/pokoje", "/mobilna", "/galeria", "/cennik", "/blog", "/hall-of-fame", "/o-nas", "/kontakt", "/rezerwacja", "/terminy", "/jak-grac", "/dla-firm", "/regulamin", "/dostepnosc", "/polityka-prywatnosci"];
+  const staticPaths = ["", "/pokoje", "/mobilna", "/eventy", "/pakiety", "/bony", "/galeria", "/cennik", "/blog", "/hall-of-fame", "/o-nas", "/kontakt", "/rezerwacja", "/terminy", "/jak-grac", "/dla-firm", "/regulamin", "/dostepnosc", "/polityka-prywatnosci"];
 
   let rooms: { slug: string }[] = [];
   let mobile: { slug: string }[] = [];

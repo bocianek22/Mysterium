@@ -601,6 +601,39 @@ model Review {
 }
 
 // Pakiety cenowe
+// Pakiety okazjonalne (urodziny, wieczory panieńskie/kawalerskie, integracje…)
+model Package {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  namePl        String
+  nameEn        String
+  occasionPl    String?  // okazja, np. „Urodziny", „Integracja firmowa"
+  occasionEn    String?
+  taglinePl     String?
+  taglineEn     String?
+  descriptionPl String?
+  descriptionEn String?
+  image         String?
+  imagesJson    String?  @default("[]")
+  priceFrom     Int      @default(0)   // cena „od" (zł)
+  priceNotePl   String?  // np. „za grupę", „/os."
+  priceNoteEn   String?
+  pricingJson   String?  @default("[]") // cennik wg liczby osób [{labelPl,labelEn,price}]
+  includesPl    String?  // co zawiera (linie)
+  includesEn    String?
+  minPlayers    Int      @default(2)
+  maxPlayers    Int      @default(10)
+  durationMin   Int      @default(60)
+  badgePl       String   @default("Pakiet")
+  badgeEn       String   @default("Package")
+  bookingUrl    String?
+  featured      Boolean  @default(false)
+  order         Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model PricingPlan {
   id        String   @id @default(cuid())
   namePl    String

@@ -6,6 +6,7 @@ import { resources, type ResourceConfig } from "./resourceConfig";
 const delegates = {
   rooms: prisma.room,
   mobile: prisma.mobileOffer,
+  packages: prisma.package,
   pages: prisma.page,
   kb: prisma.kbArticle,
   posts: prisma.post,
