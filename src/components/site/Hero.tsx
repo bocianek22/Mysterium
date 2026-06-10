@@ -46,13 +46,13 @@ export default function Hero({
             "radial-gradient(ellipse 80% 70% at 50% 40%,rgba(13,61,58,.4) 0%,transparent 70%),radial-gradient(ellipse 50% 40% at 85% 20%,rgba(201,168,76,.05) 0%,transparent 60%),linear-gradient(180deg,var(--navy-dd) 0%,var(--navy-d) 100%)",
         }}
       />
-      <div ref={orb1} className="absolute orb-anim" style={{ transition: "transform .4s ease-out" }}>
+      <div ref={orb1} className="absolute orb-anim hidden md:block" style={{ transition: "transform .4s ease-out" }}>
         <div
           className="rounded-full"
           style={{ width: 420, height: 420, background: "rgba(13,61,58,.4)", marginTop: "-30vh", marginLeft: "-30vw", filter: "blur(70px)" }}
         />
       </div>
-      <div ref={orb2} className="absolute orb-anim" style={{ transition: "transform .4s ease-out" }}>
+      <div ref={orb2} className="absolute orb-anim hidden md:block" style={{ transition: "transform .4s ease-out" }}>
         <div
           className="rounded-full"
           style={{ width: 320, height: 320, background: "rgba(201,168,76,.07)", marginTop: "30vh", marginLeft: "30vw", filter: "blur(70px)" }}
@@ -170,12 +170,6 @@ export default function Hero({
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-center" style={{ animation: "fadeUp .8s 1.5s both" }}>
-        <div className="font-serif text-[9px] tracking-[4px] mb-[10px]" style={{ color: "var(--dim)" }}>
-          {t.hero.scroll}
-        </div>
-        <div className="mx-auto" style={{ width: 1, height: 50, background: "linear-gradient(180deg,var(--gold),transparent)", animation: "scrollLine 2s ease-in-out infinite" }} />
-      </div>
     </section>
   );
 }
