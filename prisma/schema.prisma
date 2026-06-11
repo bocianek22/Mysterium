@@ -190,6 +190,8 @@ model Reservation {
   thankedAt     DateTime? // kiedy wysłano auto-podziękowanie po grze
   remindedAt    DateTime? // kiedy wysłano przypomnienie przed grą
   ip            String?   // IP klienta przy rezerwacji online (do banowania)
+  discountCode  String?   // kod rabatowy podany przy rezerwacji online
+  priceEstimate Float    @default(0) // szacowana cena gry po rabacie (do zapłaty na miejscu)
   createdAt     DateTime @default(now())
 
   @@index([start])
@@ -818,4 +820,17 @@ model SiteSettings {
   googlePrivateKey   String?
   googleCalendarId   String?
   updatedAt     DateTime @updatedAt
+}
+
+model Waitlist {
+  id         String   @id @default(cuid())
+  roomId     String?  // konkretny pokój (puste = dowolny)
+  dateKey    String?  // preferowany dzień RRRR-MM-DD (puste = dowolny)
+  name       String?
+  email      String
+  phone      String?
+  notifiedAt DateTime? // kiedy powiadomiono o wolnym terminie
+  createdAt  DateTime @default(now())
+
+  @@index([roomId])
 }

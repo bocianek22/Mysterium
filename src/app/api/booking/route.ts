@@ -8,6 +8,7 @@ import { nextRefNo } from "@/lib/reservations";
 import { notify, sendMail } from "@/lib/notify";
 import { siteUrl } from "@/lib/seo";
 import { startCheckout, resolveOrigin, paymentSettings } from "@/lib/payments";
+import { parsePricing, estimatePrice, applyDiscount } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ const schema = z.object({
   people: z.coerce.number().min(1).max(50),
   notes: z.string().optional().nullable(),
   deposit: z.coerce.boolean().optional(), // czy zapłacić zadatek online
+  discountCode: z.string().optional().nullable(),
 });
 
 export async function POST(req: NextRequest) {
@@ -71,6 +73,20 @@ export async function POST(req: NextRequest) {
     customerId = existing?.id ?? (await prisma.customer.create({ data: { name: d.name.trim(), email, phone: d.phone.trim(), source: "RESERVATION" } })).id;
   } catch { customerId = null; }
 
+  // Cennik + kod rabatowy (rabat naliczany do ceny gry, płatnej na miejscu)
+  const tiers = parsePricing(room.pricingJson);
+  let priceEstimate = estimatePrice(tiers, d.people);
+  let appliedCode: string | null = null;
+  if (d.discountCode?.trim()) {
+    const code = d.discountCode.trim().toUpperCase();
+    const dc = await prisma.discountCode.findUnique({ where: { code } });
+    if (dc && dc.active && (dc.usageLimit === 0 || dc.usedCount < dc.usageLimit)) {
+      priceEstimate = applyDiscount(priceEstimate, dc.kind, dc.value);
+      appliedCode = code;
+      await prisma.discountCode.update({ where: { code }, data: { usedCount: { increment: 1 } } }).catch(() => {});
+    }
+  }
+
   const refNo = await nextRefNo();
   const reservation = await prisma.reservation.create({
     data: {
@@ -87,10 +103,13 @@ export async function POST(req: NextRequest) {
       customerId,
       refNo,
       ip,
+      discountCode: appliedCode,
+      priceEstimate,
     },
   });
 
-  notify({ type: "reservation", title: "Nowa rezerwacja online", lines: [`${room.namePl} · ${d.people} os.`, start.toLocaleString("pl-PL"), `${d.name} · ${d.phone}`, refNo] });
+  const priceLine = appliedCode ? `kod ${appliedCode} · ${priceEstimate} zł` : priceEstimate > 0 ? `${priceEstimate} zł` : "";
+  notify({ type: "reservation", title: "Nowa rezerwacja online", lines: [`${room.namePl} · ${d.people} os.`, start.toLocaleString("pl-PL"), `${d.name} · ${d.phone}`, priceLine, refNo].filter(Boolean) });
 
   // Potwierdzenie dla klienta + link „dodaj do kalendarza"
   try {
@@ -101,7 +120,7 @@ export async function POST(req: NextRequest) {
     await sendMail({
       to: email,
       subject: `Potwierdzenie rezerwacji ${refNo} — Mysterium`,
-      text: `Dziękujemy za rezerwację! 🎉\n\nPokój: ${room.namePl}\nTermin: ${when}\nOsób: ${d.people}\nNumer rezerwacji: ${refNo}\nAdres: ${address}\n\nDodaj do kalendarza:\n${gcal}\n\nZarządzaj rezerwacją (anulowanie/podgląd):\n${siteUrl()}/pl/moje-rezerwacje\n\nDo zobaczenia w Mysterium!`,
+      text: `Dziękujemy za rezerwację! 🎉\n\nPokój: ${room.namePl}\nTermin: ${when}\nOsób: ${d.people}\n${priceEstimate > 0 ? `Cena gry: ${priceEstimate} zł${appliedCode ? ` (kod ${appliedCode})` : ""} — płatne na miejscu\n` : ""}Numer rezerwacji: ${refNo}\nAdres: ${address}\n\nDodaj do kalendarza:\n${gcal}\n\nZarządzaj rezerwacją (anulowanie/podgląd):\n${siteUrl()}/pl/moje-rezerwacje\n\nDo zobaczenia w Mysterium!`,
     });
   } catch {}
 

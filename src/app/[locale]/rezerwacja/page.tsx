@@ -6,6 +6,7 @@ import { pageMeta } from "@/lib/seo";
 import { pick } from "@/lib/i18n";
 import Booking from "@/components/site/Booking";
 import OwnBooking from "@/components/site/OwnBooking";
+import { parsePricing } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -23,10 +24,14 @@ export default async function BookingPage({ params }: { params: { locale: string
   const pl = locale === "pl";
   const settings = await prisma.siteSettings.findUnique({ where: { id: "main" } });
 
-  let rooms: { id: string; name: string }[] = [];
+  let rooms: { id: string; name: string; pricing: { label: string; price: number }[] }[] = [];
   if (settings?.ownBookingEnabled) {
-    const list = await prisma.room.findMany({ where: { published: true, status: "ACTIVE" }, orderBy: { order: "asc" }, select: { id: true, namePl: true, nameEn: true } });
-    rooms = list.map((r) => ({ id: r.id, name: pl ? r.namePl : r.nameEn }));
+    const list = await prisma.room.findMany({ where: { published: true, status: "ACTIVE" }, orderBy: { order: "asc" }, select: { id: true, namePl: true, nameEn: true, pricingJson: true } });
+    rooms = list.map((r) => ({
+      id: r.id,
+      name: pl ? r.namePl : r.nameEn,
+      pricing: parsePricing(r.pricingJson).map((t) => ({ label: (pl ? t.labelPl : t.labelEn) || "", price: t.price || 0 })),
+    }));
   }
 
   return (
