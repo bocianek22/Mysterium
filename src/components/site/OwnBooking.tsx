@@ -21,6 +21,8 @@ export default function OwnBooking({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<{ refNo: string } | null>(null);
+  const [waitEmail, setWaitEmail] = useState("");
+  const [waitDone, setWaitDone] = useState(false);
 
   const room = rooms.find((r) => r.id === roomId);
   const pricing = room?.pricing || [];
@@ -33,6 +35,26 @@ export default function OwnBooking({
     setCheckingCode(false);
     setCodeInfo(d);
   }
+
+  async function joinWaitlist() {
+    if (!waitEmail.trim()) return;
+    await fetch("/api/booking/waitlist", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: waitEmail, roomId, name: form.name || undefined, phone: form.phone || undefined }) }).catch(() => {});
+    setWaitDone(true);
+  }
+
+  const waitlistBox = () => (
+    <div className="rounded p-4" style={{ border: "1px solid var(--border)", background: "rgba(13,27,42,.4)" }}>
+      <div className="font-serif text-[11px] tracking-[2px] uppercase mb-2" style={{ color: "var(--gold)" }}>{pl ? "Powiadom o wolnym terminie" : "Notify me of a free slot"}</div>
+      {waitDone ? (
+        <p className="text-[13px]" style={{ color: "#7eebb0" }}>{pl ? "Damy znać, gdy zwolni się termin." : "We'll let you know when a slot opens."}</p>
+      ) : (
+        <div className="flex gap-2">
+          <input type="email" className="field-input" value={waitEmail} onChange={(e) => setWaitEmail(e.target.value)} placeholder="jan@example.com" />
+          <button type="button" onClick={joinWaitlist} className="px-4 rounded text-[13px] whitespace-nowrap" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{pl ? "Zapisz mnie" : "Notify me"}</button>
+        </div>
+      )}
+    </div>
+  );
 
   useEffect(() => {
     if (!roomId) return;
@@ -95,7 +117,10 @@ export default function OwnBooking({
         {loadingSlots ? (
           <p className="text-[13px]" style={{ color: "var(--muted)" }}>{pl ? "Ładowanie terminów…" : "Loading…"}</p>
         ) : slots.length === 0 ? (
-          <p className="text-[13px]" style={{ color: "var(--muted)" }}>{pl ? "Brak wolnych terminów w najbliższym czasie." : "No free slots soon."}</p>
+          <div className="flex flex-col gap-3">
+            <p className="text-[13px]" style={{ color: "var(--muted)" }}>{pl ? "Brak wolnych terminów w najbliższym czasie." : "No free slots soon."}</p>
+            {waitlistBox()}
+          </div>
         ) : (
           <div className="flex flex-col gap-3 max-h-[320px] overflow-y-auto pr-1">
             {Object.entries(byDay).map(([day, list]) => (

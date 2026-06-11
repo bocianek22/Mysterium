@@ -360,6 +360,19 @@ export const resources: Record<string, ResourceConfig> = {
     ],
   },
 
+  waitlist: {
+    label: "Lista oczekujących",
+    singular: "zgłoszenie",
+    icon: "⏳",
+    listColumns: ["email", "name", "dateKey", "notifiedAt", "createdAt"],
+    fields: [
+      { name: "email", label: "E-mail", type: "text", required: true },
+      { name: "name", label: "Imię", type: "text" },
+      { name: "phone", label: "Telefon", type: "text" },
+      { name: "dateKey", label: "Preferowany dzień (RRRR-MM-DD)", type: "text" },
+    ],
+  },
+
   messages: {
     label: "Wiadomości",
     singular: "wiadomość",

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { verifyCustomerToken } from "@/lib/customerToken";
 import { notify } from "@/lib/notify";
+import { notifyWaitlist } from "@/lib/waitlist";
 
 export const dynamic = "force-dynamic";
 
@@ -23,5 +24,8 @@ export async function POST(req: NextRequest) {
 
   await prisma.reservation.update({ where: { id: r.id }, data: { status: "CANCELLED" } });
   notify({ type: "reservation", title: "Anulowanie rezerwacji online", lines: [`${r.customerName || email}`, new Date(r.start).toLocaleString("pl-PL"), r.refNo || ""] });
+  // Powiadom listę oczekujących — zwolnił się termin
+  const dateKey = new Date(r.start).toISOString().slice(0, 10);
+  notifyWaitlist(r.roomId, dateKey);
   return NextResponse.json({ ok: true });
 }

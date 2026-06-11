@@ -18,6 +18,7 @@ const delegates = {
   faq: prisma.faqItem,
   vouchers: prisma.voucher,
   codes: prisma.discountCode,
+  waitlist: prisma.waitlist,
   messages: prisma.contactMessage,
 } as const;
 

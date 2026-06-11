@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { findOrCreateCustomer } from "@/lib/customers";
+import { notifyWaitlist } from "@/lib/waitlist";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -66,6 +67,10 @@ export async function PATCH(
       otherInvoiceUrl: d.otherInvoiceUrl ?? undefined,
     },
   });
+  // Zwolniony termin → powiadom listę oczekujących
+  if (d.status === "CANCELLED" && item.start > new Date()) {
+    notifyWaitlist(item.roomId, new Date(item.start).toISOString().slice(0, 10));
+  }
   return NextResponse.json({ item });
 }
 
