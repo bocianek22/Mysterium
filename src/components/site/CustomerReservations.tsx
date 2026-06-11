@@ -10,7 +10,7 @@ const STATUS: Record<string, { pl: string; en: string; color: string }> = {
   CANCELLED: { pl: "Anulowana", en: "Cancelled", color: "#fca5a5" },
 };
 
-export default function CustomerReservations({ locale, email, token, upcoming, past }: { locale: "pl" | "en"; email: string; token: string; upcoming: Res[]; past: Res[] }) {
+export default function CustomerReservations({ locale, email, token, upcoming, past, points = 0 }: { locale: "pl" | "en"; email: string; token: string; upcoming: Res[]; past: Res[]; points?: number }) {
   const pl = locale === "pl";
   const [list, setList] = useState(upcoming);
   const [busy, setBusy] = useState("");
@@ -51,6 +51,16 @@ export default function CustomerReservations({ locale, email, token, upcoming, p
   return (
     <div className="flex flex-col gap-8">
       <p className="text-[13px]" style={{ color: "var(--muted)" }}>{pl ? "Zalogowano jako" : "Signed in as"} <b style={{ color: "var(--gold-l)" }}>{email}</b></p>
+
+      {points > 0 && (
+        <div className="corner-frame p-5 flex items-center gap-4" style={{ background: "rgba(201,168,76,.07)", border: "1px solid rgba(201,168,76,.3)" }}>
+          <div className="text-3xl">🏆</div>
+          <div>
+            <div className="font-display text-gold-grad text-xl">{points} {pl ? "pkt" : "pts"}</div>
+            <p className="text-[12px]" style={{ color: "var(--muted)" }}>{pl ? "Twoje punkty lojalnościowe — wymienisz je na rabat przy wizycie w Mysterium." : "Your loyalty points — redeem them for a discount on your visit."}</p>
+          </div>
+        </div>
+      )}
 
       <div>
         <div className="flex items-center justify-between mb-3">

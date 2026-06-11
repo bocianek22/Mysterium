@@ -28,13 +28,34 @@ export default async function StatsPage() {
 
   const now = new Date();
   const from = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-  const [reservations, rooms, customers, messages] = await Promise.all([
+  const [reservations, rooms, customers, messages, waitlistPending] = await Promise.all([
     prisma.reservation.findMany({ where: { start: { gte: from } } }),
     prisma.room.findMany({ select: { id: true, namePl: true } }),
     prisma.customer.findMany({ select: { source: true, createdAt: true, marketingConsent: true } }).catch(() => []),
     prisma.contactMessage.findMany({ where: { createdAt: { gte: from } }, select: { createdAt: true } }).catch(() => []),
+    prisma.waitlist.count({ where: { notifiedAt: null } }).catch(() => 0),
   ]);
   const active = reservations.filter((r) => r.status !== "CANCELLED");
+
+  // Rezerwacje online (źródło ONLINE) — obłożenie, dni i godziny szczytu
+  const online = reservations.filter((r) => r.source === "ONLINE");
+  const onlineActive = online.filter((r) => r.status !== "CANCELLED");
+  const onlineCancelled = online.length - onlineActive.length;
+  const onlineShare = active.length ? Math.round((onlineActive.length / active.length) * 100) : 0;
+  const cancelRate = online.length ? Math.round((onlineCancelled / online.length) * 100) : 0;
+  const DOW = ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"];
+  const dowIdx = (d: Date) => (new Date(d).getDay() + 6) % 7;
+  const byDow = DOW.map((label, i) => ({ label, value: onlineActive.filter((r) => dowIdx(r.start) === i).length }));
+  const byHour = Array.from({ length: 14 }).map((_, k) => {
+    const h = 9 + k;
+    return { label: `${h}`, value: onlineActive.filter((r) => new Date(r.start).getHours() === h).length };
+  });
+  const onlineCards = [
+    { label: "Rezerwacje online (6 mies.)", value: String(onlineActive.length), c: "#a78bfa" },
+    { label: "Udział w grach", value: `${onlineShare}%`, c: "var(--gold)" },
+    { label: "Wskaźnik anulowań", value: `${cancelRate}%`, c: cancelRate > 20 ? "#fca5a5" : "#7eebb0" },
+    { label: "Lista oczekujących", value: String(waitlistPending), c: "var(--gold-l)" },
+  ];
 
   // Marketing: źródła klientów, nowi w czasie, zgody
   const SRC_LABEL: Record<string, string> = { MANUAL: "Ręcznie", RESERVATION: "Rezerwacja", CONTACT: "Formularz", NEWSLETTER: "Newsletter" };
@@ -144,6 +165,30 @@ export default async function StatsPage() {
           <Bars data={mkMonths.map((m) => ({ label: m.label, value: m.newCust }))} fmt={(n) => String(n)} color="linear-gradient(180deg,#e0b257,#8a6314)" />
         </div>
       </div>
+
+      <h2 className="font-display text-gold-grad text-2xl mt-10 mb-4 flex items-center gap-2"><span>🌐</span> Rezerwacje online</h2>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {onlineCards.map((c) => (
+          <div key={c.label} className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+            <div className="text-[11px] uppercase tracking-[1px] mb-2" style={{ color: "var(--muted)" }}>{c.label}</div>
+            <div className="font-display" style={{ color: c.c, fontSize: 26 }}>{c.value}</div>
+          </div>
+        ))}
+      </div>
+      {onlineActive.length > 0 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+            <h2 className="font-serif text-sm tracking-[2px] uppercase mb-5" style={{ color: "var(--gold)" }}>Rezerwacje wg dnia tygodnia</h2>
+            <Bars data={byDow} fmt={(n) => String(n)} color="linear-gradient(180deg,#a78bfa,#6f5bb0)" />
+          </div>
+          <div className="p-5 rounded" style={{ background: "rgba(13,27,42,.6)", border: "1px solid var(--border)" }}>
+            <h2 className="font-serif text-sm tracking-[2px] uppercase mb-5" style={{ color: "var(--gold)" }}>Popularne godziny startu</h2>
+            {byHour.length ? <Bars data={byHour} fmt={(n) => String(n)} color="linear-gradient(180deg,#5fb0d8,#2f6e92)" /> : <p style={{ color: "var(--muted)" }}>Brak danych.</p>}
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Brak rezerwacji online w ostatnich 6 miesiącach.</p>
+      )}
 
       <p className="text-xs mt-6" style={{ color: "var(--dim)" }}>Dane z ostatnich 6 miesięcy (bez anulowanych w sumach przychodu/graczy).</p>
     </div>

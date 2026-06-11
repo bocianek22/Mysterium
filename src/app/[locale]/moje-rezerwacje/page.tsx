@@ -25,7 +25,10 @@ export default async function MyBookingsPage({ params, searchParams }: { params:
 
   let upcoming: any[] = [];
   let past: any[] = [];
+  let points = 0;
   if (email) {
+    const cust = await prisma.customer.findUnique({ where: { email }, select: { points: true } }).catch(() => null);
+    points = cust?.points || 0;
     const list = await prisma.reservation.findMany({
       where: { customerEmail: email },
       orderBy: { start: "desc" },
@@ -57,7 +60,7 @@ export default async function MyBookingsPage({ params, searchParams }: { params:
       />
       <section className="px-6 md:px-[60px] py-12 max-w-[900px] mx-auto">
         {email ? (
-          <CustomerReservations locale={locale} email={email} token={token} upcoming={upcoming} past={past} />
+          <CustomerReservations locale={locale} email={email} token={token} upcoming={upcoming} past={past} points={points} />
         ) : (
           <RequestLinkForm locale={locale} expired={!!token} />
         )}
