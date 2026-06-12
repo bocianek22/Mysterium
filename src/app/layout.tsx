@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import NoZoom from "@/components/NoZoom";
 import PWARegister from "@/components/site/PWARegister";
 import Analytics from "@/components/site/Analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -58,6 +59,7 @@ export default async function RootLayout({
         <NoZoom />
         <PWARegister />
         {gaId && <Analytics gaId={gaId} />}
+        <VercelAnalytics />
         <div className="hex-bg" aria-hidden />
         {children}
       </body>
