@@ -22,6 +22,40 @@ function NotifyTestButton() {
   );
 }
 
+function TelegramChatDetector({ onPick }: { onPick: (id: string) => void }) {
+  const [chats, setChats] = useState<{ id: string; title: string; type: string }[] | null>(null);
+  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  async function detect() {
+    setLoading(true); setMsg(""); setChats(null);
+    try {
+      const res = await fetch("/api/admin/telegram/chat-ids");
+      const d = await res.json();
+      if (!res.ok) { setMsg(d.error || "Błąd"); return; }
+      setChats(d.chats || []);
+      if (!d.chats?.length) setMsg(d.hint || "Brak czatów.");
+    } catch { setMsg("Błąd połączenia"); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="mt-1">
+      <button type="button" onClick={detect} disabled={loading} className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{loading ? "Szukam…" : "Wykryj ID grupy"}</button>
+      <span className="text-xs ml-2" style={{ color: "var(--dim)" }}>(najpierw zapisz token, potem napisz coś na grupie)</span>
+      {msg && <p className="text-xs mt-2" style={{ color: "var(--muted)" }}>{msg}</p>}
+      {chats && chats.length > 0 && (
+        <div className="mt-2 flex flex-col gap-1">
+          {chats.map((c) => (
+            <button key={c.id} type="button" onClick={() => onPick(c.id)} className="text-left text-xs px-3 py-2 rounded flex items-center justify-between gap-3" style={{ border: "1px solid var(--border)", color: "var(--text)" }}>
+              <span><b style={{ color: "var(--gold-l)" }}>{c.title}</b> <span style={{ color: "var(--dim)" }}>· {c.type} · {c.id}</span></span>
+              <span style={{ color: "var(--gold)" }}>Użyj →</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 type Field = { name: string; label: string; type?: string; help?: string; placeholder?: string; default?: string | number; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
@@ -241,6 +275,7 @@ export default function SettingsForm() {
                 <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnSchedule ?? true} onChange={(e) => set("notifyOnSchedule", e.target.checked)} /> Zmiany grafiku</label>
               </div>
               <NotifyTestButton />
+              <TelegramChatDetector onPick={(id) => set("telegramChatId", id)} />
             </div>
           )}
           {g.title === "Newsletter — kod powitalny" && (
