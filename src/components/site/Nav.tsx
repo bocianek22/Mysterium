@@ -32,9 +32,11 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
     { href: `/${locale}/pokoje`, label: t.nav.rooms },
     { href: `/${locale}/mobilna`, label: t.nav.mobile },
     { href: `/${locale}/eventy`, label: t.nav.events },
+    { href: `/${locale}/pakiety`, label: t.nav.packages },
     { href: `/${locale}/bony`, label: t.nav.vouchers },
     { href: `/${locale}/galeria`, label: t.nav.gallery },
     { href: `/${locale}/cennik`, label: t.nav.pricing },
+    { href: `/${locale}/blog`, label: t.nav.blog },
     { href: `/${locale}/o-nas`, label: t.nav.about },
     { href: `/${locale}/kontakt`, label: t.nav.contact },
   ];
@@ -57,8 +59,7 @@ export default function Nav({ locale, t, logoUrl }: { locale: Locale; t: Dict; l
           src={logoUrl || "/logo.png"}
           alt="Mysterium"
           className="h-9 md:h-11"
-          style={{ filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))", display: "none" }}
-          onLoad={(e) => ((e.target as HTMLImageElement).style.display = "block")}
+          style={{ filter: "drop-shadow(0 0 10px rgba(201,168,76,.4))" }}
           onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
         />
         <span className="font-display text-gold-grad text-[15px] md:text-base tracking-wide">MYSTERIUM</span>

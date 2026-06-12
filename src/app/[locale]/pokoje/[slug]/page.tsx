@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma";
 import { pageMeta } from "@/lib/seo";
 import RoomGallery from "@/components/site/RoomGallery";
 import PriceTable from "@/components/site/PriceTable";
+import RoomDecor from "@/components/site/RoomDecor";
+import EmbedHtml from "@/components/site/EmbedHtml";
 
 export const dynamic = "force-dynamic";
 
@@ -45,24 +47,42 @@ export default async function RoomDetail({
     images = [];
   }
   const bookHref = room.bookingUrl || settings?.lockmeUrl || `/${locale}/rezerwacja`;
+  const theme = (room as { theme?: string }).theme || "default";
+  const themed = theme !== "default";
+  const sectionBg = "var(--navy-dd)"; // paleta motywu nadaje kolor sekcjom
+  // Tło nagłówka = media właściciela: wideo (mp4/webm) > zdjęcie/GIF > zdjęcie główne
+  const heroVideo = (room as { heroVideo?: string }).heroVideo || null;
+  const heroImgUrl = (room as { heroImage?: string }).heroImage || room.image || null;
 
   return (
-    <article>
+    <article className={`room-theme theme-${theme}`}>
       {/* HERO pokoju */}
       <section className="relative overflow-hidden pt-[140px] pb-16 px-6 md:px-[60px]">
-        {room.image && (
-          <>
-            <div className="absolute inset-0" style={{ backgroundImage: `url(${room.image})`, backgroundSize: "cover", backgroundPosition: "center" }} />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(0deg,var(--navy-dd) 5%,rgba(4,12,20,.8) 50%,rgba(4,12,20,.7))" }} />
-          </>
+        {heroVideo ? (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay loop muted playsInline
+            poster={heroImgUrl || undefined}
+          >
+            <source src={heroVideo} />
+          </video>
+        ) : heroImgUrl ? (
+          <div className="absolute inset-0" style={{ backgroundImage: `url(${heroImgUrl})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+        ) : (
+          // Brak mediów → wygląd jak domyślny motyw strony (klimatyczny gradient)
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 70% at 50% 35%,rgba(13,61,58,.4),transparent 70%),radial-gradient(ellipse 50% 40% at 85% 15%,rgba(201,168,76,.06),transparent 60%),linear-gradient(180deg,var(--navy-dd),var(--navy-d))" }} />
         )}
-        {!room.image && <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%,rgba(13,61,58,.45),transparent 70%),var(--navy-dd)" }} />}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(0deg,var(--navy-dd) 5%,rgba(4,12,20,.8) 50%,rgba(4,12,20,.7))" }} />
+        {themed && <div className="absolute inset-0" style={{ background: "var(--hero-veil)" }} />}
+        {themed && <div className="room-fx" aria-hidden="true" />}
+        {themed && <RoomDecor theme={theme} />}
         <div className="relative z-[1] max-w-[1000px] mx-auto">
           <Link href={`/${locale}/pokoje`} className="font-serif text-[11px] tracking-[2px] uppercase no-underline" style={{ color: "var(--gold)" }}>
             {t.common.backToRooms}
           </Link>
           <div className="mt-4 mb-3">
             <span className="font-serif text-[9px] tracking-[3px] uppercase px-3 py-[3px]" style={{ border: "1px solid rgba(201,168,76,.5)", color: "var(--gold)", background: "rgba(201,168,76,.08)" }}>{badge}</span>
+            {room.featured && <span className="font-serif text-[9px] tracking-[3px] uppercase px-3 py-[3px] ml-2" style={{ border: "1px solid rgba(201,168,76,.5)", color: "#1a1206", background: "var(--gold)" }}>★ {locale === "pl" ? "Polecany" : "Featured"}</span>}
           </div>
           <h1 className="font-display text-gold-grad shimmer font-bold mb-3" style={{ fontSize: "clamp(36px,6vw,64px)", lineHeight: 1.05 }}>{name}</h1>
           {tagline && <p className="text-lg max-w-[640px]" style={{ color: "var(--muted)" }}>{tagline}</p>}
@@ -79,25 +99,75 @@ export default async function RoomDetail({
 
       {/* Opis + cennik */}
       {(description || room.pricingJson) && (
-        <section className="px-6 md:px-[60px] py-12 md:py-16 relative z-[1]" style={{ background: "var(--navy-dd)" }}>
+        <section className="px-6 md:px-[60px] py-12 md:py-16 relative z-[1]" style={{ background: sectionBg }}>
           <div className="max-w-[760px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <div className="reveal">
               {(description || "").split(/\n{2,}/).filter(Boolean).map((p, i) => (
                 <p key={i} className="text-[15px] md:text-base leading-[1.95] mb-4" style={{ color: "var(--muted)" }}>{p}</p>
               ))}
             </div>
-            <PriceTable locale={locale} json={room.pricingJson} title={t.pricing.label} />
+            <PriceTable locale={locale} json={room.pricingJson} title={t.pricing.label} weekendPct={settings?.weekendSurchargePct || 0} />
           </div>
         </section>
       )}
 
       {/* Galeria pokoju */}
       {images.length > 0 && (
-        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: "var(--navy-dd)" }}>
+        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
           <div className="max-w-[1100px] mx-auto">
             <div className="sec-label reveal">{t.gallery.label}</div>
             <div className="sec-divider reveal" />
             <RoomGallery images={images} />
+          </div>
+        </section>
+      )}
+
+      {/* Wirtualny spacer 360° */}
+      {room.tour360 && room.tour360.trim() && (
+        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+          <div className="max-w-[1000px] mx-auto">
+            <div className="sec-label reveal">{locale === "pl" ? "Wirtualny spacer" : "Virtual tour"}</div>
+            <div className="sec-divider reveal" />
+            <div className="reveal rounded overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+              {room.tour360.includes("<") ? (
+                <EmbedHtml html={room.tour360} />
+              ) : (
+                <iframe src={room.tour360.trim()} title="360" loading="lazy" allowFullScreen className="w-full" style={{ height: 420, border: 0 }} />
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ pokoju */}
+      {(() => {
+        const faqs = (room.faqJson || "").split("\n").map((l) => l.split("|")).filter((p) => p.length >= 2 && p[0].trim());
+        if (!faqs.length) return null;
+        return (
+          <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+            <div className="max-w-[760px] mx-auto">
+              <div className="sec-label reveal">{locale === "pl" ? "Najczęstsze pytania" : "FAQ"}</div>
+              <div className="sec-divider reveal" />
+              <div className="flex flex-col gap-2 reveal">
+                {faqs.map((p, i) => (
+                  <details key={i} className="rounded px-4 py-3" style={{ background: "rgba(13,27,42,.5)", border: "1px solid var(--border)" }}>
+                    <summary className="cursor-pointer text-[15px]" style={{ color: "var(--text)" }}>{p[0].trim()}</summary>
+                    <p className="text-sm mt-2 leading-[1.8]" style={{ color: "var(--muted)" }}>{p.slice(1).join("|").trim()}</p>
+                  </details>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* Opinie z Lockme */}
+      {room.reviewsEmbed && room.reviewsEmbed.trim() && (
+        <section className="px-6 md:px-[60px] pb-16 relative z-[1]" style={{ background: sectionBg }}>
+          <div className="max-w-[1000px] mx-auto">
+            <div className="sec-label reveal">{locale === "pl" ? "Opinie graczy" : "Player reviews"}</div>
+            <div className="sec-divider reveal" />
+            <div className="reveal"><EmbedHtml html={room.reviewsEmbed} /></div>
           </div>
         </section>
       )}

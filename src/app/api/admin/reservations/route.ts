@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getSession, isManager } from "@/lib/auth";
+import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { pushEventToGoogle } from "@/lib/google";
+import { pushEventToGoogle, resolveRoomColor, googleEventDescription } from "@/lib/google";
 import { notify } from "@/lib/notify";
+import { findOrCreateCustomer } from "@/lib/customers";
 
 const schema = z.object({
   title: z.string().min(1),
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
   const to = searchParams.get("to");
   const where: any = {};
   // pracownik widzi tylko zlecenia, do których jest przypisany
-  if (!isManager(s.role)) where.assignedUserId = s.sub;
+  if (!canReservations(s.role)) where.assignedUserId = s.sub;
   if (from || to) {
     where.start = {};
     if (from) where.start.gte = new Date(from);
@@ -63,16 +64,18 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const s = await getSession();
-  if (!s || !isManager(s.role))
+  if (!s || !canReservations(s.role))
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   const parsed = schema.safeParse(await req.json());
   if (!parsed.success)
     return NextResponse.json({ error: "Nieprawidłowe dane" }, { status: 400 });
   const d = parsed.data;
   const refNo = await nextRefNo();
+  const customerId = await findOrCreateCustomer({ name: d.customerName, email: d.customerEmail, phone: d.customerPhone });
   const item = await prisma.reservation.create({
     data: {
       title: d.title,
+      customerId,
       roomId: d.roomId || null,
       start: new Date(d.start),
       end: new Date(d.end),
@@ -107,15 +110,18 @@ export async function POST(req: NextRequest) {
     ],
   }).catch(() => {});
 
-  // Opcjonalny zapis do Google Calendar (nie blokuje odpowiedzi przy błędzie)
-  pushEventToGoogle({
-    summary: `Rezerwacja: ${item.title}`,
-    description: [item.customerName, item.customerPhone, item.notes]
-      .filter(Boolean)
-      .join(" • "),
-    start: item.start,
-    end: item.end,
-  }).catch(() => {});
+  // Opcjonalny zapis do Google Calendar — zapamiętaj ID, by móc aktualizować/usuwać.
+  try {
+    const eventId = await pushEventToGoogle({
+      summary: `Rezerwacja: ${item.title}`,
+      description: googleEventDescription(item),
+      location: item.customerName || undefined,
+      colorId: await resolveRoomColor(item.roomId),
+      start: item.start,
+      end: item.end,
+    });
+    if (eventId) await prisma.reservation.update({ where: { id: item.id }, data: { googleEventId: eventId } });
+  } catch {}
 
   return NextResponse.json({ item });
 }

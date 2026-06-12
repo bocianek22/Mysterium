@@ -45,7 +45,7 @@ export default function MobileCard({
       <div className="absolute inset-0 transition-colors duration-500 group-hover:border-[rgba(201,168,76,.55)]" style={{ border: "1px solid rgba(201,168,76,.1)" }} />
       <span className="absolute top-6 left-6 font-serif text-[9px] tracking-[3px] uppercase px-3 py-[3px]" style={{ border: "1px solid rgba(125,211,208,.4)", color: "#7dd3d0", background: "rgba(13,61,58,.3)" }}>{badge}</span>
       <span className="absolute top-6 right-6 text-3xl opacity-30">📦</span>
-      <div className="absolute bottom-0 left-0 right-0 px-8 pb-9 pt-9 transition-transform duration-500 group-hover:-translate-y-1">
+      <div className="absolute bottom-0 left-0 right-0 px-8 pb-9 pt-9 md:pr-28 transition-transform duration-500 group-hover:-translate-y-1">
         <div className="font-display text-[28px] font-bold text-white mb-[10px] leading-[1.1]">{name}</div>
         {tagline && <div className="text-sm mb-4 leading-[1.6]" style={{ color: "var(--muted)" }}>{tagline}</div>}
         <div className="flex gap-4 flex-wrap">
@@ -54,7 +54,7 @@ export default function MobileCard({
           <span className="font-serif text-[10px] tracking-[1px] flex items-center gap-[5px]" style={{ color: "var(--gold)" }}>🚐 {t.mobile.label}</span>
         </div>
       </div>
-      <span className="absolute bottom-9 right-8 font-serif text-[10px] tracking-[2px] uppercase opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ color: "var(--gold)" }}>{t.mobile.seeOffer}</span>
+      <span className="hidden md:block absolute bottom-9 right-8 font-serif text-[10px] tracking-[2px] uppercase opacity-0 group-hover:opacity-100 transition-all duration-500" style={{ color: "var(--gold)" }}>{t.mobile.seeOffer}</span>
     </a>
   );
 }

@@ -8,7 +8,21 @@ const secret = new TextEncoder().encode(
   process.env.AUTH_SECRET || "dev-secret-change-me"
 );
 
-export type Role = "OWNER" | "ADMIN" | "EMPLOYEE";
+export type Role = "OWNER" | "ADMIN" | "EMPLOYEE" | "CODE" | "RECEPCJA" | "KSIEGOWA" | "TECHNIK";
+
+export const ROLE_LABELS: Record<string, string> = {
+  OWNER: "Właściciel",
+  ADMIN: "Admin",
+  EMPLOYEE: "Pracownik",
+  RECEPCJA: "Recepcja",
+  KSIEGOWA: "Księgowa",
+  TECHNIK: "Technik",
+  CODE: "Kod (kiosk)",
+};
+
+export function roleLabel(role?: string) {
+  return (role && ROLE_LABELS[role]) || "Pracownik";
+}
 
 export type SessionPayload = {
   sub: string; // user id
@@ -71,6 +85,46 @@ export function isManager(role?: Role) {
 
 export function isOwner(role?: Role) {
   return role === "OWNER";
+}
+
+// Kto widzi finanse (Finanse, Faktury, eksporty finansowe): zarządzający + Księgowa.
+export function canFinance(role?: Role) {
+  return isManager(role) || role === "KSIEGOWA";
+}
+
+// Kto obsługuje rezerwacje: zarządzający + Recepcja.
+export function canReservations(role?: Role) {
+  return isManager(role) || role === "RECEPCJA";
+}
+
+// Kto ma dostęp do bazy klientów (mini-CRM): zarządzający + Recepcja.
+export function canCustomers(role?: Role) {
+  return isManager(role) || role === "RECEPCJA";
+}
+
+// Kto może dodawać wydatki: zarządzający + Księgowa + Technik.
+export function canExpenses(role?: Role) {
+  return isManager(role) || role === "KSIEGOWA" || role === "TECHNIK";
+}
+
+// Operacje (konserwacja, checklisty) — cały zespół oprócz kiosku/księgowej.
+export function canOps(role?: Role) {
+  return isManager(role) || role === "EMPLOYEE" || role === "TECHNIK" || role === "RECEPCJA";
+}
+
+// Zarządzanie operacjami (szablony checklist, usuwanie/zamykanie zgłoszeń).
+export function canOpsManage(role?: Role) {
+  return isManager(role) || role === "TECHNIK";
+}
+
+// Role „biurowe" o ograniczonym dostępie (nie pełni zarządzający, nie obsługa gier).
+export function isOffice(role?: Role) {
+  return role === "RECEPCJA" || role === "KSIEGOWA" || role === "TECHNIK";
+}
+
+// Kto może wyświetlać ekran kodu QR (RCP): zarządzający + rola „Kod" (kiosk).
+export function canShowCode(role?: Role) {
+  return isManager(role) || role === "CODE";
 }
 
 export async function requireSession(): Promise<SessionPayload> {

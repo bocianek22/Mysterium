@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { isLocale, getDict, locales, type Locale } from "@/lib/i18n";
+import { isLocale, getDict, pick, locales, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
 import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
@@ -10,6 +10,7 @@ import Splash from "@/components/site/Splash";
 import HtmlLang from "@/components/site/HtmlLang";
 import CookieBanner from "@/components/site/CookieBanner";
 import JsonLd from "@/components/site/JsonLd";
+import SitePopup from "@/components/site/SitePopup";
 
 // Renderowanie na żądanie — strona pobiera treści z bazy w czasie żądania,
 // dzięki czemu build (np. na Vercel) nie wymaga połączenia z bazą.
@@ -45,7 +46,20 @@ export default async function LocaleLayout({
       <Particles />
       <Nav locale={locale} t={t} logoUrl={settings?.logoUrl} />
       <main>{children}</main>
-      <Footer locale={locale} t={t} phone={phone} email={email} address={address} />
+      <Footer locale={locale} t={t} phone={phone} email={email} address={address} instagram={settings?.instagram} facebook={settings?.facebook} tiktok={settings?.tiktok} youtube={settings?.youtube} />
+      {settings && settings.popupMode !== "OFF" && (
+        <SitePopup
+          locale={locale}
+          t={t}
+          mode={settings.popupMode === "NEWSLETTER" ? "NEWSLETTER" : "PROMO"}
+          title={pick(settings, "popupTitle", locale)}
+          text={pick(settings, "popupText", locale)}
+          image={settings.popupImage}
+          ctaLabel={pick(settings, "popupCtaLabel", locale)}
+          ctaUrl={settings.popupCtaUrl}
+          delaySec={settings.popupDelaySec ?? 6}
+        />
+      )}
       <WhatsappFloat whatsapp={whatsapp} />
       <CookieBanner locale={locale} />
       <JsonLd
@@ -54,6 +68,8 @@ export default async function LocaleLayout({
         email={email}
         hours={locale === "pl" ? settings?.hoursPl : settings?.hoursEn}
         rating={settings?.googleReviewsEnabled ? settings?.googleRating : null}
+        logo={settings?.logoUrl}
+        openHoursJson={settings?.openHoursJson}
       />
     </>
   );

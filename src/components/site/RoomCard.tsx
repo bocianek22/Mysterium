@@ -82,7 +82,7 @@ export default function RoomCard({
         {badge}
       </span>
 
-      <div className="absolute bottom-0 left-0 right-0 px-8 pb-9 pt-9 transition-transform duration-500 group-hover:-translate-y-1">
+      <div className="absolute bottom-0 left-0 right-0 px-8 pb-9 pt-9 md:pr-28 transition-transform duration-500 group-hover:-translate-y-1">
         <div className="font-display text-[28px] font-bold text-white mb-[10px] leading-[1.1]">{name}</div>
         {tagline && (
           <div className="text-sm mb-4 leading-[1.6] max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 transition-all duration-500 overflow-hidden" style={{ color: "var(--muted)" }}>
@@ -102,7 +102,7 @@ export default function RoomCard({
         </div>
       </div>
 
-      <span className="absolute bottom-9 right-8 font-serif text-[10px] tracking-[2px] uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-[-6px] group-hover:translate-x-0" style={{ color: "var(--gold)" }}>
+      <span className="hidden md:block absolute bottom-9 right-8 font-serif text-[10px] tracking-[2px] uppercase opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-[-6px] group-hover:translate-x-0" style={{ color: "var(--gold)" }}>
         {t.rooms.explore}
       </span>
     </a>

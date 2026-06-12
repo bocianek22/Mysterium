@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getSession, isOwner } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -8,7 +8,7 @@ const zl = (n: number) => (n || 0).toLocaleString("pl-PL", { minimumFractionDigi
 export default async function InvoicesPage() {
   const s = await getSession();
   if (!s) redirect("/admin/login");
-  if (!isOwner(s.role)) redirect("/admin");
+  if (!canFinance(s.role)) redirect("/admin");
 
   const all = await prisma.reservation.findMany({ orderBy: { start: "desc" }, include: { assignedUser: { select: { name: true, email: true } } } });
   const items = all.filter((r) => r.invoiceUrl || r.fuelInvoiceUrl || r.otherInvoiceUrl || r.price || r.fuelCost || r.otherCost);
@@ -17,7 +17,11 @@ export default async function InvoicesPage() {
     <div>
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <h1 className="font-display text-gold-grad text-3xl flex items-center gap-3"><span>🧾</span> Faktury i koszty</h1>
-        <a href="/api/admin/export/reservations" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ Eksport CSV</a>
+        <div className="flex gap-2">
+          <a href="/api/admin/export/reservations" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ CSV</a>
+          <a href="/api/admin/report/reservations" target="_blank" rel="noreferrer" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ PDF</a>
+          <a href="/api/admin/export/accounting" className="text-sm px-4 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>⬇ Księgowość (CSV)</a>
+        </div>
       </div>
       <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>Wszystkie zlecenia z wartością lub kosztami. Kliknij załącznik, by otworzyć fakturę/paragon.</p>
 

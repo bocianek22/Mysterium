@@ -1,4 +1,4 @@
-import { getSession, isOwner } from "@/lib/auth";
+import { getSession, canFinance } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toCsv, csvResponse } from "@/lib/csv";
 
@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const s = await getSession();
-  if (!s || !isOwner(s.role)) return new Response("Forbidden", { status: 403 });
+  if (!s || !canFinance(s.role)) return new Response("Forbidden", { status: 403 });
   const rows = await prisma.reservation.findMany({ orderBy: { start: "desc" }, include: { assignedUser: { select: { name: true, email: true } }, room: { select: { namePl: true } } } });
   const csv = toCsv(
     ["Nr", "Data", "Tytuł", "Pokój", "Status", "Osób", "Klient", "Telefon", "E-mail", "Prowadzi", "Przychód", "Zaliczka", "Opłacone", "Paliwo", "Inne", "Zysk"],

@@ -6,12 +6,19 @@ import { resources, type ResourceConfig } from "./resourceConfig";
 const delegates = {
   rooms: prisma.room,
   mobile: prisma.mobileOffer,
+  packages: prisma.package,
+  pages: prisma.page,
+  kb: prisma.kbArticle,
+  posts: prisma.post,
+  albums: prisma.eventAlbum,
+  leaderboard: prisma.leaderboardEntry,
   gallery: prisma.galleryImage,
   videos: prisma.video,
   reviews: prisma.review,
   faq: prisma.faqItem,
   vouchers: prisma.voucher,
   codes: prisma.discountCode,
+  waitlist: prisma.waitlist,
   messages: prisma.contactMessage,
 } as const;
 

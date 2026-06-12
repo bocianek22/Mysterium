@@ -12,6 +12,25 @@ datasource db {
 }
 
 // Konto użytkownika panelu — właściciel/admin lub pracownik
+model LoginAttempt {
+  id          String    @id @default(cuid())
+  key         String    @unique // adres IP
+  count       Int       @default(0)
+  windowStart DateTime  @default(now())
+  lockedUntil DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
 model User {
   id            String         @id @default(cuid())
   email         String         @unique
@@ -28,6 +47,7 @@ model User {
   canStationary Boolean        @default(true)  // może obsługiwać stacjonarne
   canMobile     Boolean        @default(true)  // może jeździć na wyjazdy
   targetHours   Float          @default(0)      // cel godzin / miesiąc
+  leaveAllowance Int           @default(26)     // roczny limit dni urlopu
   // Wynagrodzenie: stawki netto/brutto per kategoria (JSON) + typ umowy
   ratesJson     String?        @default("{}")   // {stationary:{net,brutto},mobile:{...},travel:{...},cleaning:{...}}
   contractType  String?        // UoP | Zlecenie | UoD | B2B (informacyjnie)
@@ -40,7 +60,43 @@ model User {
   shifts        Shift[]
   availability  Availability[]
   timesheets    DailyTimesheet[] @relation("Timesheets")
+  clockEntries  ClockEntry[]     @relation("ClockEntries")
+  leaveRequests LeaveRequest[]   @relation("LeaveRequests")
   assignedReservations Reservation[] @relation("AssignedReservations")
+}
+
+// Wnioski urlopowe / niedostępność (z saldem dni wolnych)
+model LeaveRequest {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("LeaveRequests", fields: [userId], references: [id], onDelete: Cascade)
+  startDate DateTime  // pierwszy dzień (00:00)
+  endDate   DateTime  // ostatni dzień (włącznie)
+  days      Float     @default(0) // dni robocze wniosku (liczone przy zapisie)
+  type      String    @default("URLOP") // URLOP | NA_ZADANIE | BEZPLATNY | CHOROBA | INNE
+  reason    String?
+  status    String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  decidedBy String?   // imię/e-mail osoby rozpatrującej
+  decidedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([startDate])
+}
+
+// Rejestracja czasu pracy (RCP) — wejście/wyjście przez kod QR
+model ClockEntry {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("ClockEntries", fields: [userId], references: [id], onDelete: Cascade)
+  clockIn   DateTime  @default(now())
+  clockOut  DateTime? // null = pracownik wciąż w pracy
+  source    String    @default("QR") // QR | MANUAL
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([clockIn])
 }
 
 // Dzienna tabelka godzin wg kategorii (wypełnia pracownik) — podstawa wypłat
@@ -72,6 +128,20 @@ model Shift {
 
   @@index([userId])
   @@index([start])
+}
+
+// Wymiana / oddanie zmiany między pracownikami
+model ShiftSwap {
+  id           String    @id @default(cuid())
+  shiftId      String
+  fromUserId   String
+  status       String    @default("OPEN") // OPEN | ACCEPTED | CANCELLED
+  acceptedById String?
+  note         String?
+  createdAt    DateTime  @default(now())
+  resolvedAt   DateTime?
+  @@index([status])
+  @@index([fromUserId])
 }
 
 // Dyspozycyjność zgłaszana przez pracownika
@@ -106,6 +176,8 @@ model Reservation {
   status        String   @default("NEW") // NEW | CONFIRMED | DONE | CANCELLED
   assignedUserId String?
   assignedUser  User?    @relation("AssignedReservations", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  customerId    String?
+  customer      Customer? @relation("CustomerReservations", fields: [customerId], references: [id], onDelete: SetNull)
   deposit       Float    @default(0)
   paid          Boolean  @default(false)
   refNo         String?  @unique // automatyczny numer zlecenia, np. MYS-2026-0001
@@ -115,14 +187,167 @@ model Reservation {
   fuelInvoiceUrl String? // faktura za paliwo
   otherCost     Float    @default(0)  // inne koszty
   otherInvoiceUrl String? // faktura za inne koszty
+  thankedAt     DateTime? // kiedy wysłano auto-podziękowanie po grze
+  remindedAt    DateTime? // kiedy wysłano przypomnienie przed grą
+  ip            String?   // IP klienta przy rezerwacji online (do banowania)
+  discountCode  String?   // kod rabatowy podany przy rezerwacji online
+  priceEstimate Float    @default(0) // szacowana cena gry po rabacie (do zapłaty na miejscu)
+  googleEventId String?   // ID wydarzenia w Google Calendar (do aktualizacji/usuwania)
   createdAt     DateTime @default(now())
 
   @@index([start])
 }
 
-// Kody rabatowe
-model DiscountCode {
+// Subskrypcje Web Push (powiadomienia dla zespołu w panelu)
+model PushSub {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  createdAt DateTime @default(now())
+  @@index([userId])
+}
+
+// Bany rezerwacji online — e-mail, telefon lub adres IP klienta
+model BookingBan {
+  id        String   @id @default(cuid())
+  type      String   // EMAIL | PHONE | IP
+  value     String
+  reason    String?
+  createdAt DateTime @default(now())
+  @@unique([type, value])
+}
+
+// Wydatki firmowe (poza kosztami przypisanymi do rezerwacji) —
+// dodają Księgowa i Technik; wliczane do kosztów w pulpicie finansowym.
+model Expense {
   id            String   @id @default(cuid())
+  date          DateTime @default(now())
+  category      String   @default("INNE") // ZAKUP | NAPRAWA | KONSERWACJA | MEDIA | MARKETING | INNE
+  description   String
+  amount        Float    @default(0) // brutto zł
+  vendor        String?  // sprzedawca / kontrahent
+  invoiceNo     String?  // numer faktury/paragonu
+  invoiceUrl    String?  // skan faktury/paragonu
+  createdById   String?  // kto dodał (id konta)
+  createdByName String?  // kto dodał (nazwa — do podglądu)
+  createdAt     DateTime @default(now())
+
+  @@index([date])
+  @@index([category])
+}
+
+// Klienci (mini-CRM) — baza z historią gier, zgodą marketingową i tagami
+model Customer {
+  id               String   @id @default(cuid())
+  name             String?
+  email            String?  @unique // klucz łączenia z rezerwacjami (gdy podany)
+  phone            String?
+  company          String?
+  marketingConsent Boolean  @default(false)
+  tagsJson         String?  @default("[]") // np. ["VIP","stały","firma"]
+  notes            String?
+  source           String   @default("MANUAL") // MANUAL | RESERVATION | CONTACT
+  points           Int      @default(0) // program lojalnościowy
+  welcomeCodeSentAt DateTime? // kod powitalny z newslettera wysłany
+  welcomeCodeUsedAt DateTime? // i wykorzystany (jednorazowo)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  reservations     Reservation[] @relation("CustomerReservations")
+
+  @@index([phone])
+}
+
+// Magazyn — pozycje (bilety, gadżety, akcesoria na wyjazdy)
+model InventoryItem {
+  id        String   @id @default(cuid())
+  name      String
+  category  String   @default("INNE") // BILETY | GADZETY | AKCESORIA | MATERIALY | INNE
+  quantity  Int      @default(0)
+  unit      String   @default("szt.")
+  lowStock  Int      @default(0) // próg niskiego stanu (0 = brak alertu)
+  location  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movements InventoryMovement[]
+
+  @@index([category])
+}
+
+// Ruch magazynowy (przyjęcie +/ wydanie -)
+model InventoryMovement {
+  id        String   @id @default(cuid())
+  itemId    String
+  item      InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  delta     Int
+  reason    String?
+  byName    String?
+  createdAt DateTime @default(now())
+
+  @@index([itemId])
+}
+
+// Log konserwacji pokoju (resety rekwizytów, baterie, usterki, naprawy)
+model MaintenanceLog {
+  id            String    @id @default(cuid())
+  roomId        String?
+  room          Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  type          String    @default("USTERKA") // RESET | BATERIE | USTERKA | NAPRAWA | PRZEGLAD | INNE
+  description   String
+  status        String    @default("OPEN") // OPEN | DONE
+  priority      String    @default("NORMAL") // LOW | NORMAL | HIGH
+  dueDate       DateTime? // termin / przypomnienie
+  createdById   String?
+  createdByName String?
+  resolvedAt    DateTime?
+  resolvedByName String?
+  createdAt     DateTime  @default(now())
+
+  @@index([roomId])
+  @@index([status])
+}
+
+// Szablon checklisty otwarcia/zamknięcia lokalu
+model ChecklistItem {
+  id        String   @id @default(cuid())
+  kind      String   @default("OPEN") // OPEN | CLOSE
+  label     String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([kind])
+}
+
+// Odhaczenie pozycji checklisty danego dnia
+model ChecklistCheck {
+  id         String   @id @default(cuid())
+  itemId     String
+  date       DateTime // dzień (00:00 UTC)
+  doneByName String?
+  createdAt  DateTime @default(now())
+
+  @@unique([itemId, date])
+  @@index([date])
+}
+
+// Kampanie marketingowe (newsletter) — log wysyłek do bazy klientów
+model Campaign {
+  id         String   @id @default(cuid())
+  subject    String
+  body       String
+  channel    String   @default("EMAIL") // EMAIL | TELEGRAM | BOTH
+  audience   String   @default("ALL")   // ALL | nazwa tagu
+  recipients Int      @default(0)
+  result     String?  // krótkie podsumowanie wysyłki
+  sentByName String?
+  createdAt  DateTime @default(now())
+}
+
+// Kody rabatowe
+model DiscountCode {  id            String   @id @default(cuid())
   code          String   @unique
   kind          String   @default("PERCENT") // PERCENT | AMOUNT
   value         Float    @default(0)
@@ -181,7 +406,16 @@ model Room {
   imagesJson    String?  @default("[]") // galeria pokoju (JSON: tablica URLi)
   pricingJson   String?  @default("[]") // cennik wg liczby osób (JSON: [{labelPl,labelEn,price}])
   reservations  Reservation[]
+  maintenanceLogs MaintenanceLog[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
+  googleColorId String?  // ręczny kolor wydarzenia w Google Calendar (1–11; puste = auto)
+  theme         String   @default("default") // motyw podstrony: default|loch|pirate|horror|occult|noir|tomb|steampunk|bunker
+  heroImage     String?  // opcjonalne zdjęcie tła nagłówka (puste = zdjęcie główne)
+  heroVideo     String?  // opcjonalne wideo w tle nagłówka (mp4/webm, w pętli)
+  reviewsEmbed  String?  // opinie z Lockme: kod widgetu / iframe (HTML)
+  featured      Boolean  @default(false) // wyróżniony / polecany
+  tour360       String?  // wirtualny spacer: iframe / link 360 / wideo (HTML lub URL)
+  faqJson       String?  // FAQ pokoju: linie „Pytanie | Odpowiedź"
   bookingUrl    String?
   order         Int      @default(0)
   published     Boolean  @default(true)
@@ -221,6 +455,149 @@ model MobileOffer {
   published       Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// Płatności online (Stripe / Przelewy24) — bony, eventy, zadatki
+model Payment {
+  id          String    @id @default(cuid())
+  provider    String    @default("STRIPE") // STRIPE | P24
+  purpose     String    @default("EVENT")  // VOUCHER | EVENT
+  amount      Int       @default(0)         // w groszach
+  currency    String    @default("PLN")
+  description String?
+  status      String    @default("PENDING") // PENDING | PAID | FAILED | CANCELLED
+  buyerName   String?
+  buyerEmail  String?
+  metaJson    String?   // dane do realizacji (np. wartość bonu)
+  providerRef String?   // id sesji Stripe / orderId P24
+  voucherId   String?   // utworzony bon po opłaceniu
+  paidAt      DateTime?
+  createdById String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status])
+}
+
+// Baza wiedzy / ogłoszenia dla zespołu
+model KbArticle {
+  id        String   @id @default(cuid())
+  title     String
+  category  String?  @default("Ogólne")
+  content   String   @default("")
+  pinned    Boolean  @default(false)
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Blokady terminów (urlop, serwis) — wykluczane z „wolnych terminów"
+model SlotBlock {
+  id        String   @id @default(cuid())
+  start     DateTime
+  end       DateTime
+  roomId    String?  // null = wszystkie pokoje
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@index([start])
+}
+
+// Ankiety po grze (NPS / ocena + komentarz)
+model Survey {
+  id            String    @id @default(cuid())
+  token         String    @unique
+  reservationId String?
+  customerName  String?
+  customerEmail String?
+  rating        Int?      // 1-5
+  nps           Int?      // 0-10
+  comment       String?
+  status        String    @default("PENDING") // PENDING | DONE
+  createdAt     DateTime  @default(now())
+  submittedAt   DateTime?
+
+  @@index([status])
+}
+
+// Dziennik audytu — kto co zmienił w panelu
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  userName  String?
+  action    String   // CREATE | UPDATE | DELETE | SETTINGS | LOGIN | OTHER
+  entity    String   // np. "rooms", "settings", "payment"
+  detail    String?  // krótki opis (np. nazwa/slug)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// Strony informacyjne/prawne (O nas, Regulamin, Polityka prywatności, Dostępność, Dla firm)
+model Page {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  titlePl      String
+  titleEn      String   @default("")
+  contentPl    String   @default("")
+  contentEn    String   @default("")
+  order        Int      @default(0)
+  showInFooter Boolean  @default(true)
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Blog / Aktualności (SEO)
+model Post {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  titlePl    String
+  titleEn    String
+  excerptPl  String?
+  excerptEn  String?
+  contentPl  String?
+  contentEn  String?
+  coverImage String?
+  order      Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Galeria z eventów / realizacji (album per wydarzenie)
+model EventAlbum {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  titlePl    String
+  titleEn    String
+  dateLabel  String?  // np. „Marzec 2026" lub „12.03.2026"
+  roomName   String?  // której gry/eventu dotyczy
+  descPl     String?
+  descEn     String?
+  coverImage String?
+  imagesJson String?  @default("[]") // tablica URLi
+  order      Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// Hall of Fame — ranking najlepszych drużyn (czasy ukończenia)
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  roomName  String   @default("") // której gry dotyczy (grupowanie)
+  teamName  String
+  timeMin   Int      @default(0)
+  timeSec   Int      @default(0)
+  players   Int      @default(0)
+  dateLabel String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([roomName])
 }
 
 // Galeria zdjęć
@@ -264,6 +641,39 @@ model Review {
 }
 
 // Pakiety cenowe
+// Pakiety okazjonalne (urodziny, wieczory panieńskie/kawalerskie, integracje…)
+model Package {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  namePl        String
+  nameEn        String
+  occasionPl    String?  // okazja, np. „Urodziny", „Integracja firmowa"
+  occasionEn    String?
+  taglinePl     String?
+  taglineEn     String?
+  descriptionPl String?
+  descriptionEn String?
+  image         String?
+  imagesJson    String?  @default("[]")
+  priceFrom     Int      @default(0)   // cena „od" (zł)
+  priceNotePl   String?  // np. „za grupę", „/os."
+  priceNoteEn   String?
+  pricingJson   String?  @default("[]") // cennik wg liczby osób [{labelPl,labelEn,price}]
+  includesPl    String?  // co zawiera (linie)
+  includesEn    String?
+  minPlayers    Int      @default(2)
+  maxPlayers    Int      @default(10)
+  durationMin   Int      @default(60)
+  badgePl       String   @default("Pakiet")
+  badgeEn       String   @default("Package")
+  bookingUrl    String?
+  featured      Boolean  @default(false)
+  order         Int      @default(0)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model PricingPlan {
   id        String   @id @default(cuid())
   namePl    String
@@ -313,6 +723,20 @@ model SiteSettings {
   lockmeUrl     String  @default("https://lock.me")
   instagram     String?
   facebook      String?
+  tiktok        String?
+  youtube       String?
+  parkingPl     String?
+  parkingEn     String?
+  openHoursJson String?  // godziny otwarcia (JSON: 7 dni Pn..Nd)
+  slotStepMin   Int      @default(90) // długość slotu rezerwacji (min)
+  slotsEnabled  Boolean  @default(false) // pokazuj „wolne terminy" na stronie
+  // Własny system rezerwacji online (obok LockMe)
+  ownBookingEnabled Boolean @default(false)
+  ownBookingDeposit Int     @default(0)   // kwota zadatku zł (0 = bez opcji zadatku)
+  ownBookingLeadMin Int     @default(120) // min. wyprzedzenie rezerwacji (min)
+  ownBookingInfoPl  String? // dodatkowa informacja przy rezerwacji (PL)
+  ownBookingInfoEn  String?
+  weekendSurchargePct Int @default(0)    // dopłata weekendowa do cen (%)
   googleReviewsEnabled Boolean @default(false)
   googleReviewsUrl     String?
   googleRating         String? // np. "4.9"
@@ -324,6 +748,46 @@ model SiteSettings {
   notifyOnReservation Boolean @default(true)
   notifyOnMessage     Boolean @default(true)
   notifyOnSchedule    Boolean @default(true)
+  // Auto-podziękowanie po grze + prośba o opinię Google
+  autoThankYouEnabled Boolean @default(false)
+  surveyEnabled       Boolean @default(false) // dołączaj ankietę po grze
+  loyaltyPerGame      Int     @default(0)     // pkt lojalnościowe naliczane za każdą rozegraną grę (0 = wył.)
+  thankYouMessagePl   String?
+  // Kod powitalny za zapis do newslettera (jednorazowy, wspólny kod)
+  newsletterDiscountEnabled Boolean @default(false)
+  newsletterDiscountPct     Int     @default(10)
+  newsletterDiscountCode    String?
+  // SEO / Google
+  gaMeasurementId        String? // np. G-XXXXXXX (Google Analytics 4)
+  googleSiteVerification String? // token weryfikacji Search Console
+  // Web Push (powiadomienia dla zespołu)
+  vapidPublicKey  String?
+  vapidPrivateKey String?
+  pushEnabled     Boolean @default(false)
+  // Przypomnienia przed grą
+  reminderEnabled    Boolean @default(false)
+  reminderLeadHours  Int     @default(24)
+  reminderSubject    String?
+  reminderBody       String?  // placeholdery: {name} {date} {time} {room}
+  voucherEmailSubject String?
+  voucherEmailBody    String?  // placeholdery: {code} {amount}
+  payEmailSubject     String?
+  payEmailBody        String?  // placeholdery: {amount} {description}
+  // Pop-up (promocja lub zapis do newslettera)
+  popupMode       String  @default("OFF") // OFF | PROMO | NEWSLETTER
+  popupTitlePl    String  @default("")
+  popupTitleEn    String  @default("")
+  popupTextPl     String  @default("")
+  popupTextEn     String  @default("")
+  popupImage      String?
+  popupCtaLabelPl String  @default("")
+  popupCtaLabelEn String  @default("")
+  popupCtaUrl     String?
+  popupDelaySec   Int     @default(6)
+  // Płatności online
+  paymentsEnabled Boolean @default(false)
+  paymentProvider String  @default("STRIPE") // STRIPE | P24
+  voucherSaleEnabled Boolean @default(false)  // zakup bonów online na /bony
   hoursPl       String  @default("Pon–Nd: 9:00–22:00")
   hoursEn       String  @default("Mon–Sun: 9:00–22:00")
   heroDescPl    String  @default("Przenieś się do świata, gdzie każda sekunda ma znaczenie.")
@@ -349,10 +813,26 @@ model SiteSettings {
   lockmeApiUrl  String?
   lockmeApiKey  String?
   lockmeRoomId  String?
+  // RCP: sekret do podpisywania kodów QR (zegar wejście/wyjście)
+  clockSecret   String?
+  clockCodeMode String  @default("STATIC") // STATIC = ręczna zmiana | DYNAMIC = auto-rotacja
   // Integracja Google Calendar (pełna synchronizacja — opcjonalna)
   googleSyncEnabled  Boolean @default(false)
   googleClientEmail  String?
   googlePrivateKey   String?
   googleCalendarId   String?
   updatedAt     DateTime @updatedAt
+}
+
+model Waitlist {
+  id         String   @id @default(cuid())
+  roomId     String?  // konkretny pokój (puste = dowolny)
+  dateKey    String?  // preferowany dzień RRRR-MM-DD (puste = dowolny)
+  name       String?
+  email      String
+  phone      String?
+  notifiedAt DateTime? // kiedy powiadomiono o wolnym terminie
+  createdAt  DateTime @default(now())
+
+  @@index([roomId])
 }

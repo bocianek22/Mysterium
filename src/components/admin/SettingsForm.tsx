@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import FileUpload from "./FileUpload";
+import OpeningHoursEditor from "./OpeningHoursEditor";
 
 function NotifyTestButton() {
   const [msg, setMsg] = useState("");
@@ -21,7 +22,64 @@ function NotifyTestButton() {
   );
 }
 
-type Field = { name: string; label: string; type?: string; help?: string; options?: { value: string; label: string }[] };
+function TelegramChatDetector({ onPick }: { onPick: (id: string) => void }) {
+  const [chats, setChats] = useState<{ id: string; title: string; type: string }[] | null>(null);
+  const [msg, setMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  async function detect() {
+    setLoading(true); setMsg(""); setChats(null);
+    try {
+      const res = await fetch("/api/admin/telegram/chat-ids");
+      const d = await res.json();
+      if (!res.ok) { setMsg(d.error || "Błąd"); return; }
+      setChats(d.chats || []);
+      if (!d.chats?.length) setMsg(d.hint || "Brak czatów.");
+    } catch { setMsg("Błąd połączenia"); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="mt-1">
+      <button type="button" onClick={detect} disabled={loading} className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{loading ? "Szukam…" : "Wykryj ID grupy"}</button>
+      <span className="text-xs ml-2" style={{ color: "var(--dim)" }}>(najpierw zapisz token, potem napisz coś na grupie)</span>
+      {msg && <p className="text-xs mt-2" style={{ color: "var(--muted)" }}>{msg}</p>}
+      {chats && chats.length > 0 && (
+        <div className="mt-2 flex flex-col gap-1">
+          {chats.map((c) => (
+            <button key={c.id} type="button" onClick={() => onPick(c.id)} className="text-left text-xs px-3 py-2 rounded flex items-center justify-between gap-3" style={{ border: "1px solid var(--border)", color: "var(--text)" }}>
+              <span><b style={{ color: "var(--gold-l)" }}>{c.title}</b> <span style={{ color: "var(--dim)" }}>· {c.type} · {c.id}</span></span>
+              <span style={{ color: "var(--gold)" }}>Użyj →</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GoogleSyncTestButton() {
+  const [msg, setMsg] = useState("");
+  const [ok, setOk] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
+  async function test() {
+    setLoading(true); setMsg(""); setOk(null);
+    try {
+      const res = await fetch("/api/admin/google/test", { method: "POST" });
+      const d = await res.json();
+      setOk(!!d.ok);
+      setMsg(d.ok ? "Działa! Sprawdź kalendarz — dodaliśmy wydarzenie testowe (możesz je usunąć)." : (d.error || "Błąd"));
+    } catch { setOk(false); setMsg("Błąd połączenia"); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="mt-1 mb-4">
+      <button type="button" onClick={test} disabled={loading} className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{loading ? "Testuję…" : "Testuj synchronizację Google"}</button>
+      <span className="text-xs ml-2" style={{ color: "var(--dim)" }}>(najpierw zapisz dane konta serwisowego)</span>
+      {msg && <p className="text-xs mt-2" style={{ color: ok ? "#7eebb0" : "#fca5a5" }}>{msg}</p>}
+    </div>
+  );
+}
+
+type Field = { name: string; label: string; type?: string; help?: string; placeholder?: string; default?: string | number; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
   {
@@ -35,10 +93,14 @@ const groups: { title: string; fields: Field[] }[] = [
       { name: "addressEn", label: "Adres (EN)" },
       { name: "hoursPl", label: "Godziny / dostępność (PL)" },
       { name: "hoursEn", label: "Godziny / dostępność (EN)" },
+      { name: "parkingPl", label: "Parking / dojazd (PL)", type: "textarea", help: "Wyświetla się pod mapą na stronie Kontakt." },
+      { name: "parkingEn", label: "Parking / dojazd (EN)", type: "textarea" },
       { name: "heroDescPl", label: "Opis na stronie głównej (PL)", type: "textarea" },
       { name: "heroDescEn", label: "Opis na stronie głównej (EN)", type: "textarea" },
       { name: "instagram", label: "Instagram (URL)" },
       { name: "facebook", label: "Facebook (URL)" },
+      { name: "tiktok", label: "TikTok (URL)" },
+      { name: "youtube", label: "YouTube (URL)" },
     ],
   },
   {
@@ -76,10 +138,101 @@ const groups: { title: string; fields: Field[] }[] = [
     ],
   },
   {
+    title: "Zegar (RCP) — kod QR",
+    fields: [
+      { name: "clockCodeMode", label: "Tryb kodu QR", type: "select", options: [
+        { value: "STATIC", label: "Statyczny — zmienia się tylko po kliknięciu „Wygeneruj nowy kod”" },
+        { value: "DYNAMIC", label: "Dynamiczny — odświeża się automatycznie co kilka sekund" },
+      ], help: "Statyczny jest wygodniejszy (możesz wydrukować kod). Dynamiczny jest bezpieczniejszy — sfotografowany kod szybko wygasa." },
+    ],
+  },
+  {
+    title: "Płatności online",
+    fields: [
+      { name: "paymentProvider", label: "Operator płatności", type: "select", options: [
+        { value: "STRIPE", label: "Stripe (karty + BLIK)" },
+        { value: "P24", label: "Przelewy24 (BLIK + przelewy)" },
+      ], help: "Klucze API ustaw w zmiennych środowiskowych na Vercel: Stripe (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET) lub Przelewy24 (P24_MERCHANT_ID, P24_POS_ID, P24_CRC, P24_API_KEY, P24_SANDBOX)." },
+    ],
+  },
+  {
+    title: "Pop-up (promocja / newsletter)",
+    fields: [
+      { name: "popupMode", label: "Tryb pop-upu", type: "select", options: [
+        { value: "OFF", label: "Wyłączony" },
+        { value: "PROMO", label: "Promocja (z przyciskiem)" },
+        { value: "NEWSLETTER", label: "Newsletter (zapis e-mail)" },
+      ], help: "Wyskakujące okno na stronie. Newsletter zapisuje e-mail do bazy klientów ze zgodą marketingową." },
+      { name: "popupTitlePl", label: "Tytuł (PL)", type: "text" },
+      { name: "popupTitleEn", label: "Tytuł (EN)", type: "text" },
+      { name: "popupTextPl", label: "Tekst (PL)", type: "textarea" },
+      { name: "popupTextEn", label: "Tekst (EN)", type: "textarea" },
+      { name: "popupImage", label: "Obrazek (opcjonalnie)", type: "image" },
+      { name: "popupCtaLabelPl", label: "Przycisk — tekst (PL)", type: "text", help: "Dla promocji: napis na przycisku. Dla newslettera: napis przy zapisie." },
+      { name: "popupCtaLabelEn", label: "Przycisk — tekst (EN)", type: "text" },
+      { name: "popupCtaUrl", label: "Przycisk — link (tylko promocja)", type: "text", placeholder: "https://..." },
+      { name: "popupDelaySec", label: "Opóźnienie pokazania (sekundy)", type: "number", default: 6 },
+    ],
+  },
+  {
+    title: "Klienci — auto-podziękowanie",
+    fields: [
+      { name: "thankYouMessagePl", label: "Treść podziękowania (mail po grze)", type: "textarea", help: "Wysyłane automatycznie do klienta po zakończonej rezerwacji (jeśli ma e-mail). Link do opinii Google z sekcji „Opinie Google” dołączamy automatycznie. Zostaw puste, by użyć domyślnej treści." },
+      { name: "loyaltyPerGame", label: "Punkty lojalnościowe za grę", type: "number", default: 0, help: "Ile punktów dopisać klientowi (po e-mailu) za każdą rozegraną grę. 0 = wyłączone." },
+    ],
+  },
+  {
     title: "Opinie Google",
     fields: [
       { name: "googleReviewsUrl", label: "Link do opinii Google", help: "Adres Twojej wizytówki Google (przycisk „Zobacz nas w Google” w sekcji opinii)." },
       { name: "googleRating", label: "Ocena Google (np. 4.9)" },
+    ],
+  },
+  {
+    title: "Szablony e-maili (bony / płatności)",
+    fields: [
+      { name: "voucherEmailSubject", label: "Bon — temat", placeholder: "Twój bon podarunkowy Mysterium 🎁" },
+      { name: "voucherEmailBody", label: "Bon — treść", type: "textarea", help: "Placeholdery: {code} (kod bonu), {amount} (wartość). Puste = domyślna treść." },
+      { name: "payEmailSubject", label: "Płatność — temat", placeholder: "Potwierdzenie płatności — Mysterium" },
+      { name: "payEmailBody", label: "Płatność — treść", type: "textarea", help: "Placeholdery: {amount} (kwota), {description} (opis). Puste = domyślna treść." },
+    ],
+  },
+  {
+    title: "SEO i Google",
+    fields: [
+      { name: "gaMeasurementId", label: "Google Analytics ID", placeholder: "G-XXXXXXXXXX", help: "GA4. Wczytywane tylko po zgodzie analitycznej użytkownika (RODO)." },
+      { name: "googleSiteVerification", label: "Google Search Console — token weryfikacji", placeholder: "np. abc123...", help: "Wartość z meta tagu google-site-verification." },
+    ],
+  },
+  {
+    title: "Newsletter — kod powitalny",
+    fields: [
+      { name: "newsletterDiscountPct", label: "Zniżka za zapis (%)", type: "number", default: 10 },
+      { name: "newsletterDiscountCode", label: "Wspólny kod rabatowy", placeholder: "WITAJ10", help: "Jeden kod dla wszystkich zapisanych. Wysyłany automatycznie mailem przy zapisie (raz na osobę)." },
+    ],
+  },
+  {
+    title: "Przypomnienia przed grą",
+    fields: [
+      { name: "reminderLeadHours", label: "Ile godzin przed grą wysłać", type: "number", default: 24 },
+      { name: "reminderSubject", label: "Temat (puste = domyślny)", placeholder: "Przypomnienie o grze w Mysterium" },
+      { name: "reminderBody", label: "Treść (placeholdery: {name} {date} {time} {room})", type: "textarea" },
+    ],
+  },
+  {
+    title: "Godziny otwarcia i wolne terminy",
+    fields: [
+      { name: "slotStepMin", label: "Długość slotu rezerwacji (min)", type: "number", default: 90, help: "Co ile minut zaczyna się nowa gra (np. 90)." },
+      { name: "weekendSurchargePct", label: "Dopłata weekendowa do cen (%)", type: "number", default: 0, help: "0 = brak. Np. 15 pokaże w cenniku drugą cenę weekendową +15%." },
+    ],
+  },
+  {
+    title: "Rezerwacja online (własny system)",
+    fields: [
+      { name: "ownBookingDeposit", label: "Kwota zadatku online (zł)", type: "number", default: 0, help: "0 = bez opcji zadatku (rezerwacja bez płatności). Powyżej 0 — klient może opcjonalnie zapłacić zadatek przez Stripe/P24." },
+      { name: "ownBookingLeadMin", label: "Min. wyprzedzenie rezerwacji (min)", type: "number", default: 120, help: "Ile minut przed grą można jeszcze zarezerwować online." },
+      { name: "ownBookingInfoPl", label: "Informacja przy rezerwacji (PL)", type: "textarea" },
+      { name: "ownBookingInfoEn", label: "Informacja przy rezerwacji (EN)", type: "textarea" },
     ],
   },
   {
@@ -130,10 +283,13 @@ export default function SettingsForm() {
         <div key={g.title} className="mb-8">
           <h2 className="font-serif text-sm tracking-[2px] uppercase mb-4 pb-2" style={{ color: "var(--gold)", borderBottom: "1px solid var(--border)" }}>{g.title}</h2>
           {g.title.startsWith("Google Calendar") && (
-            <label className="flex items-center gap-3 mb-4">
-              <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
-              <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
-            </label>
+            <>
+              <label className="flex items-center gap-3 mb-4">
+                <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
+              </label>
+              <GoogleSyncTestButton />
+            </>
           )}
           {g.title === "Powiadomienia" && (
             <div className="mb-4 flex flex-col gap-2">
@@ -145,6 +301,40 @@ export default function SettingsForm() {
                 <label className="flex items-center gap-2"><input type="checkbox" checked={data.notifyOnSchedule ?? true} onChange={(e) => set("notifyOnSchedule", e.target.checked)} /> Zmiany grafiku</label>
               </div>
               <NotifyTestButton />
+              <TelegramChatDetector onPick={(id) => set("telegramChatId", id)} />
+            </div>
+          )}
+          {g.title === "Newsletter — kod powitalny" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.newsletterDiscountEnabled} onChange={(e) => set("newsletterDiscountEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj kod powitalny po zapisie do newslettera (wymaga Resend)</span></label>
+          )}
+          {g.title === "Przypomnienia przed grą" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.reminderEnabled} onChange={(e) => set("reminderEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne przypomnienia e-mail przed grą (wymaga Resend + cron)</span></label>
+          )}
+          {g.title === "Godziny otwarcia i wolne terminy" && (
+            <div className="mb-4">
+              <label className="flex items-center gap-3 mb-3"><input type="checkbox" checked={!!data.slotsEnabled} onChange={(e) => set("slotsEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Pokazuj „Wolne terminy" na stronie (/terminy)</span></label>
+              <OpeningHoursEditor value={data.openHoursJson} onChange={(v) => set("openHoursJson", v)} />
+            </div>
+          )}
+          {g.title === "Rezerwacja online (własny system)" && (
+            <label className="flex items-center gap-3 mb-4"><input type="checkbox" checked={!!data.ownBookingEnabled} onChange={(e) => set("ownBookingEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz własny system rezerwacji online na /rezerwacja (obok LockMe). Potwierdzanie automatyczne.</span></label>
+          )}
+          {g.title === "Płatności online" && (
+            <div className="mb-4 flex flex-col gap-2">
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.paymentsEnabled} onChange={(e) => set("paymentsEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Włącz płatności online</span></label>
+              <label className="flex items-center gap-3"><input type="checkbox" checked={!!data.voucherSaleEnabled} onChange={(e) => set("voucherSaleEnabled", e.target.checked)} /><span className="text-sm" style={{ color: "var(--text)" }}>Sprzedaż bonów online na stronie /bony</span></label>
+            </div>
+          )}
+          {g.title === "Klienci — auto-podziękowanie" && (
+            <div className="mb-4 flex flex-col gap-2">
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={!!data.autoThankYouEnabled} onChange={(e) => set("autoThankYouEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Wysyłaj automatyczne podziękowanie e-mail po grze (wymaga klucza Resend)</span>
+              </label>
+              <label className="flex items-center gap-3">
+                <input type="checkbox" checked={!!data.surveyEnabled} onChange={(e) => set("surveyEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Dołącz krótką ankietę po grze (ocena + opinia; wyniki w „Ankiety")</span>
+              </label>
             </div>
           )}
           {g.title === "Opinie Google" && (

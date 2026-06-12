@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession, isManager } from "@/lib/auth";
+import { logAudit } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 
 const schema = z.object({
@@ -13,6 +14,14 @@ const schema = z.object({
   lockmeUrl: z.string().optional(),
   instagram: z.string().optional().nullable(),
   facebook: z.string().optional().nullable(),
+  tiktok: z.string().optional().nullable(),
+  youtube: z.string().optional().nullable(),
+  parkingPl: z.string().optional().nullable(),
+  parkingEn: z.string().optional().nullable(),
+  openHoursJson: z.string().optional().nullable(),
+  slotStepMin: z.coerce.number().min(15).max(480).optional(),
+  slotsEnabled: z.coerce.boolean().optional(),
+  weekendSurchargePct: z.coerce.number().min(0).max(200).optional(),
   hoursPl: z.string().optional(),
   hoursEn: z.string().optional(),
   heroDescPl: z.string().optional(),
@@ -49,6 +58,42 @@ const schema = z.object({
   notifyOnReservation: z.coerce.boolean().optional(),
   notifyOnMessage: z.coerce.boolean().optional(),
   notifyOnSchedule: z.coerce.boolean().optional(),
+  clockCodeMode: z.enum(["STATIC", "DYNAMIC"]).optional(),
+  autoThankYouEnabled: z.coerce.boolean().optional(),
+  surveyEnabled: z.coerce.boolean().optional(),
+  loyaltyPerGame: z.coerce.number().min(0).max(1000).optional(),
+  thankYouMessagePl: z.string().optional().nullable(),
+  gaMeasurementId: z.string().optional().nullable(),
+  googleSiteVerification: z.string().optional().nullable(),
+  ownBookingEnabled: z.coerce.boolean().optional(),
+  ownBookingDeposit: z.coerce.number().min(0).optional(),
+  ownBookingLeadMin: z.coerce.number().min(0).optional(),
+  ownBookingInfoPl: z.string().optional().nullable(),
+  ownBookingInfoEn: z.string().optional().nullable(),
+  newsletterDiscountEnabled: z.coerce.boolean().optional(),
+  newsletterDiscountPct: z.coerce.number().min(0).max(100).optional(),
+  newsletterDiscountCode: z.string().optional().nullable(),
+  reminderEnabled: z.coerce.boolean().optional(),
+  reminderLeadHours: z.coerce.number().min(1).max(168).optional(),
+  reminderSubject: z.string().optional().nullable(),
+  reminderBody: z.string().optional().nullable(),
+  voucherEmailSubject: z.string().optional().nullable(),
+  voucherEmailBody: z.string().optional().nullable(),
+  payEmailSubject: z.string().optional().nullable(),
+  payEmailBody: z.string().optional().nullable(),
+  popupMode: z.enum(["OFF", "PROMO", "NEWSLETTER"]).optional(),
+  popupTitlePl: z.string().optional(),
+  popupTitleEn: z.string().optional(),
+  popupTextPl: z.string().optional(),
+  popupTextEn: z.string().optional(),
+  popupImage: z.string().optional().nullable(),
+  popupCtaLabelPl: z.string().optional(),
+  popupCtaLabelEn: z.string().optional(),
+  popupCtaUrl: z.string().optional().nullable(),
+  popupDelaySec: z.coerce.number().min(0).optional(),
+  paymentsEnabled: z.coerce.boolean().optional(),
+  paymentProvider: z.enum(["STRIPE", "P24"]).optional(),
+  voucherSaleEnabled: z.coerce.boolean().optional(),
 });
 
 export async function GET() {
@@ -79,5 +124,6 @@ export async function PUT(req: NextRequest) {
     update: data,
     create: { id: "main", ...data },
   });
+  logAudit(s, "SETTINGS", "settings", "Zapis ustawień strony");
   return NextResponse.json({ settings });
 }

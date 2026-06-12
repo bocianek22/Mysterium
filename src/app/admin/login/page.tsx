@@ -60,6 +60,9 @@ export default function LoginPage() {
         <button type="submit" disabled={loading} className="btn-gold w-full" style={{ clipPath: "none" }}>
           {loading ? "Logowanie..." : "Zaloguj się"}
         </button>
+        <div className="text-center mt-4">
+          <a href="/admin/reset" className="text-[12px] underline" style={{ color: "var(--muted)" }}>Nie pamiętasz hasła?</a>
+        </div>
       </form>
     </div>
   );
