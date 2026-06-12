@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { pushEventToGoogle, roomColorId, googleEventDescription } from "@/lib/google";
+import { pushEventToGoogle, resolveRoomColor, googleEventDescription } from "@/lib/google";
 import { notify } from "@/lib/notify";
 import { findOrCreateCustomer } from "@/lib/customers";
 
@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
       summary: `Rezerwacja: ${item.title}`,
       description: googleEventDescription(item),
       location: item.customerName || undefined,
-      colorId: roomColorId(item.roomId),
+      colorId: await resolveRoomColor(item.roomId),
       start: item.start,
       end: item.end,
     });

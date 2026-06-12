@@ -122,6 +122,13 @@ export function roomColorId(roomId?: string | null): string | undefined {
   return String((h % 11) + 1);
 }
 
+// Kolor pokoju: ręcznie ustawiony w panelu, w razie braku — automatyczny z ID.
+export async function resolveRoomColor(roomId?: string | null): Promise<string | undefined> {
+  if (!roomId) return undefined;
+  const room = await prisma.room.findUnique({ where: { id: roomId }, select: { googleColorId: true } }).catch(() => null);
+  return room?.googleColorId || roomColorId(roomId);
+}
+
 // Tworzy wydarzenie w Google Calendar. Zwraca ID wydarzenia lub null (nigdy nie rzuca).
 export async function pushEventToGoogle(ev: EventInput): Promise<string | null> {
   const cfg = await getConfig();

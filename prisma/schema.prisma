@@ -408,6 +408,7 @@ model Room {
   reservations  Reservation[]
   maintenanceLogs MaintenanceLog[]
   status        String   @default("ACTIVE") // ACTIVE | SOON
+  googleColorId String?  // ręczny kolor wydarzenia w Google Calendar (1–11; puste = auto)
   theme         String   @default("default") // motyw podstrony: default|loch|pirate|horror|occult|noir|tomb|steampunk|bunker
   heroImage     String?  // opcjonalne zdjęcie tła nagłówka (puste = zdjęcie główne)
   heroVideo     String?  // opcjonalne wideo w tle nagłówka (mp4/webm, w pętli)

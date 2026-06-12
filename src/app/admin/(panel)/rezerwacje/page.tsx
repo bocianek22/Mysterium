@@ -11,7 +11,7 @@ export default async function RezerwacjePage() {
   if (!session) redirect("/admin/login");
   if (!canReservations(session.role)) redirect("/admin");
   const [rooms, users, settings] = await Promise.all([
-    prisma.room.findMany({ select: { id: true, namePl: true }, orderBy: { order: "asc" } }),
+    prisma.room.findMany({ select: { id: true, namePl: true, googleColorId: true }, orderBy: { order: "asc" } }),
     prisma.user.findMany({ where: { active: true }, select: { id: true, name: true, email: true }, orderBy: { name: "asc" } }),
     prisma.siteSettings.findUnique({ where: { id: "main" }, select: { googleSyncEnabled: true } }),
   ]);
@@ -22,7 +22,7 @@ export default async function RezerwacjePage() {
           <div className="font-serif text-[11px] tracking-[2px] uppercase mb-3" style={{ color: "var(--gold)" }}>Kolory w Google Calendar</div>
           <div className="flex flex-wrap gap-x-5 gap-y-2">
             {rooms.map((r) => {
-              const col = GOOGLE_EVENT_COLORS[roomColorId(r.id) || "1"];
+              const col = GOOGLE_EVENT_COLORS[r.googleColorId || roomColorId(r.id) || "1"];
               return (
                 <div key={r.id} className="flex items-center gap-2 text-[13px]" style={{ color: "var(--text)" }}>
                   <span style={{ width: 14, height: 14, borderRadius: 3, background: col.hex, display: "inline-block" }} />

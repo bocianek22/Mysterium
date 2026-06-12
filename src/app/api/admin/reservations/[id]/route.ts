@@ -4,7 +4,7 @@ import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { findOrCreateCustomer } from "@/lib/customers";
 import { notifyWaitlist } from "@/lib/waitlist";
-import { pushEventToGoogle, updateGoogleEvent, deleteGoogleEvent, roomColorId, googleEventDescription } from "@/lib/google";
+import { pushEventToGoogle, updateGoogleEvent, deleteGoogleEvent, resolveRoomColor, googleEventDescription } from "@/lib/google";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -84,7 +84,7 @@ export async function PATCH(
           summary: `Rezerwacja: ${item.title}`,
           description: googleEventDescription(item),
           location: item.customerName || undefined,
-          colorId: roomColorId(item.roomId),
+          colorId: await resolveRoomColor(item.roomId),
           start: item.start,
           end: item.end,
         });
@@ -95,7 +95,7 @@ export async function PATCH(
         summary: `Rezerwacja: ${item.title}`,
         description: googleEventDescription(item),
         location: item.customerName || undefined,
-        colorId: roomColorId(item.roomId),
+        colorId: await resolveRoomColor(item.roomId),
         start: item.start,
         end: item.end,
       });

@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
       summary: `Rezerwacja: ${room.namePl} — ${d.name.trim()}`,
       description: googleEventDescription({ customerName: d.name.trim(), customerPhone: d.phone.trim(), customerEmail: email, people: d.people, refNo, notes: d.notes }),
       location: d.name.trim(),
-      colorId: roomColorId(d.roomId),
+      colorId: (room as any).googleColorId || roomColorId(d.roomId),
       start, end,
     });
     if (eventId) await prisma.reservation.update({ where: { id: reservation.id }, data: { googleEventId: eventId } });
