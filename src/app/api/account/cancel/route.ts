@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyCustomerToken } from "@/lib/customerToken";
 import { notify } from "@/lib/notify";
 import { notifyWaitlist } from "@/lib/waitlist";
+import { deleteGoogleEvent } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,8 @@ export async function POST(req: NextRequest) {
   if (r.status === "CANCELLED") return NextResponse.json({ ok: true });
   if (r.start < new Date()) return NextResponse.json({ error: "Nie można anulować minionej rezerwacji." }, { status: 400 });
 
-  await prisma.reservation.update({ where: { id: r.id }, data: { status: "CANCELLED" } });
+  await prisma.reservation.update({ where: { id: r.id }, data: { status: "CANCELLED", googleEventId: null } });
+  if (r.googleEventId) deleteGoogleEvent(r.googleEventId).catch(() => {});
   notify({ type: "reservation", title: "Anulowanie rezerwacji online", lines: [`${r.customerName || email}`, new Date(r.start).toLocaleString("pl-PL"), r.refNo || ""] });
   // Powiadom listę oczekujących — zwolnił się termin
   const dateKey = new Date(r.start).toISOString().slice(0, 10);

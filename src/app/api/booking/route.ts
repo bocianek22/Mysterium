@@ -112,12 +112,15 @@ export async function POST(req: NextRequest) {
   const priceLine = appliedCode ? `kod ${appliedCode} · ${priceEstimate} zł` : priceEstimate > 0 ? `${priceEstimate} zł` : "";
   notify({ type: "reservation", title: "Nowa rezerwacja online", lines: [`${room.namePl} · ${d.people} os.`, start.toLocaleString("pl-PL"), `${d.name} · ${d.phone}`, priceLine, refNo].filter(Boolean) });
 
-  // Opcjonalny zapis do Google Calendar (nie blokuje przy błędzie)
-  pushEventToGoogle({
-    summary: `Rezerwacja: ${room.namePl} — ${d.name.trim()}`,
-    description: [`${d.name} · ${d.phone}`, `Osób: ${d.people}`, refNo, d.notes].filter(Boolean).join(" • "),
-    start, end,
-  }).catch(() => {});
+  // Opcjonalny zapis do Google Calendar — zapamiętaj ID, by móc aktualizować/usuwać.
+  try {
+    const eventId = await pushEventToGoogle({
+      summary: `Rezerwacja: ${room.namePl} — ${d.name.trim()}`,
+      description: [`${d.name} · ${d.phone}`, `Osób: ${d.people}`, refNo, d.notes].filter(Boolean).join(" • "),
+      start, end,
+    });
+    if (eventId) await prisma.reservation.update({ where: { id: reservation.id }, data: { googleEventId: eventId } });
+  } catch {}
 
   // Potwierdzenie dla klienta + link „dodaj do kalendarza"
   try {

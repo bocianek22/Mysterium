@@ -110,15 +110,16 @@ export async function POST(req: NextRequest) {
     ],
   }).catch(() => {});
 
-  // Opcjonalny zapis do Google Calendar (nie blokuje odpowiedzi przy błędzie)
-  pushEventToGoogle({
-    summary: `Rezerwacja: ${item.title}`,
-    description: [item.customerName, item.customerPhone, item.notes]
-      .filter(Boolean)
-      .join(" • "),
-    start: item.start,
-    end: item.end,
-  }).catch(() => {});
+  // Opcjonalny zapis do Google Calendar — zapamiętaj ID, by móc aktualizować/usuwać.
+  try {
+    const eventId = await pushEventToGoogle({
+      summary: `Rezerwacja: ${item.title}`,
+      description: [item.customerName, item.customerPhone, item.notes].filter(Boolean).join(" • "),
+      start: item.start,
+      end: item.end,
+    });
+    if (eventId) await prisma.reservation.update({ where: { id: item.id }, data: { googleEventId: eventId } });
+  } catch {}
 
   return NextResponse.json({ item });
 }

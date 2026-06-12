@@ -4,6 +4,7 @@ import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { findOrCreateCustomer } from "@/lib/customers";
 import { notifyWaitlist } from "@/lib/waitlist";
+import { pushEventToGoogle, updateGoogleEvent, deleteGoogleEvent } from "@/lib/google";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -71,6 +72,33 @@ export async function PATCH(
   if (d.status === "CANCELLED" && item.start > new Date()) {
     notifyWaitlist(item.roomId, new Date(item.start).toISOString().slice(0, 10));
   }
+
+  // Synchronizacja z Google Calendar: anulowanie usuwa wydarzenie, edycja je aktualizuje.
+  try {
+    if (item.googleEventId) {
+      if (item.status === "CANCELLED") {
+        await deleteGoogleEvent(item.googleEventId);
+        await prisma.reservation.update({ where: { id: item.id }, data: { googleEventId: null } });
+      } else {
+        await updateGoogleEvent(item.googleEventId, {
+          summary: `Rezerwacja: ${item.title}`,
+          description: [item.customerName, item.customerPhone, item.notes].filter(Boolean).join(" • "),
+          start: item.start,
+          end: item.end,
+        });
+      }
+    } else if (item.status !== "CANCELLED") {
+      // Brak wydarzenia (np. rezerwacja sprzed włączenia synchronizacji) — utwórz teraz.
+      const eventId = await pushEventToGoogle({
+        summary: `Rezerwacja: ${item.title}`,
+        description: [item.customerName, item.customerPhone, item.notes].filter(Boolean).join(" • "),
+        start: item.start,
+        end: item.end,
+      });
+      if (eventId) await prisma.reservation.update({ where: { id: item.id }, data: { googleEventId: eventId } });
+    }
+  } catch {}
+
   return NextResponse.json({ item });
 }
 
@@ -81,6 +109,8 @@ export async function DELETE(
   const s = await getSession();
   if (!s || !canReservations(s.role))
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
+  const existing = await prisma.reservation.findUnique({ where: { id: params.id }, select: { googleEventId: true } });
+  if (existing?.googleEventId) await deleteGoogleEvent(existing.googleEventId).catch(() => {});
   await prisma.reservation.delete({ where: { id: params.id } });
   return NextResponse.json({ ok: true });
 }

@@ -76,23 +76,47 @@ type EventInput = {
   end: Date;
 };
 
-// Tworzy wydarzenie w Google Calendar. Zwraca true/false (nigdy nie rzuca).
-export async function pushEventToGoogle(ev: EventInput): Promise<boolean> {
+// Tworzy wydarzenie w Google Calendar. Zwraca ID wydarzenia lub null (nigdy nie rzuca).
+export async function pushEventToGoogle(ev: EventInput): Promise<string | null> {
   const cfg = await getConfig();
-  if (!cfg) return false; // synchronizacja wyłączona/niegotowa
+  if (!cfg) return null; // synchronizacja wyłączona/niegotowa
+  const token = await getAccessToken(cfg);
+  if (!token) return null;
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calendarId)}/events`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          summary: ev.summary,
+          description: ev.description,
+          start: { dateTime: ev.start.toISOString() },
+          end: { dateTime: ev.end.toISOString() },
+        }),
+      }
+    );
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => ({}));
+    return data.id ?? null;
+  } catch (e) {
+    console.error("[google] event create error", e);
+    return null;
+  }
+}
+
+// Aktualizuje istniejące wydarzenie (PATCH). Zwraca true/false (nigdy nie rzuca).
+export async function updateGoogleEvent(eventId: string, ev: EventInput): Promise<boolean> {
+  const cfg = await getConfig();
+  if (!cfg) return false;
   const token = await getAccessToken(cfg);
   if (!token) return false;
   try {
     const res = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
-        cfg.calendarId
-      )}/events`,
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calendarId)}/events/${encodeURIComponent(eventId)}`,
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           summary: ev.summary,
           description: ev.description,
@@ -103,7 +127,25 @@ export async function pushEventToGoogle(ev: EventInput): Promise<boolean> {
     );
     return res.ok;
   } catch (e) {
-    console.error("[google] event error", e);
+    console.error("[google] event update error", e);
+    return false;
+  }
+}
+
+// Usuwa wydarzenie. Zwraca true/false (nigdy nie rzuca). 410/404 traktujemy jako sukces.
+export async function deleteGoogleEvent(eventId: string): Promise<boolean> {
+  const cfg = await getConfig();
+  if (!cfg) return false;
+  const token = await getAccessToken(cfg);
+  if (!token) return false;
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calendarId)}/events/${encodeURIComponent(eventId)}`,
+      { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
+    );
+    return res.ok || res.status === 404 || res.status === 410;
+  } catch (e) {
+    console.error("[google] event delete error", e);
     return false;
   }
 }

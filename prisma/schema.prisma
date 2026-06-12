@@ -192,6 +192,7 @@ model Reservation {
   ip            String?   // IP klienta przy rezerwacji online (do banowania)
   discountCode  String?   // kod rabatowy podany przy rezerwacji online
   priceEstimate Float    @default(0) // szacowana cena gry po rabacie (do zapłaty na miejscu)
+  googleEventId String?   // ID wydarzenia w Google Calendar (do aktualizacji/usuwania)
   createdAt     DateTime @default(now())
 
   @@index([start])
