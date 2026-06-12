@@ -98,3 +98,47 @@ export async function pushEventToGoogle(ev: EventInput): Promise<boolean> {
     return false;
   }
 }
+
+// Test konfiguracji z czytelnym komunikatem (do panelu ustawień).
+export async function testGoogleSync(): Promise<{ ok: boolean; error?: string }> {
+  const s = await prisma.siteSettings.findUnique({ where: { id: "main" } });
+  if (!s?.googleSyncEnabled) return { ok: false, error: "Synchronizacja wyłączona — zaznacz checkbox i zapisz." };
+  if (!s.googleClientEmail) return { ok: false, error: "Brak e-maila konta serwisowego (client_email)." };
+  if (!s.googlePrivateKey) return { ok: false, error: "Brak klucza prywatnego (private_key)." };
+  if (!s.googleCalendarId) return { ok: false, error: "Brak ID kalendarza." };
+
+  const cfg: GoogleConfig = {
+    clientEmail: s.googleClientEmail,
+    privateKey: s.googlePrivateKey.replace(/\\n/g, "\n"),
+    calendarId: s.googleCalendarId,
+  };
+  const token = await getAccessToken(cfg);
+  if (!token) return { ok: false, error: "Nie udało się uzyskać tokenu — sprawdź client_email i private_key (czy wklejony w całości, łącznie z BEGIN/END)." };
+
+  const start = new Date(Date.now() + 3600_000);
+  const end = new Date(start.getTime() + 1800_000);
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(cfg.calendarId)}/events`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          summary: "✅ Test synchronizacji Mysterium",
+          description: "Wydarzenie testowe — możesz je usunąć.",
+          start: { dateTime: start.toISOString() },
+          end: { dateTime: end.toISOString() },
+        }),
+      }
+    );
+    if (res.ok) return { ok: true };
+    const body = await res.json().catch(() => ({}));
+    const reason = body?.error?.message || `HTTP ${res.status}`;
+    if (res.status === 404) return { ok: false, error: `Nie znaleziono kalendarza (${reason}). Sprawdź ID kalendarza i czy udostępniłeś go kontu serwisowemu.` };
+    if (res.status === 403) return { ok: false, error: `Brak uprawnień (${reason}). Udostępnij kalendarz e-mailowi konta serwisowego z prawem „Wprowadzanie zmian w wydarzeniach".` };
+    return { ok: false, error: reason };
+  } catch (e: any) {
+    return { ok: false, error: String(e?.message || e) };
+  }
+}
+

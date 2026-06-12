@@ -9,6 +9,7 @@ import { notify, sendMail } from "@/lib/notify";
 import { siteUrl } from "@/lib/seo";
 import { startCheckout, resolveOrigin, paymentSettings } from "@/lib/payments";
 import { parsePricing, estimatePrice, applyDiscount } from "@/lib/pricing";
+import { pushEventToGoogle } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -110,6 +111,13 @@ export async function POST(req: NextRequest) {
 
   const priceLine = appliedCode ? `kod ${appliedCode} · ${priceEstimate} zł` : priceEstimate > 0 ? `${priceEstimate} zł` : "";
   notify({ type: "reservation", title: "Nowa rezerwacja online", lines: [`${room.namePl} · ${d.people} os.`, start.toLocaleString("pl-PL"), `${d.name} · ${d.phone}`, priceLine, refNo].filter(Boolean) });
+
+  // Opcjonalny zapis do Google Calendar (nie blokuje przy błędzie)
+  pushEventToGoogle({
+    summary: `Rezerwacja: ${room.namePl} — ${d.name.trim()}`,
+    description: [`${d.name} · ${d.phone}`, `Osób: ${d.people}`, refNo, d.notes].filter(Boolean).join(" • "),
+    start, end,
+  }).catch(() => {});
 
   // Potwierdzenie dla klienta + link „dodaj do kalendarza"
   try {

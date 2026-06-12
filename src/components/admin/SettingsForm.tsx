@@ -56,6 +56,29 @@ function TelegramChatDetector({ onPick }: { onPick: (id: string) => void }) {
   );
 }
 
+function GoogleSyncTestButton() {
+  const [msg, setMsg] = useState("");
+  const [ok, setOk] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState(false);
+  async function test() {
+    setLoading(true); setMsg(""); setOk(null);
+    try {
+      const res = await fetch("/api/admin/google/test", { method: "POST" });
+      const d = await res.json();
+      setOk(!!d.ok);
+      setMsg(d.ok ? "Działa! Sprawdź kalendarz — dodaliśmy wydarzenie testowe (możesz je usunąć)." : (d.error || "Błąd"));
+    } catch { setOk(false); setMsg("Błąd połączenia"); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="mt-1 mb-4">
+      <button type="button" onClick={test} disabled={loading} className="text-xs px-3 py-2 rounded" style={{ border: "1px solid var(--border)", color: "var(--gold)" }}>{loading ? "Testuję…" : "Testuj synchronizację Google"}</button>
+      <span className="text-xs ml-2" style={{ color: "var(--dim)" }}>(najpierw zapisz dane konta serwisowego)</span>
+      {msg && <p className="text-xs mt-2" style={{ color: ok ? "#7eebb0" : "#fca5a5" }}>{msg}</p>}
+    </div>
+  );
+}
+
 type Field = { name: string; label: string; type?: string; help?: string; placeholder?: string; default?: string | number; options?: { value: string; label: string }[] };
 
 const groups: { title: string; fields: Field[] }[] = [
@@ -260,10 +283,13 @@ export default function SettingsForm() {
         <div key={g.title} className="mb-8">
           <h2 className="font-serif text-sm tracking-[2px] uppercase mb-4 pb-2" style={{ color: "var(--gold)", borderBottom: "1px solid var(--border)" }}>{g.title}</h2>
           {g.title.startsWith("Google Calendar") && (
-            <label className="flex items-center gap-3 mb-4">
-              <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
-              <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
-            </label>
+            <>
+              <label className="flex items-center gap-3 mb-4">
+                <input type="checkbox" checked={!!data.googleSyncEnabled} onChange={(e) => set("googleSyncEnabled", e.target.checked)} />
+                <span className="text-sm" style={{ color: "var(--text)" }}>Włącz synchronizację rezerwacji z Google Calendar</span>
+              </label>
+              <GoogleSyncTestButton />
+            </>
           )}
           {g.title === "Powiadomienia" && (
             <div className="mb-4 flex flex-col gap-2">
