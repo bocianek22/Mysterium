@@ -99,6 +99,21 @@ export function googleEventDescription(r: {
   ].filter(Boolean).join("\n");
 }
 
+// Paleta kolorów wydarzeń Google Calendar (colorId → {nazwa, hex}).
+export const GOOGLE_EVENT_COLORS: Record<string, { name: string; hex: string }> = {
+  "1": { name: "Lawenda", hex: "#7986cb" },
+  "2": { name: "Szałwia", hex: "#33b679" },
+  "3": { name: "Winogrono", hex: "#8e24aa" },
+  "4": { name: "Flaming", hex: "#e67c73" },
+  "5": { name: "Banan", hex: "#f6bf26" },
+  "6": { name: "Mandarynka", hex: "#f4511e" },
+  "7": { name: "Paw", hex: "#039be5" },
+  "8": { name: "Grafit", hex: "#616161" },
+  "9": { name: "Borówka", hex: "#3f51b5" },
+  "10": { name: "Bazylia", hex: "#0b8043" },
+  "11": { name: "Pomidor", hex: "#d50000" },
+};
+
 // Stały kolor wydarzenia (1–11) wyliczony z ID pokoju, by każdy pokój miał swój.
 export function roomColorId(roomId?: string | null): string | undefined {
   if (!roomId) return undefined;
@@ -126,6 +141,7 @@ export async function pushEventToGoogle(ev: EventInput): Promise<string | null> 
           end: { dateTime: ev.end.toISOString() },
           ...(ev.colorId ? { colorId: ev.colorId } : {}),
           ...(ev.location ? { location: ev.location } : {}),
+          reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 60 }, { method: "popup", minutes: 1440 }] },
         }),
       }
     );
@@ -157,6 +173,7 @@ export async function updateGoogleEvent(eventId: string, ev: EventInput): Promis
           end: { dateTime: ev.end.toISOString() },
           ...(ev.colorId ? { colorId: ev.colorId } : {}),
           ...(ev.location ? { location: ev.location } : {}),
+          reminders: { useDefault: false, overrides: [{ method: "popup", minutes: 60 }, { method: "popup", minutes: 1440 }] },
         }),
       }
     );
