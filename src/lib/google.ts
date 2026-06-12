@@ -29,12 +29,21 @@ async function getConfig(): Promise<GoogleConfig | null> {
 }
 
 async function getAccessToken(cfg: GoogleConfig): Promise<string | null> {
+  const { token } = await getAccessTokenDetailed(cfg);
+  return token ?? null;
+}
+
+// Jak wyżej, ale zwraca czytelny powód błędu (do testu w panelu).
+async function getAccessTokenDetailed(cfg: GoogleConfig): Promise<{ token?: string; error?: string }> {
+  let key: Awaited<ReturnType<typeof importPKCS8>>;
   try {
-    const key = await importPKCS8(cfg.privateKey, "RS256");
+    key = await importPKCS8(cfg.privateKey, "RS256");
+  } catch {
+    return { error: "Nie udało się odczytać klucza prywatnego. Wklej całą wartość pola private_key z pliku JSON (od -----BEGIN PRIVATE KEY----- do -----END PRIVATE KEY-----), bez otaczających cudzysłowów." };
+  }
+  try {
     const now = Math.floor(Date.now() / 1000);
-    const assertion = await new SignJWT({
-      scope: "https://www.googleapis.com/auth/calendar",
-    })
+    const assertion = await new SignJWT({ scope: "https://www.googleapis.com/auth/calendar" })
       .setProtectedHeader({ alg: "RS256", typ: "JWT" })
       .setIssuer(cfg.clientEmail)
       .setSubject(cfg.clientEmail)
@@ -46,17 +55,17 @@ async function getAccessToken(cfg: GoogleConfig): Promise<string | null> {
     const res = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-        assertion,
-      }),
+      body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion }),
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.access_token ?? null;
-  } catch (e) {
-    console.error("[google] token error", e);
-    return null;
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.access_token) return { token: data.access_token };
+
+    const g = data.error_description || data.error || `HTTP ${res.status}`;
+    if (/signature/i.test(g)) return { error: `Google: ${g}. Klucz prywatny nie pasuje do tego konta serwisowego — pobierz nowy klucz JSON i wklej oba pola (e-mail + klucz) z tego samego pliku.` };
+    if (/invalid_client|account not found|email/i.test(g)) return { error: `Google: ${g}. Sprawdź e-mail konta serwisowego (client_email).` };
+    return { error: `Google odrzucił logowanie: ${g}` };
+  } catch (e: any) {
+    return { error: String(e?.message || e) };
   }
 }
 
@@ -112,8 +121,9 @@ export async function testGoogleSync(): Promise<{ ok: boolean; error?: string }>
     privateKey: s.googlePrivateKey.replace(/\\n/g, "\n"),
     calendarId: s.googleCalendarId,
   };
-  const token = await getAccessToken(cfg);
-  if (!token) return { ok: false, error: "Nie udało się uzyskać tokenu — sprawdź client_email i private_key (czy wklejony w całości, łącznie z BEGIN/END)." };
+  const auth = await getAccessTokenDetailed(cfg);
+  if (!auth.token) return { ok: false, error: auth.error || "Nie udało się uzyskać tokenu." };
+  const token = auth.token;
 
   const start = new Date(Date.now() + 3600_000);
   const end = new Date(start.getTime() + 1800_000);
