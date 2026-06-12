@@ -5,6 +5,7 @@
 
 import { SignJWT, importPKCS8 } from "jose";
 import { prisma } from "./prisma";
+import { siteUrl } from "./seo";
 
 type GoogleConfig = {
   clientEmail: string;
@@ -74,7 +75,37 @@ type EventInput = {
   description?: string;
   start: Date;
   end: Date;
+  colorId?: string; // 1–11 (kolor wydarzenia w Google)
+  location?: string;
 };
+
+// Bogaty opis wydarzenia: klient, telefon, liczba osób, numer rezerwacji, notatki, link do panelu.
+export function googleEventDescription(r: {
+  customerName?: string | null;
+  customerPhone?: string | null;
+  customerEmail?: string | null;
+  people?: number | null;
+  refNo?: string | null;
+  notes?: string | null;
+}): string {
+  return [
+    r.customerName ? `👤 ${r.customerName}` : "",
+    r.customerPhone ? `📞 ${r.customerPhone}` : "",
+    r.customerEmail ? `✉️ ${r.customerEmail}` : "",
+    r.people ? `👥 ${r.people} os.` : "",
+    r.refNo ? `🔖 ${r.refNo}` : "",
+    r.notes ? `📝 ${r.notes}` : "",
+    `🔗 Panel: ${siteUrl()}/admin/rezerwacje`,
+  ].filter(Boolean).join("\n");
+}
+
+// Stały kolor wydarzenia (1–11) wyliczony z ID pokoju, by każdy pokój miał swój.
+export function roomColorId(roomId?: string | null): string | undefined {
+  if (!roomId) return undefined;
+  let h = 0;
+  for (let i = 0; i < roomId.length; i++) h = (h * 31 + roomId.charCodeAt(i)) >>> 0;
+  return String((h % 11) + 1);
+}
 
 // Tworzy wydarzenie w Google Calendar. Zwraca ID wydarzenia lub null (nigdy nie rzuca).
 export async function pushEventToGoogle(ev: EventInput): Promise<string | null> {
@@ -93,6 +124,8 @@ export async function pushEventToGoogle(ev: EventInput): Promise<string | null> 
           description: ev.description,
           start: { dateTime: ev.start.toISOString() },
           end: { dateTime: ev.end.toISOString() },
+          ...(ev.colorId ? { colorId: ev.colorId } : {}),
+          ...(ev.location ? { location: ev.location } : {}),
         }),
       }
     );
@@ -122,6 +155,8 @@ export async function updateGoogleEvent(eventId: string, ev: EventInput): Promis
           description: ev.description,
           start: { dateTime: ev.start.toISOString() },
           end: { dateTime: ev.end.toISOString() },
+          ...(ev.colorId ? { colorId: ev.colorId } : {}),
+          ...(ev.location ? { location: ev.location } : {}),
         }),
       }
     );

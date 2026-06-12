@@ -9,7 +9,7 @@ import { notify, sendMail } from "@/lib/notify";
 import { siteUrl } from "@/lib/seo";
 import { startCheckout, resolveOrigin, paymentSettings } from "@/lib/payments";
 import { parsePricing, estimatePrice, applyDiscount } from "@/lib/pricing";
-import { pushEventToGoogle } from "@/lib/google";
+import { pushEventToGoogle, roomColorId, googleEventDescription } from "@/lib/google";
 
 export const dynamic = "force-dynamic";
 
@@ -116,7 +116,9 @@ export async function POST(req: NextRequest) {
   try {
     const eventId = await pushEventToGoogle({
       summary: `Rezerwacja: ${room.namePl} — ${d.name.trim()}`,
-      description: [`${d.name} · ${d.phone}`, `Osób: ${d.people}`, refNo, d.notes].filter(Boolean).join(" • "),
+      description: googleEventDescription({ customerName: d.name.trim(), customerPhone: d.phone.trim(), customerEmail: email, people: d.people, refNo, notes: d.notes }),
+      location: d.name.trim(),
+      colorId: roomColorId(d.roomId),
       start, end,
     });
     if (eventId) await prisma.reservation.update({ where: { id: reservation.id }, data: { googleEventId: eventId } });

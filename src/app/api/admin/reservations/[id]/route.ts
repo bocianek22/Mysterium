@@ -4,7 +4,7 @@ import { getSession, canReservations } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { findOrCreateCustomer } from "@/lib/customers";
 import { notifyWaitlist } from "@/lib/waitlist";
-import { pushEventToGoogle, updateGoogleEvent, deleteGoogleEvent } from "@/lib/google";
+import { pushEventToGoogle, updateGoogleEvent, deleteGoogleEvent, roomColorId, googleEventDescription } from "@/lib/google";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -82,7 +82,9 @@ export async function PATCH(
       } else {
         await updateGoogleEvent(item.googleEventId, {
           summary: `Rezerwacja: ${item.title}`,
-          description: [item.customerName, item.customerPhone, item.notes].filter(Boolean).join(" • "),
+          description: googleEventDescription(item),
+          location: item.customerName || undefined,
+          colorId: roomColorId(item.roomId),
           start: item.start,
           end: item.end,
         });
@@ -91,7 +93,9 @@ export async function PATCH(
       // Brak wydarzenia (np. rezerwacja sprzed włączenia synchronizacji) — utwórz teraz.
       const eventId = await pushEventToGoogle({
         summary: `Rezerwacja: ${item.title}`,
-        description: [item.customerName, item.customerPhone, item.notes].filter(Boolean).join(" • "),
+        description: googleEventDescription(item),
+        location: item.customerName || undefined,
+        colorId: roomColorId(item.roomId),
         start: item.start,
         end: item.end,
       });
